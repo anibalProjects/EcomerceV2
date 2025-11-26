@@ -22,4 +22,6 @@ class Carrito extends Model
     public function Mueble() {
         return $this->belongsToMany(Mueble::class);
     }
+
+
 }

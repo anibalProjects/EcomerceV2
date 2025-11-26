@@ -17,7 +17,7 @@ return new class extends Migration
             $table->float('precio')->default(0);
             $table->timestamps();
             $table->unsignedBigInteger('usuario_id')->nullable();
-            $table->foreign('usuario_id')->references('id')->on('usuarios')->onDelete('set null');
+            $table->foreign('usuario_id')->references('id')->on('users')->onDelete('set null');
         });
     }
 
