@@ -45,4 +45,11 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    static function buscarUsuario($sesion_id){
+
+        if($sesion_id){
+            
+        }
+    }
 }

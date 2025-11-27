@@ -2,22 +2,24 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Mueble extends Model
 {
+    use HasFactory;
     protected $table = 'muebles';
     protected $primaryKey = 'id';
     protected $fillable =
     [
-        'id_categoria',
+        'categoria_id',
         'nombre',
         'descripcion',
         'precio',
         'color',
         'stock',
         'novedad',
-        'material',
+        'materiales',
         'dimensiones',
         'activo'
     ];

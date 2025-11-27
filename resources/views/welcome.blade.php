@@ -7,6 +7,6 @@
     <title>Vista de prueba</title>
 </head>
 <body>
-Esto es la pagina de bienvenida
+    <a href="{{ route('carrito.index') }}">Haz click mi rey</a>
 </body>
 </html>
