@@ -1,0 +1,24 @@
+/* Tema Claro */
+:root {
+    --bg-color: #ffffff;
+    --text-color: #333333;
+    --card-bg: #f8f9fa;
+    --border-color: #dee2e6;
+    --primary-color: #0d6efd;
+}
+
+body.claro {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+.claro .card {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+.claro .list-group-item {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
