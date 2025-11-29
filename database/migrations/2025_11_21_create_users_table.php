@@ -21,7 +21,8 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
-            $table->boolean('bloqueo')->nullable()->default(false);;
+            $table->timestamp('bloqueo_temporal')->nullable();
+            $table->integer('intentos');
             $table->foreign('rol_id')->references('id')->on('roles')->onDelete('set null');
         });
 

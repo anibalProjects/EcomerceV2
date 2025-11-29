@@ -29,6 +29,8 @@ class UsuarioFactory extends Factory
             'apellido' => $this->faker->lastName,
             'email' => $this->faker->unique()->safeEmail,
             'password' => Hash::make('password'),
+            'bloqueo_temporal' => null,
+            'intentos' => 0,
             'email_verified_at' => now(),
             'remember_token' => Str::random(10)
         ];

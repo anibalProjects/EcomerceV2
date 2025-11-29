@@ -34,6 +34,8 @@ class RegisterController extends Controller
         $usuario->email_verified_at = now();
         $usuario->remember_token = Str::random(10);
         $usuario->rol_id = 3;
+        $usuario->bloqueo_temporal = null;
+        $usuario->intentos = 0;
         $respUsuario = $usuario->save();
 
         return redirect()->route('registro')->with('success', 'Usuario Cliente creado exitosamente.');
