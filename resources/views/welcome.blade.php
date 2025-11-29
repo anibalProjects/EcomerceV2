@@ -8,5 +8,7 @@
 </head>
 <body>
     <a href="{{ route('carrito.index') }}">Haz click mi rey</a>
+    <a href="{{ route('usuarios.create') }}">Haz click Registro</a>
+    <a href="{{ route('login.mostrar') }}">Haz click inicio sesion</a>
 </body>
 </html>

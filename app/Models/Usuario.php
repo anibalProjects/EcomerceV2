@@ -3,16 +3,21 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 
 class Usuario extends Model
 {
-    protected $table = 'usuarios';
+    use HasFactory;
+
+    protected $table = 'users';
     protected $primaryKey = 'id';
     protected $fillable =
     [
-        'id_rol',
+        'rol_id',
         'nombre',
-        'correo',
+        'apellido',
+        'email',
         'password'
     ];
 
