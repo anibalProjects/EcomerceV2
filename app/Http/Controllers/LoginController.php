@@ -34,14 +34,14 @@ class LoginController extends Controller{
             $datosSesion = [
                 'id' => $user->id,
                 'nombre' => $user->nombre,
-                'sessionId' => $sesionId
+                'sesionId' => $sesionId
             ];
 
             $usuarioJson = json_encode($datosSesion);
             $usuarios[$sesionId] = $usuarioJson;
             Session::put('usuarios_sesion', $usuarios);
 
-            return redirect()->route('pag_prueba', ['sessionId' => $sesionId]);
+            return redirect()->route('pag_prueba', ['sesionId' => $sesionId]);
         }
 
         //return redirect()->route('pag_prueba', ['sessionId' => $sesionId]); //Redirige al pagina prueba

@@ -10,7 +10,7 @@
 <body>
 
 @php
-    $sessionId = request()->query('sessionId');
+    $sessionId = request()->query('sesionId');
     $usuarios = Session::get('usuarios_sesion', []);
     $usuario = isset($usuarios[$sessionId]) ? json_decode($usuarios[$sessionId]) : null;
     //dd(session()->all());
