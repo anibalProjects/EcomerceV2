@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Categoria;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,7 @@ class MuebleFactory extends Factory
    public function definition()
     {
         return [
-            'categoria_id' => null,
+            'categoria_id' => $this->faker->numberBetween(1, 3), //esto hay que cambiarlo para que sea dinámico
             'nombre'       => ucfirst($this->faker->words(2, true)),
             'descripcion'  => $this->faker->text(200),
             'precio'       => $this->faker->randomFloat(2, 20, 2000),

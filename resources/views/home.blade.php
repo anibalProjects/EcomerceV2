@@ -7,7 +7,6 @@
 {{-- Se omite @section('head') --}}
 
 @section('content')
-
     <div class="container">
         <h1>Filtrar y Ordenar Muebles</h1>
 
@@ -22,7 +21,7 @@
         <hr>
 
 
-        <form action="" method="POST" class="filter-form mb-4 p-3 border rounded">
+        <form action="{{ route('mueble.filtrar') }}" method="POST" class="filter-form mb-4 p-3 border rounded">
             @csrf
             <div class="row">
                 {{-- Nombre --}}
@@ -40,7 +39,7 @@
                 {{-- Precio máximo --}}
                 <div class="col-md-2 mb-3">
                     <label for="precio_max">Precio máx:</label>
-                    <input type="number" step="0.01" name="filtro[precio_max]" id="precio_max" class="form-control" value="{{ $filtro['precio_max'] ?? '' }}">
+                    <input type="number" step="1" name="filtro[precio_max]" id="precio_max" class="form-control" value="{{ $filtro['precio_max'] ?? '' }}">
                 </div>
 
                 {{-- Color --}}
@@ -71,6 +70,16 @@
                         @endforeach
                     </select>
                 </div>
+                <div class="col-md-3 mb-3">
+                    <label class="d-block">Novedades:</label>
+                    <input
+                        type="checkbox"
+                        name="filtro[novedad]"
+                        value="1"
+                        {{ !empty($filtro['novedad']) ? 'checked' : '' }}
+                    >
+                    <span>Mostrar solo novedades</span>
+                </div>
 
                 {{-- Ordenar por --}}
                 <div class="col-md-3 mb-3">
@@ -81,8 +90,6 @@
                         <option value="precio_desc" {{ ($orden ?? '') === 'precio_desc' ? 'selected' : '' }}>Precio ↓</option>
                         <option value="nombre_asc"  {{ ($orden ?? '') === 'nombre_asc' ? 'selected' : '' }}>Nombre ↑</option>
                         <option value="nombre_desc" {{ ($orden ?? '') === 'nombre_desc' ? 'selected' : '' }}>Nombre ↓</option>
-                        <option value="fecha_desc"  {{ ($orden ?? '') === 'fecha_desc' ? 'selected' : '' }}>Fecha (Más nuevo)</option>
-                        <option value="fecha_asc"   {{ ($orden ?? '') === 'fecha_asc' ? 'selected' : '' }}>Fecha (Más antiguo)</option>
                     </select>
                 </div>
 
