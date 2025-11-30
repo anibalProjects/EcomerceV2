@@ -97,10 +97,11 @@ class MuebleController extends Controller
             $query->where('novedad', 1);
         }
 
-        return $this->ordenar($query, $request->orden, $filtro);
+        $sesionId = $request->sesionId;
+        return $this->ordenar($query, $request->orden, $filtro, $sesionId);
     }
 
-    public function ordenar($query, $orden, $filtro) {
+    public function ordenar($query, $orden, $filtro, $sesionId) {
 
     switch ($orden) {
         case 'precio_asc':
@@ -125,11 +126,13 @@ class MuebleController extends Controller
     }
     $muebles = $query->get();
     $categorias = Categoria::all();
+
     return view('home', [
         'muebles' => $muebles,
         'categorias' => $categorias,
         'filtro' => $filtro,
-        'orden' => $orden
+        'orden' => $orden,
+        'sesionId' => $sesionId
     ]);
     }
 }

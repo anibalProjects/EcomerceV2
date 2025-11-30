@@ -21,7 +21,7 @@
         <hr>
 
 
-        <form action="{{ route('mueble.filtrar', ['categorias' => $categorias]) }}" method="POST" class="filter-form mb-4 p-3 border rounded">
+        <form action="{{ route('mueble.filtrar', ['categorias' => $categorias, 'sesionId' => $sesionId]) }}" method="POST" class="filter-form mb-4 p-3 border rounded">
             @csrf
             <div class="row">
                 {{-- Nombre --}}
