@@ -96,9 +96,6 @@ class MuebleController extends Controller
             $query->where('novedad', 1);
         }
 
-        //$mueblesFiltrados = $query->paginate(12);
-        $mueblesFiltrados = $query->get()->toArray();
-        dd($mueblesFiltrados);
         return $this->ordenar($query, $request->orden, $filtro);
     }
 
@@ -125,8 +122,13 @@ class MuebleController extends Controller
             $query->orderBy('id', 'asc');
             break;
     }
-    $muebles = $query->get()->toArray();
-    dd($muebles);
-
+    $muebles = $query->get();
+    $categorias = Categoria::all();
+    return view('home', [
+        'muebles' => $muebles,
+        'categorias' => $categorias,
+        'filtro' => $filtro,
+        'orden' => $orden
+    ]);
     }
 }
