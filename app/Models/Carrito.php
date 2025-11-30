@@ -11,27 +11,17 @@ class Carrito extends Model
     protected $primaryKey = 'id';
     protected $fillable =
     [
+        'usuario_id',
+        'sesionId',
         'cantidad_productos',
-        'precio',
-        'id_usuario',
+        'precio'
     ];
 
     public function Usuario() {
         return $this->belongsTo(Usuario::class);
     }
 
-    public function Mueble() {
-        return $this->belongsToMany(Mueble::class);
-    }
-
-    static function getCarritoActual($sesionId){
-        $user = Auth::user();
-        // Busca un carrito que coincida con el Usuario y si el carrito no existe lo creo
-        return Carrito::firstOrCreate(
-            [
-                'usuario_id' => $user->id,
-                'sesionId' => $sesionId
-            ]
-        );
+    public function muebles() {
+        return $this->belongsToMany(Mueble::class, 'carrito_productos')->withPivot('cantidad');
     }
 }

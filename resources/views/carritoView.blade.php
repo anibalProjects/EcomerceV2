@@ -10,26 +10,28 @@
 <body>
 
     <h1>Mi Carrito de Compras</h1>
-    @if (!empty($carrito))
+    @if ($productosDelCarrito->isNotEmpty())
         <table>
             <thead>
                 <tr>
                     <th>Producto</th>
                     <th>Precio Unitario</th>
                     <th>Cantidad</th>
+                    <th>Subtotal</th>
                     <th>Accion</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ($carrito as $item)
+                @foreach ($productosDelCarrito as $item)
                     <tr>
-                        <td>{{ $item['nombre'] }}</td>
-                        <td>{{ number_format($item['precio'], 2, ',', '.') }}€</td>
-                        <td>{{ $item['cantidad'] }}</td>                        <td>
-                            <form action="{{ route('carrito.destroy', ['carrito' => $item->id]) }}" method="POST">
+                        <td>{{ $item->nombre }}</td>
+                        <td>{{ number_format($item->precio, 2, ',', '.') }}€</td>
+                        <td>{{ $item->pivot->cantidad }}</td>
+                        <td>{{ number_format($item->precio * $item->pivot->cantidad, 2, ',', '.') }}€</td>
+                        <td>
+                            <form action="{{ route('carrito.destroy', ['carrito' => $item->id, 'sesionId' => $sesionId]) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
-                                <input type="hidden" name="sesionId" value="{{ $sesionId }}">
                                 <button type="submit">Eliminar</button>
                             </form>
                         </td>
@@ -38,9 +40,8 @@
             </tbody>
         </table>
         <h2>Total: {{ number_format($total, 2, ',', '.') }}€</h2>
-        <form action="{{ route('carrito.empty') }}" method="POST">
+        <form action="{{ route('carrito.empty', ['sesionId' => $sesionId]) }}" method="POST">
             @csrf
-            <input type="hidden" name="sesionId" value="{{ $sesionId }}">
             <button>Vaciar Carrito</button>
         </form>
     @else
