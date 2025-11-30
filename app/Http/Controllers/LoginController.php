@@ -68,9 +68,7 @@ class LoginController extends Controller{
                 $usuarioDB->intentos = 0;
                 $usuarioDB->save();
 
-                return back()->withErrors([
-                    'email' => "Has superado el límite de intentos. Inténtalo dentro de 5 minutos."
-                ]);
+                return back()->withErrors(['email' => "Has superado el límite de intentos. Inténtalo dentro de 5 minutos."]);
             }
 
             $usuarioDB->save();
@@ -83,7 +81,7 @@ class LoginController extends Controller{
 
     }
     public function cerrarSesion(Request $request){
-        $sesionId = $request->query('sessionId');
+        $sesionId = $request->query('sesionId');
         $usuarios = Session::get('usuarios_sesion', []);
 
         if (isset($usuarios[$sesionId])) {
