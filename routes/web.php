@@ -14,6 +14,7 @@ Route::post('usuarios/create', [RegisterController::class, 'crear'])->name('regi
 
 Route::get('/login', [LoginController::class, 'mostrar'])->name('login.mostrar');
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
+Route::post('/logout', [LoginController::class, 'cerrarSesion'])->name('logout');
 
 Route::get('/pag_prueba', function () { return view('principal'); })->name('pag_prueba');
 

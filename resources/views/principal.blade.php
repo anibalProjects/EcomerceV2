@@ -18,6 +18,10 @@
 @if ($usuario)
     <h1>Pagina Prueba</h1>
     <p>Usuario: {{ $usuario->nombre }}</p>
+    <form method="POST" action="{{ route('logout') }}?sesionId={{ $sessionId }}">
+        @csrf
+        <button type="submit">Cerrar sesión</button>
+    </form>
 @else
     <p>Debes iniciar sesión para ver este contenido.</p>
 @endif

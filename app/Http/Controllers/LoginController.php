@@ -82,17 +82,20 @@ class LoginController extends Controller{
 
 
     }
-    /*
     public function cerrarSesion(Request $request){
-
         $sesionId = $request->query('sessionId');
-        $usuarios = Session::get('usuarios_sesion');
+        $usuarios = Session::get('usuarios_sesion', []);
 
-        if( isset($usuarios[$sesionId]) == true){
+        if (isset($usuarios[$sesionId])) {
             unset($usuarios[$sesionId]);
             Session::put('usuarios_sesion', $usuarios);
         }
-        return redirect()->route('login')->with('mensaje', 'Sesión cerrada correctamente.'); //Redirige al login
-    }*/
+
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('welcome')->with('mensaje', 'Sesión cerrada correctamente.');
+    }
 
 }
