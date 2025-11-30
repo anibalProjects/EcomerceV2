@@ -38,6 +38,8 @@ class RegisterController extends Controller
         $usuario->intentos = 0;
         $respUsuario = $usuario->save();
 
+        
+
         return redirect()->route('registro')->with('success', 'Usuario Cliente creado exitosamente.');
     }
 }
