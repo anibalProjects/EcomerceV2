@@ -11,11 +11,12 @@ class MuebleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $sesionId = $request->sesionId;
         $muebles = Mueble::all();
         $categorias = Categoria::all();
-        return view('home', compact('muebles', 'categorias'));
+        return view('home', compact('muebles', 'categorias','sesionId'));
     }
 
     /**

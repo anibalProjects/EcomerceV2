@@ -13,8 +13,6 @@ class carritoController extends Controller
     {
         $sesionId = $request->input('sesionId');
         $usuario = User::buscarUsuario($sesionId);
-
-
         $carrito = Session::get('carrito_'.$usuario->id, []);
         $total = 0;
         foreach ($carrito as $item) {
@@ -29,7 +27,7 @@ class carritoController extends Controller
             'cantidad' => 'required|int|min:1|max:10'
         ]);
         //Datos del usuario
-        $sesionId = $request->query('sesionId');
+        $sesionId = $request->input('sesionId');
         $usuario = User::buscarUsuario($sesionId);
         //Asignar carrito a cada usuario
         $carrito = Session::get('carrito_'.$usuario->id, []);
@@ -40,7 +38,6 @@ class carritoController extends Controller
 
         //comprar que hay stock y si producto estaba ya en el carrito
         if ($producto['stock'] >= $cantidad) {
-
             if(isset($carrito[$producto_id])){
                 $carrito[$producto_id]['cantidad'] += $cantidad ;
             } else {

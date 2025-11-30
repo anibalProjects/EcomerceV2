@@ -48,6 +48,6 @@
     @endif
 
     <br>
-    <a href="{{ url('/') }}">← Seguir comprando</a>
+    <a href="{{ route('muebles.index', ['sesionId' => $sesionId]) }}">← Seguir comprando</a>
 </body>
 </html>

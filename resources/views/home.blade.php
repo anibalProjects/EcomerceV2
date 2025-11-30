@@ -13,7 +13,7 @@
         <hr>
 
         <div class="header-actions mb-4">
-            <a href="" class="btn btn-primary cart-btn me-2">
+            <a href="{{ route('carrito.index', ['sesionId' => $sesionId]) }}" class="btn btn-primary cart-btn me-2">
                 Ver Carrito 🛒
             </a>
         </div>
@@ -140,10 +140,10 @@
 
                             {{-- Formulario para Añadir al Carrito con ruta de acción vacía --}}
                             <div class="card-footer bg-white border-0">
-                                <form method="POST" action='' class="add-cart-form">
+                                <form method="POST" action="{{ route('carrito.store') }}" class="add-cart-form">
                                     @csrf
                                     <input type="hidden" name="producto_id" value="{{ $mueble->id }}">
-                                    <input type="hidden" name="sesionId" value="{{ $sesionId ?? '' }}">
+                                    <input type="hidden" name="sesionId" value="{{ $sesionId }}">
 
                                     <div class="mb-2">
                                         <label for="cantidad_{{ $mueble->id }}" class="form-label d-block text-center small">Cantidad</label>
