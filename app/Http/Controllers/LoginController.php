@@ -76,9 +76,6 @@ class LoginController extends Controller{
 
         }
 
-        //return redirect()->route('pag_prueba', ['sessionId' => $sesionId]); //Redirige al pagina prueba
-
-
     }
     public function cerrarSesion(Request $request){
         $sesionId = $request->query('sesionId');

@@ -40,11 +40,4 @@ class RegisterController extends Controller
 
         return redirect()->route('registro')->with('success', 'Usuario Cliente creado exitosamente.');
     }
-
-
-    // Mostrar un usuario específico
-    public function show(Usuario $usuario)
-    {
-        return view('usuarios.show', ['usuario' => $usuario]);
-    }
 }
