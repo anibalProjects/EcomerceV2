@@ -15,6 +15,13 @@
 </head>
 <body class="login-page">
     <div class="login-container">
+
+        @if (session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <h1>Iniciar Sesión</h1>
 
         @if ($errors->any())
