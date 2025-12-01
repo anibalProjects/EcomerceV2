@@ -47,7 +47,7 @@
                     <label for="color">Color:</label>
                     <select name="filtro[color]" id="color" class="form-select">
                         <option value="">-- Selecciona --</option>
-                        @foreach(['negro', 'blanco', 'rojo', 'azul', 'verde', 'gris', 'marron'] as $c)
+                        @foreach(['black', 'white', 'red', 'blue', 'green', 'grey', 'brown'] as $c)
                             <option value="{{ $c }}" {{ ($filtro['color'] ?? '') === $c ? 'selected' : '' }}>
                                 {{ ucfirst($c) }}
                             </option>
@@ -90,6 +90,8 @@
                         <option value="precio_desc" {{ ($orden ?? '') === 'precio_desc' ? 'selected' : '' }}>Precio ↓</option>
                         <option value="nombre_asc"  {{ ($orden ?? '') === 'nombre_asc' ? 'selected' : '' }}>Nombre ↑</option>
                         <option value="nombre_desc" {{ ($orden ?? '') === 'nombre_desc' ? 'selected' : '' }}>Nombre ↓</option>
+                        <option value="fecha_desc" {{ ($orden ?? '') === 'fecha_desc' ? 'selected' : '' }}>Fecha de Creación ↓</option>
+                        <option value="fecha_asc" {{ ($orden ?? '') === 'fecha_asc' ? 'selected' : '' }}>Fecha de Creación ↑</option>
                     </select>
                 </div>
 

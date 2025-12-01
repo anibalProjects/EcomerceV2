@@ -119,6 +119,12 @@ class MuebleController extends Controller
         case 'nombre_desc':
             $query->orderBy('nombre', 'desc');
             break;
+        case 'fecha_desc':
+            $query->orderBy('created_at', 'desc');
+            break;
+        case 'fecha_asc':
+            $query->orderBy('created_at', 'asc');
+            break;
 
         default:
             $query->orderBy('id', 'asc');
