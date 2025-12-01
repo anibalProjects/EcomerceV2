@@ -78,7 +78,7 @@ class MuebleController extends Controller
             }
         }
         $query = Mueble::query()
-                       ->with('categoria')
+                        ->with('categoria')
                        ->where('activo', 1);
         if (isset($filtro['nombre'])) {
             $query->where('nombre', 'like', '%' . $filtro['nombre'] . '%');
