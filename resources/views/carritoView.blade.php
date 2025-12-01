@@ -41,6 +41,13 @@
                         <td>{{ $item->pivot->cantidad }}</td>
                         <td>{{ number_format($item->precio * $item->pivot->cantidad, 2, ',', '.') }}€</td>
                         <td>
+                            <form action="{{ route('carrito.update', ['carrito' => $item->id, 'sesionId' => $sesionId]) }}" method="POST">
+                                @csrf
+                                 @method('PUT')
+
+                                <button type="submit" name="increment" value="+">+</button>
+                                <button type="submit" name="decrement" value="-">-</button>
+                            </form>
                             <form action="{{ route('carrito.destroy', ['carrito' => $item->id, 'sesionId' => $sesionId]) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
