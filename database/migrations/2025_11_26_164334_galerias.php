@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('mueble_id')->nullable();
             $table->string('ruta');
-            $table->boolean('es_principal');
+            $table->boolean('es_principal')->default(false);
+            $table->integer('orden')->default(0);
             $table->timestamps();
             $table->foreign('mueble_id')->references('id')->on('muebles')->onDelete('set null');
         });

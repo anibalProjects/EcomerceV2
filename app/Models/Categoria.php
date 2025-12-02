@@ -14,6 +14,10 @@ class Categoria extends Model
         'descripcion'
     ];
 
+    public function muebles() {
+        return $this->hasMany(Mueble::class);
+    }
+
 
 
     public static function getAllCategories() {

@@ -14,6 +14,16 @@ class UsuarioSeeder extends Seeder
      */
     public function run()
     {
+        // Usuario admin para pruebas
+        Usuario::factory()->create([
+            'nombre' => 'Admin',
+            'apellido' => 'User',
+            'email' => 'admin@example.com',
+            'password' => bcrypt('password'), // Hash::make('password')?
+            'rol_id' => 1,
+        ]);
+
+        // Resto de usuarios
         Usuario::factory(10)->create();
     }
 }
