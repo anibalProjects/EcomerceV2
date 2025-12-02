@@ -10,10 +10,6 @@
          style="border-bottom: 1px solid var(--nav-border); position: relative;">
 
         <div class="d-flex align-items-center">
-            <a href="#" class="menu-toggle d-md-none me-3">
-                <i class="bi bi-list"></i>
-            </a>
-
             <nav class="nav-links-desktop d-none d-md-flex align-items-center">
                 <a href="{{ route('muebles.index') }}" class="me-3">
                     <img src="{{ asset('img/Logo png.png') }}" alt="LECTONIC" style="height:70px; object-fit:contain;">
@@ -27,8 +23,13 @@
 
             <div class="d-flex align-items-center">
 
+@if ($usuario)
+
+
+
     <div class="dropdown">
 
+        {{-- Botón que activa el menú (Solo visible si hay usuario autenticado) --}}
         <button class="btn btn-primary d-flex align-items-center dropdown-toggle"
                 type="button"
                 data-bs-toggle="dropdown"
@@ -38,8 +39,10 @@
             <i class="bi bi-person-circle me-1"></i> Mi Cuenta
         </button>
 
+        {{-- El Menú Desplegable --}}
         <ul class="dropdown-menu dropdown-menu-end">
 
+            {{-- Opción 1: Ver carrito --}}
             <li>
                 <a class="dropdown-item d-flex justify-content-between align-items-center"
                    href="{{ route('carrito.index', ['sesionId' => $sesionId ?? null]) }}"
@@ -49,21 +52,33 @@
                 </a>
             </li>
 
+            {{-- Separador --}}
             <li><hr class="dropdown-divider"></li>
 
+            {{-- Opción 2: Preferencias --}}
             <li>
                 <a class="dropdown-item" href="#">
                     <i class="bi bi-gear-fill me-2"></i> Preferencias
                 </a>
             </li>
 
+            {{-- Opción 3: Cerrar Sesión --}}
             <li>
-                <a class="dropdown-item text-danger" href="#">
-                    <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
-                </a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                   <button type="submit" class="dropdown-item text-danger">
+                        <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
+                    </button>
+                </form>
             </li>
         </ul>
     </div>
+@endif
+
+@if (!$usuario)
+<a href="{{ route('login.mostrar') }}" class="btn btn-primary">Iniciar Sesión</a>
+
+@endif
 
 </div>
             @auth

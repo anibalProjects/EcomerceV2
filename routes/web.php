@@ -8,6 +8,7 @@ use App\Http\Controllers\carritoController;
 use App\Http\Controllers\MuebleController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
+use App\Models\User;
 use Illuminate\Support\Facades\Session;
 
 Route::get('/', function () {
