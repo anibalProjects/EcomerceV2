@@ -119,6 +119,7 @@
 
 <main class="container">
     @yield('content')
+    @yield('auth-content')
 </main>
 
 <footer class="lux-footer">
