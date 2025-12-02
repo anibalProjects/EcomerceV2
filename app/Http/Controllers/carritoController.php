@@ -28,7 +28,7 @@ class carritoController extends Controller
                 $total += $mueble->precio * $mueble->pivot->cantidad;
             }
 
-            return view('carritoView', ['sesionId' => $sesionId, 'productosDelCarrito' => $carrito->muebles, 'total' => $total]);
+            return view('carrito.carritoView', ['sesionId' => $sesionId, 'productosDelCarrito' => $carrito->muebles, 'total' => $total]);
         }else{
             return redirect()->route('login.mostrar')->with('error', 'debes iniciar sesion para ver el carrito');
         }
@@ -129,6 +129,7 @@ class carritoController extends Controller
 
     public function empty(Request $request)
     {
+        dd($request);
         $sesionId = $request->input('sesionId');
         $usuario = User::buscarUsuario($sesionId);
 
@@ -142,24 +143,35 @@ class carritoController extends Controller
         }
     }
 
-    public function buy(Request $request){
+      public function buy(Request $request){
         $sesionId = $request->input('sesionId');
         $usuario = User::buscarUsuario($sesionId);
         $carrito = Carrito::where('usuario_id', $usuario->id)->first();
-
+        $email = User::where('id', $usuario->id)->first()->email;
         if($usuario){
             foreach ($carrito->muebles as $mueble) {
-                if($mueble->stock > $mueble->pivot->cantidad){
+                if($mueble->stock >= $mueble->pivot->cantidad){
                     $mueble->stock -= $mueble->pivot->cantidad;
                     $mueble->save();
                 }else{
                     return redirect()->back()->with('error', 'No hay stock suficiente para completar la compra del producto: ' . $mueble->nombre);
                 }
             }
-            return redirect()->route('carrito.empty', ['sesionId' => $sesionId])->with('success', 'Compra realizada con exito ' . $usuario->nombre);
+            $productosDelCarrito = $carrito->muebles;
+            return view('carrito.carritoFactura', compact('sesionId', 'usuario','email' ,'productosDelCarrito'));
         }else{
             return redirect()->route('login.mostrar')->with('error', 'debes iniciar sesion');
         }
+    }
+
+    public function returnFromBuy(Request $request){
+        $sesionId = $request->input('sesionId');
+        $usuario = User::buscarUsuario($sesionId);
+
+        $carrito = Carrito::where('usuario_id', $usuario->id)->first();
+        $carrito->muebles()->detach();
+
+        return redirect()->route('muebles.index', compact('sesionId'));
     }
 
     public function show(string $id){}

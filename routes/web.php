@@ -48,6 +48,7 @@ Route::get('/', function () {
 */
 Route::resource('carrito', carritoController::class);
 Route::post('/carrito/{sesionId}/buy', [carritoController::class,'buy'])->name('carrito.buy');
+Route::get('/carrito/{sesionId}', [carritoController::class,'returnFromBuy'])->name('carrito.returnFromBuy');
 Route::resource('muebles', MuebleController::class);
 
 Route::get('filtro', [MuebleController::class, 'filtrar'])->name('mueble.filtrar');
