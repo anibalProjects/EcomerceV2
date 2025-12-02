@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Categoria;
 use App\Models\Mueble;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class MuebleController extends Controller
@@ -17,7 +18,8 @@ class MuebleController extends Controller
         $sesionId = $request->sesionId;
         $muebles = Mueble::paginate(12);
         $categorias = Categoria::all();
-        return view('home', compact('muebles', 'categorias','sesionId'));
+        $usuario = User::buscarUsuario($sesionId);
+        return view('home', compact('muebles', 'categorias','sesionId', 'usuario'));
     }
 
     /**

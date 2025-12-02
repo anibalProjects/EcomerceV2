@@ -89,7 +89,7 @@ class LoginController extends Controller{
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('welcome')->with('mensaje', 'Sesión cerrada correctamente.');
+        return redirect()->route('muebles.index')->with('mensaje', 'Sesión cerrada correctamente.');
     }
 
 }
