@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\CookieMoneda;
+use App\Http\Controllers\CookiePaginacion;
+use App\Http\Controllers\CookiePersonalizacion;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\carritoController;
 use App\Http\Controllers\MuebleController;
@@ -49,3 +52,6 @@ Route::resource('muebles', MuebleController::class);
 
 Route::post('filtro', [MuebleController::class, 'filtrar'])->name('mueble.filtrar');
 Route::post('/carrito/empty', [carritoController::class, 'empty'])->name('carrito.empty');
+Route::post('/guardar-tema', [CookiePersonalizacion::class, 'guardarTema'])->name('preferencias.tema.guardar');
+Route::post('/guardar-moneda', [CookieMoneda::class, 'guardarMoneda'])->name('preferencias.moneda.guardar');
+Route::post('/guardar-paginacion', [CookiePaginacion::class, 'guardarPaginacion'])->name('preferencias.paginacion.guardar');

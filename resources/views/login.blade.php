@@ -1,21 +1,17 @@
-@extends('layout.registerAndLogin') {{-- <-- Debe extender el layout de autenticación --}}
+@extends('layout.registerAndLogin')
 
 @section('title', 'Inicio de Sesión')
 
-{{-- ¡EL CONTENIDO DEL FORMULARIO DEBE IR DENTRO DEL SECTION Y DEBE CERRARSE! --}}
 @section('auth-content')
 
-    {{-- Pestañas de Navegación (Simulación) --}}
     <div class="mb-5">
         <ul class="nav nav-pills nav-justified" id="authTabs" role="tablist">
             <li class="nav-item" role="presentation">
-                {{-- Pestaña de Login (Activa) --}}
                 <a class="nav-link active" id="login-tab" data-bs-toggle="pill" href="#login-content" role="tab" aria-selected="true">
                     <i class="bi bi-box-arrow-in-right me-1"></i> Iniciar Sesión
                 </a>
             </li>
             <li class="nav-item" role="presentation">
-                {{-- Enlace a Registro --}}
                 <a class="nav-link" href="{{ route('usuarios.create') }}" role="tab" aria-selected="false">
                     <i class="bi bi-person-plus-fill me-1"></i> Registrarse
                 </a>
@@ -23,7 +19,6 @@
         </ul>
     </div>
 
-    {{-- Mensajes de Sesión y Errores --}}
     @if (session('error'))
         <div class="alert alert-danger p-2 mb-3" role="alert">
             <i class="bi bi-exclamation-octagon-fill me-1"></i> {{ session('error') }}
@@ -36,13 +31,9 @@
         </div>
     @endif
 
-    {{-- =================================== --}}
-    {{-- 🔒 Formulario de Login Principal --}}
-    {{-- =================================== --}}
     <form method="POST" action="{{ route('login.post') }}">
         @csrf
 
-        {{-- 1. Email --}}
         <div class="mb-3">
             <label class="form-label visually-hidden">Correo Electrónico</label>
             <div class="input-group input-group-lg">
@@ -54,7 +45,6 @@
             </div>
         </div>
 
-        {{-- 2. Contraseña --}}
         <div class="mb-4">
             <label class="form-label visually-hidden">Contraseña</label>
             <div class="input-group input-group-lg">
@@ -66,21 +56,13 @@
             </div>
         </div>
 
-        {{-- 3. Botón de Entrar --}}
         <button type="submit" class="btn btn-primary w-100 mb-3 btn-lg submit-btn">
             <i class="bi bi-key-fill me-1"></i> Iniciar Sesión
         </button>
 
-        {{-- Enlace de Contraseña Olvidada --}}
-        <a href="#" class="forgot-password-link">
-            ¿Olvidaste tu contraseña?
-        </a>
-
         <hr class="my-4">
 
-        {{-- =================================== --}}
-        {{-- ⚙️ Opciones de Configuración --}}
-        {{-- =================================== --}}
+
         <div class="mt-4">
             <h6 class="text-center text-muted mb-3">Preferencias de Sesión</h6>
 
@@ -126,4 +108,6 @@
             </div>
         </div>
     </form>
-@endsection {{-- <--- ¡Faltaba cerrar la sección! --}}
+@endsection
+
+
