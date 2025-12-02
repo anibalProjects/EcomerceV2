@@ -8,20 +8,21 @@
 
 @section('content')
     <div class="container">
-        <h1>Filtrar y Ordenar Muebles</h1>
 
+
+        <h2>Filtro:</h2>
         <hr>
-
-        <div class="header-actions mb-4">
-            <a href="{{ route('carrito.index', ['sesionId' => $sesionId]) }}" class="btn btn-primary cart-btn me-2">
-                Ver Carrito 🛒
-            </a>
-        </div>
-
-        <hr>
-
-
-        <form action="{{ route('mueble.filtrar', ['categorias' => $categorias, 'sesionId' => $sesionId]) }}" method="POST" class="filter-form mb-4 p-3 border rounded">
+            @if (session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
+            @if (session('error'))
+                <div class="alert alert-danger">
+                    {{ session('error') }}
+                </div>
+            @endif
+        <form action="{{ route('mueble.filtrar', ['categorias' => $categorias]) }}" method="POST" class="filter-form mb-4 p-3 border rounded">
             @csrf
             <div class="row">
                 {{-- Nombre --}}

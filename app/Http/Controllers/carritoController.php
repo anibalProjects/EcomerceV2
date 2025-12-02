@@ -30,7 +30,7 @@ class carritoController extends Controller
 
             return view('carritoView', ['sesionId' => $sesionId, 'productosDelCarrito' => $carrito->muebles, 'total' => $total]);
         }else{
-            return redirect()->route('login')->with('error', 'debes iniciar sesion');
+            return redirect()->route('login.mostrar')->with('error', 'debes iniciar sesion para ver el carrito');
         }
     }
 
@@ -60,7 +60,6 @@ class carritoController extends Controller
                 if ($producto->stock >= $cantidad) {
                     //compruebo si el producto esta en el carrito
                     $productoEnCarrito = $carrito->muebles()->where('mueble_id', $producto_id)->first();
-
                     //Si existe edito cantidad  de ese producto que esta asociada a ese carrito si no la inserto al carrito
                     if ($productoEnCarrito) {
                         $nuevaCantidad = $productoEnCarrito->pivot->cantidad + $cantidad;
@@ -74,7 +73,7 @@ class carritoController extends Controller
                     return redirect()->back()->with('error', 'No hay stock suficiente.');
                 }
         }else{
-            return redirect()->route('login')->with('error', 'debes iniciar sesion');
+            return redirect()->route('login.mostrar')->with('error', 'debes iniciar sesion para añadir productos al carrito');
         }
     }
 
@@ -87,10 +86,42 @@ class carritoController extends Controller
             $carrito = Carrito::where('usuario_id', $usuario->id)->first();
             if ($carrito) {
                 $carrito->muebles()->detach($producto);
+                return redirect()->back()->with('success', 'Producto eliminado del carrito');
+            }else{
+                return redirect()->back()->with('error', 'No se ha podido eliminar el producto del carrito');
             }
-            return redirect()->back()->with('success', 'Producto eliminado del carrito');
         }else{
-            return redirect()->route('login')->with('error', 'debes iniciar sesion');
+            return redirect()->route('login.mostrar')->with('error', 'debes iniciar sesion');
+        }
+    }
+
+    public function update(Request $request, $producto_id){
+        //Datos del usuario
+        $sesionId = $request->input('sesionId');
+        $usuario = User::buscarUsuario($sesionId);
+        $producto = Mueble::find($producto_id);
+        $carrito = Carrito::where('usuario_id', $usuario->id)->first();
+
+        $productoEnCarrito = $carrito->muebles()->where('mueble_id', $producto_id)->first();
+        if($usuario){
+            if( $productoEnCarrito ){
+                if($request->increment){
+                    $productoEnCarrito->pivot->cantidad++;
+                    $productoEnCarrito->pivot->save();
+                }
+
+                if ($request->decrement) {
+                    if ($productoEnCarrito->pivot->cantidad > 1) {
+                        $productoEnCarrito->pivot->cantidad--;
+                        $productoEnCarrito->pivot->save();
+                    } else {
+                        $carrito->muebles()->detach($producto_id);
+                    }
+                }
+                return redirect()->back();
+            }
+        }else{
+            return redirect()->route('login.mostrar')->with('error', 'debes iniciar sesion');
         }
     }
 
@@ -105,7 +136,7 @@ class carritoController extends Controller
 
             return redirect()->route('carrito.index', ['sesionId' => $sesionId]);
         }else{
-            return redirect()->route('login')->with('error', 'debes iniciar sesion');
+            return redirect()->route('login.mostrar')->with('error', 'debes iniciar sesion');
         }
     }
 }

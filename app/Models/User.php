@@ -58,12 +58,4 @@ class User extends Authenticatable
         }
         return null;
     }
-
-    static function buscarSesionId($usuario_id){
-        $sesionId = DB::table('sessions')
-            ->where('user_id', $usuario_id)
-            ->latest('last_activity') //sesion mas reciente
-            ->first();
-            return $sesionId->id . '_' . $usuario_id;
-    }
 }
