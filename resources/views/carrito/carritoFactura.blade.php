@@ -127,9 +127,10 @@
 
             <!-- Botones de Acción -->
             <div class="d-flex gap-2 justify-content-center mb-4">
-                <a href="{{ route('carrito.returnFromBuy', ['sesionId' => $sesionId]) }}" class="btn btn-primary">
-                    <i class="bi bi-shop me-2"></i>Seguir Comprando
-                </a>
+                <form action="{{ route('carrito.returnFromBuy', ['sesionId' => $sesionId]) }}" class="btn btn-primary">
+                    <input type="hidden" name="sesionId" value="{{ $sesionId }}">
+                    <button class="bi bi-shop me-2">Seguir Comprando</button>
+                </form>
                 <button onclick="window.print()" class="btn btn-outline-secondary">
                     <i class="bi bi-printer me-2"></i>Imprimir Factura
                 </button>
