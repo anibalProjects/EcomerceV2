@@ -1,7 +1,6 @@
 <body>
 <form action="{{ route('usuarios.store') }}" method="POST">
     @csrf
-    {{-- @csrf es equivalente a <?php echo csrf_field(); ?> --}}
 
     <div class="form-row">
 

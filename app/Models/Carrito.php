@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 
 class Carrito extends Model
@@ -10,18 +11,17 @@ class Carrito extends Model
     protected $primaryKey = 'id';
     protected $fillable =
     [
+        'usuario_id',
+        'sesionId',
         'cantidad_productos',
-        'precio',
-        'id_usuario',
+        'precio'
     ];
 
     public function Usuario() {
         return $this->belongsTo(Usuario::class);
     }
 
-    public function Mueble() {
-        return $this->belongsToMany(Mueble::class);
+    public function muebles() {
+        return $this->belongsToMany(Mueble::class, 'carrito_productos')->withPivot('cantidad');
     }
-
-
 }

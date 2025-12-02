@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('mueble_id')->nullable();
             $table->unsignedBigInteger('carrito_id')->nullable();
+            $table->Integer('cantidad');
             $table->timestamps();
             $table->foreign('mueble_id')->references('id')->on('muebles')->onDelete('set null');
             $table->foreign('carrito_id')->references('id')->on('carrito')->onDelete('set null');
