@@ -7,22 +7,16 @@
     <title>@yield('title', 'LECTONIC')</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            /* Colores Base */
             --white-bg: #ffffff;
             --dark-text: #222222;
             --light-text: #5a5a5a;
-
-            /* Color de Acento */
             --accent-dark: #111111;
             --accent-border: #dddddd;
-
-            /* Tipografía */
             --brand-font: "Playfair Display", serif;
             --main-font: "Lora", serif;
             --gold: #ad8516;
@@ -39,24 +33,29 @@
             transition: background 0.3s, color 0.3s;
         }
 
-        /* --- HEADER (Contenedor vacío) --- */
-        .lux-header {
-            /* Eliminamos el padding para que la nav de la vista se pegue al borde */
-            padding: 0;
+        /* NAVBAR */
+        .nav-wrapper {
+            position: relative;
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            background: transparent;
-            min-height: 0;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--accent-border);
         }
 
-        /* --- MAIN CONTENT & TYPOGRAPHY --- */
-        main {
-            padding-top: 0; /* ¡Ajuste clave! Eliminamos el padding superior */
-            text-align: center;
+        .nav-centered {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
         }
 
-        /* Estilos de la marca */
+        .nav-centered span {
+            pointer-events: auto;
+        }
+
         .lux-brand {
             font-family: var(--brand-font);
             font-size: 2.5rem;
@@ -67,7 +66,28 @@
             white-space: nowrap;
         }
 
-        /* Títulos usan Playfair Display */
+        .nav-links-desktop a {
+            color: var(--light-text);
+            font-family: var(--main-font);
+            font-size: 1rem;
+            font-weight: 400;
+            padding: 0 0.8rem;
+            text-transform: capitalize;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links-desktop a:hover {
+            color: var(--accent-dark);
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
+        }
+
+        /* MAIN CONTENT */
+        main {
+            padding-top: 0;
+            text-align: center;
+        }
+
         .page-header-text, .content-container h2 {
             font-family: var(--brand-font);
             font-weight: 400;
@@ -88,49 +108,12 @@
             padding: 0 2rem;
         }
 
-        /* --- ESTILOS DE COMPONENTES (sin cambios) --- */
-        .menu-toggle {
-            font-size: 1.5rem;
-            color: var(--dark-text);
-            cursor: pointer;
-        }
-        .nav-links-desktop a {
-            color: var(--light-text);
-            font-family: var(--main-font);
-            font-size: 1rem;
-            font-weight: 400;
-            padding: 0 0.8rem;
-            text-transform: capitalize;
-            transition: color 0.3s ease;
-        }
-        .nav-links-desktop a:hover {
-            color: var(--accent-dark);
-            text-decoration: underline;
-            text-decoration-thickness: 1px;
-        }
-        .btn-primary {
-            background: var(--gold);
-            border: 1px solid var(--dark-gold-border);
-            color: #ffffff;
-            font-weight: 600;
-            border-radius: 4px; /* Un poco más cuadrado */
-            transition: background 0.2s, border-color 0.2s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .btn-primary:hover {
-            background: #b59035;
-            border-color: #8d765d;
-            filter: none; /* Desactivamos el filtro de brillo de Bootstrap para un control total */
-        }
-        .producto-price {
-            color: #007000 !important;
-            font-family: var(--main-font);
-            font-weight: 600;
-        }
+        /* FORMS & CARDS */
         .filter-form {
             border: 1px solid var(--accent-border) !important;
             background-color: #fafafa;
         }
+
         .form-control, .form-select {
             border-radius: 0;
             border-color: var(--accent-border);
@@ -138,28 +121,69 @@
             font-size: 0.9rem;
             color: var(--dark-text);
         }
+
         .producto-card {
             border: 1px solid var(--accent-border);
             border-radius: 0;
             box-shadow: none;
             transition: box-shadow 0.3s, transform 0.3s;
         }
+
         .producto-card:hover {
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             transform: translateY(-2px);
         }
 
-        /* FOOTER */
+        .producto-price {
+            color: #007000 !important;
+            font-family: var(--main-font);
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: var(--gold);
+            border: 1px solid var(--dark-gold-border);
+            color: #ffffff;
+            font-weight: 600;
+            border-radius: 4px;
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #b59035;
+            border-color: #8d765d;
+        }
+
+        /* PAGINATION */
+        .pagination {
+            font-family: var(--main-font);
+        }
+
+        .page-link {
+            color: var(--dark-text);
+            border: 1px solid var(--accent-border);
+            background-color: #fafafa;
+        }
+
+        .page-link:hover {
+            color: var(--dark-text);
+            background-color: #e9e9e9;
+        }
+
+        .page-item.active .page-link {
+            background-color: var(--gold);
+            border-color: var(--dark-gold-border);
+            color: #fff;
+        }
+
         footer {
             text-align: center;
             padding: 1rem 0;
             font-size: 0.8rem;
             color: #ccc;
-            border-top: none;
             margin-top: 5rem;
         }
 
-        /* MEDIA QUERIES */
         @media (max-width: 992px) {
             .page-header-text {
                 font-size: 2.5rem;
@@ -172,13 +196,12 @@
 
 <body>
 
-<header class="lux-header">
-    {{-- EL HEADER ESTÁ VACÍO. LA NAV SE GESTIONA EN LA VISTA HOME --}}
+<header>
+    {{-- EL HEADER ESTÁ VACÍO. NAV SE GESTIONA EN LA VISTA --}}
 </header>
 
 <main>
     @yield('content')
-    @yield('auth-content')
 </main>
 
 <footer>

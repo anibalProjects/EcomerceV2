@@ -36,14 +36,15 @@ class carritoController extends Controller
 
     public function store(Request $request){
 
+
         $request->validate([
             'cantidad' => 'required|int|min:1|max:10'
         ]);
 
+
         //Datos del usuario
         $sesionId = $request->input('sesionId');
         $usuario = User::buscarUsuario($sesionId);
-
         if($usuario){
                 //Busco el carrito del usuario o si no lo creo
                 $carrito = Carrito::firstOrCreate(
