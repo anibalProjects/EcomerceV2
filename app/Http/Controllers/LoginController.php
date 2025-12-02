@@ -9,28 +9,19 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cookie;
 
-class LoginController extends Controller
-{
+class LoginController extends Controller{
 
-    public function mostrar()
-    {
+    public function mostrar() {
         return view('login');
     }
 
-    public function login(Request $request)
-    {
+    public function login(Request $request) {
 
         $datos = $request->validate([
             'email' => 'required|email',
-            'password' => 'required|string',
-            'tema' => 'required|string',
-            'moneda' => 'required|string',
-            'paginacion' => 'required|string'
+            'password' => 'required|string'
         ]);
-
-
 
         $usuarioDB = Usuario::where('email', $datos['email'])->first();
 
@@ -42,7 +33,7 @@ class LoginController extends Controller
             ]);
         }
 
-        if (Auth::attempt(['email' => $datos['email'], 'password' => $datos['password']])) {
+        if (Auth::attempt($datos)) {
             $request->session()->regenerate();
 
             if ($usuarioDB) {
@@ -53,20 +44,13 @@ class LoginController extends Controller
 
             $user = Auth::user();
 
-            $user->preferences()->updateOrCreate(['key' => 'tema'], ['value' => $datos['tema']]);
-            $user->preferences()->updateOrCreate(['key' => 'moneda'], ['value' => $datos['moneda']]);
-            $user->preferences()->updateOrCreate(['key' => 'paginacion'], ['value' => $datos['paginacion']]);
-
             $sesionId = Session::getId() . "_" . $user->id;
 
             $usuarios = Session::get('usuarios_sesion', []);
             $datosSesion = [
                 'id' => $user->id,
                 'nombre' => $user->nombre,
-                'sesionId' => $sesionId,
-                'tema' => $datos['tema'],
-                'moneda' => $datos['moneda'],
-                'paginacion' => $datos['paginacion']
+                'sesionId' => $sesionId
             ];
 
             $usuarioJson = json_encode($datosSesion);
@@ -92,8 +76,7 @@ class LoginController extends Controller
         }
 
     }
-    public function cerrarSesion(Request $request)
-    {
+    public function cerrarSesion(Request $request){
         $sesionId = $request->query('sesionId');
         $usuarios = Session::get('usuarios_sesion', []);
 
