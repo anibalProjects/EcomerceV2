@@ -69,9 +69,9 @@ class carritoController extends Controller
 
                         $carrito->muebles()->attach($producto_id, ['cantidad' => $cantidad]);
                     }
-                    return redirect()->back()->with('success', 'Producto añadido al carrito.');
+                    return redirect()->back()->with('success', 'Producto' . $producto->nombre . 'añadido al carrito.');
                 } else {
-                    return redirect()->back()->with('error', 'No hay stock suficiente.');
+                    return redirect()->back()->with('error', 'No hay stock suficiente del producto' . $producto->nombre);
                 }
         }else{
             return redirect()->route('login.mostrar')->with('error', 'debes iniciar sesion para añadir productos al carrito');
@@ -87,7 +87,7 @@ class carritoController extends Controller
             $carrito = Carrito::where('usuario_id', $usuario->id)->first();
             if ($carrito) {
                 $carrito->muebles()->detach($producto);
-                return redirect()->back()->with('success', 'Producto eliminado del carrito');
+                return redirect()->back()->with('success', 'Se ha eliminado el producto del carrito ');
             }else{
                 return redirect()->back()->with('error', 'No se ha podido eliminar el producto del carrito');
             }
@@ -117,6 +117,7 @@ class carritoController extends Controller
                         $productoEnCarrito->pivot->save();
                     } else {
                         $carrito->muebles()->detach($producto_id);
+                        return redirect()->back()->with('success', 'Se ha eliminado el producto del carrito ' . $producto->nombre);
                     }
                 }
                 return redirect()->back();
@@ -140,4 +141,26 @@ class carritoController extends Controller
             return redirect()->route('login.mostrar')->with('error', 'debes iniciar sesion');
         }
     }
+
+    public function buy(Request $request){
+        $sesionId = $request->input('sesionId');
+        $usuario = User::buscarUsuario($sesionId);
+        $carrito = Carrito::where('usuario_id', $usuario->id)->first();
+
+        if($usuario){
+            foreach ($carrito->muebles as $mueble) {
+                if($mueble->stock > $mueble->pivot->cantidad){
+                    $mueble->stock -= $mueble->pivot->cantidad;
+                    $mueble->save();
+                }else{
+                    return redirect()->back()->with('error', 'No hay stock suficiente para completar la compra del producto: ' . $mueble->nombre);
+                }
+            }
+            return redirect()->route('carrito.empty', ['sesionId' => $sesionId])->with('success', 'Compra realizada con exito ' . $usuario->nombre);
+        }else{
+            return redirect()->route('login.mostrar')->with('error', 'debes iniciar sesion');
+        }
+    }
+
+    public function show(string $id){}
 }
