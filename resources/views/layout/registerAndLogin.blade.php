@@ -6,11 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Tienda Laravel')</title>
 
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
-    <!-- Tipografía -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Montserrat:wght@300;500;600&display=swap" rel="stylesheet">
 
     <style>
@@ -18,6 +16,7 @@
             --gold: #c9a84b;
             --wood-shadow: rgba(90,60,30,0.15);
             --light-bg: #f7f5f2;
+            --dark-gold-border: #a3873d; /* Un tono más oscuro del dorado para el botón */
         }
 
         body {
@@ -71,16 +70,26 @@
             border-radius: 10px;
         }
 
-        /* BOTONES */
+        /* --- BOTONES DE LUJO (Ajuste clave) --- */
         .btn-primary {
-            background: linear-gradient(180deg, var(--gold), #b59035);
-            border: none;
-            color: #fff;
+            /* Estilo más plano y lujoso: Dorado con borde */
+            background: var(--gold);
+            border: 1px solid var(--dark-gold-border);
+            color: #ffffff;
             font-weight: 600;
-            border-radius: 8px;
+            border-radius: 4px; /* Un poco más cuadrado */
+            transition: background 0.2s, border-color 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .btn-primary:hover {
-            filter: brightness(0.92);
+            /* Oscurecer el fondo y el borde en hover */
+            background: #b59035;
+            border-color: #8d765d;
+            filter: none; /* Desactivamos el filtro de brillo de Bootstrap para un control total */
+        }
+        .btn-secondary {
+            border-radius: 4px;
+            font-weight: 500;
         }
 
         .cart-btn {
@@ -115,8 +124,6 @@
 
 <body>
 
-
-
 <main class="container">
     @yield('content')
     @yield('auth-content')
@@ -130,5 +137,5 @@
 
 @stack('scripts')
 </body>
-</html>
 
+</html>

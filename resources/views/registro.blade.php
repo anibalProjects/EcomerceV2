@@ -12,9 +12,10 @@
             <form action="{{ route('usuarios.store') }}" method="POST" class="p-4 border rounded shadow-sm bg-white">
                 @csrf
 
+                {{-- Nombre y Apellido: Acomodados verticalmente --}}
                 <div class="row">
                     {{-- Nombre --}}
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-12 mb-3">
                         <label for="nombre" class="form-label">Nombre:</label>
                         <input type="text" class="form-control @error('nombre') is-invalid @enderror" id="nombre" name="nombre" value="{{ old('nombre') }}" required>
                         @error('nombre')
@@ -23,7 +24,7 @@
                     </div>
 
                     {{-- Apellido --}}
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-12 mb-3">
                         <label for="apellido" class="form-label">Apellidos:</label>
                         <input type="text" class="form-control @error('apellido') is-invalid @enderror" id="apellido" name="apellido" value="{{ old('apellido') }}" required>
                         @error('apellido')
@@ -33,7 +34,7 @@
                 </div>
 
                 <div class="row">
-                    {{-- Email --}}
+                    {{-- Email (ya ocupaba el 100% antes, se mantiene) --}}
                     <div class="col-md-12 mb-3">
                         <label for="email" class="form-label">Email:</label>
                         <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" required>
@@ -43,9 +44,10 @@
                     </div>
                 </div>
 
+                {{-- Contraseña y Confirmar: Acomodados verticalmente --}}
                 <div class="row">
                     {{-- Contraseña --}}
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-12 mb-3">
                         <label for="password" class="form-label">Contraseña:</label>
                         <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" required>
                         @error('password')
@@ -53,11 +55,6 @@
                         @enderror
                     </div>
 
-                    {{-- Confirmar Contraseña --}}
-                    <div class="col-md-6 mb-3">
-                        <label for="password_confirmation" class="form-label">Confirmar Contraseña:</label>
-                        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required>
-                    </div>
                 </div>
 
                 <div class="d-flex justify-content-start gap-3 mt-4">

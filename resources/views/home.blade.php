@@ -2,13 +2,49 @@
 
 @section('title', 'Filtrar y Ordenar Muebles')
 
-
-
 {{-- Se omite @section('head') --}}
 
 @section('content')
-    <div class="container">
 
+    {{-- 1. BARRA DE NAVEGACIÓN COMPLETA (Añadimos Borde y Clases de Centrado) --}}
+    <div class="content-container">
+        <div class="d-flex justify-content-between align-items-center pt-4 pb-4 nav-centered-brand"
+             style="border-bottom: 1px solid var(--nav-border);">
+
+            <div class="d-flex align-items-center">
+                {{-- Menú móvil (Hamburguesa) --}}
+                <a href="#" class="menu-toggle d-md-none me-3">
+                    <i class="bi bi-list"></i>
+                </a>
+
+                {{-- Navegación principal (Escritorio) --}}
+                <nav class="nav-links-desktop">
+                    <a href="#">All Prints</a>
+                    <a href="#">About</a>
+                </nav>
+            </div>
+
+            {{-- MARCA (Añadimos la clase 'centered') --}}
+            <div class="lux-brand centered d-none d-md-block">LECTONIC</div>
+            {{-- Para móvil, la marca no se puede centrar absolutamente sin solapar el carrito/menú, la dejamos en flujo normal --}}
+            <div class="lux-brand d-md-none">L.</div>
+
+            {{-- Botón de carrito (Derecha) --}}
+            <a href="{{ route('carrito.index', ['sesionId' => $sesionId ?? null]) }}" class="btn btn-primary d-flex align-items-center">
+                <i class="bi bi-cart-fill me-1"></i> Ver carrito
+            </a>
+        </div>
+    </div>
+
+    {{-- 2. ENCABEZADO DE LA PÁGINA (Centrado y ajustamos el margin) --}}
+    {{-- El contenedor es global y el texto ya está centrado con text-align: center en main --}}
+    <div class="page-header-text" style="margin-top: 2rem !important;">
+        Productos<br>
+        Essentials.
+    </div>
+
+    {{-- 3. CONTENEDOR PRINCIPAL DEL CONTENIDO (Filtros y Lista) --}}
+    <div class="content-container">
 
         <h2>Filtro:</h2>
         <hr>
@@ -173,5 +209,5 @@
 
         @endif {{-- Fin del @if($muebles->isEmpty()) --}}
 
-    </div> {{-- Fin .container --}}
+    </div> {{-- Fin .content-container --}}
 @endsection

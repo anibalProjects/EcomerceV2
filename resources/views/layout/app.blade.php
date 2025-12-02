@@ -4,109 +4,166 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Tienda Laravel')</title>
+    <title>@yield('title', 'LECTONIC')</title>
 
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
-    <!-- Tipografía -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Montserrat:wght@300;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --gold: #c9a84b;
+            /* Colores Base */
+            --white-bg: #ffffff;
+            --dark-text: #222222;
+            --light-text: #5a5a5a;
+
+            /* Color de Acento */
+            --accent-dark: #111111;
+            --accent-border: #dddddd;
+
+            /* Tipografía */
+            --brand-font: "Playfair Display", serif;
+            --main-font: "Lora", serif;
+            --gold: #ad8516;
             --wood-shadow: rgba(90,60,30,0.15);
             --light-bg: #f7f5f2;
+            --dark-gold-border: #a3873d;
         }
 
         body {
-            font-family: "Montserrat", sans-serif;
-            background: var(--light-bg);
-            color: #333;
+            font-family: var(--main-font);
+            background: var(--white-bg);
+            color: var(--dark-text);
+            min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
         }
 
-        /* NAVBAR moderna, clara, con un toque dorado */
-        .lux-navbar {
-            background: #ffffff;
-            border-bottom: 2px solid rgba(201,168,75,0.4);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        /* --- HEADER (Contenedor vacío) --- */
+        .lux-header {
+            /* Eliminamos el padding para que la nav de la vista se pegue al borde */
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: transparent;
+            min-height: 0;
         }
 
+        /* --- MAIN CONTENT & TYPOGRAPHY --- */
+        main {
+            padding-top: 0; /* ¡Ajuste clave! Eliminamos el padding superior */
+            text-align: center;
+        }
+
+        /* Estilos de la marca */
         .lux-brand {
-            font-family: "Playfair Display", serif;
+            font-family: var(--brand-font);
+            font-size: 2.5rem;
+            font-weight: 500;
+            color: var(--dark-text) !important;
+            margin: 0;
+            padding: 0;
+            white-space: nowrap;
+        }
+
+        /* Títulos usan Playfair Display */
+        .page-header-text, .content-container h2 {
+            font-family: var(--brand-font);
+            font-weight: 400;
+            color: var(--dark-text);
+        }
+
+        .page-header-text {
+            font-size: 3.5rem;
+            line-height: 1.2;
+            margin-top: 5rem;
+            margin-bottom: 5rem;
+        }
+
+        .content-container {
+            text-align: left;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* --- ESTILOS DE COMPONENTES (sin cambios) --- */
+        .menu-toggle {
             font-size: 1.5rem;
-            color: #222 !important;
+            color: var(--dark-text);
+            cursor: pointer;
         }
-
-        /* CONTENEDOR PRINCIPAL LIMPIO */
-        main.container {
-            margin-top: 2rem;
-            padding: 2rem;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px var(--wood-shadow);
+        .nav-links-desktop a {
+            color: var(--light-text);
+            font-family: var(--main-font);
+            font-size: 1rem;
+            font-weight: 400;
+            padding: 0 0.8rem;
+            text-transform: capitalize;
+            transition: color 0.3s ease;
         }
-
-        /* TARJETAS MODERNAS CON TOQUE MADERA SUAVE */
-        .card, .producto-card {
-            background: #ffffff;
-            border: 1px solid rgba(0,0,0,0.05);
-            border-radius: 12px;
-            box-shadow: 0 6px 20px var(--wood-shadow);
-            transition: 0.2s;
+        .nav-links-desktop a:hover {
+            color: var(--accent-dark);
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
         }
-        .card:hover, .producto-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 28px rgba(0,0,0,0.2);
-        }
-
-        /* IMÁGENES */
-        .producto-image {
-            background: #fafafa;
-            padding: 1rem;
-        }
-        .producto-image img {
-            max-width: 100%;
-            border-radius: 10px;
-        }
-
-        /* BOTONES */
         .btn-primary {
-            background: linear-gradient(180deg, var(--gold), #b59035);
-            border: none;
-            color: #fff;
+            background: var(--gold);
+            border: 1px solid var(--dark-gold-border);
+            color: #ffffff;
             font-weight: 600;
-            border-radius: 8px;
+            border-radius: 4px; /* Un poco más cuadrado */
+            transition: background 0.2s, border-color 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .btn-primary:hover {
-            filter: brightness(0.92);
+            background: #b59035;
+            border-color: #8d765d;
+            filter: none; /* Desactivamos el filtro de brillo de Bootstrap para un control total */
         }
-
-        .cart-btn {
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            background: transparent;
-            border-radius: 8px;
+        .producto-price {
+            color: #007000 !important;
+            font-family: var(--main-font);
+            font-weight: 600;
         }
-        .cart-btn:hover {
-            background: rgba(201,168,75,0.1);
+        .filter-form {
+            border: 1px solid var(--accent-border) !important;
+            background-color: #fafafa;
         }
-
-        /* TITULOS */
-        h1,h2,h3,h4,h5 {
-            font-family: "Playfair Display", serif;
-            color: #222;
-        }
-
-        /* FOOTER LIMPIO */
-        footer.lux-footer {
-            margin-top: 3rem;
-            text-align: center;
-            padding: 1rem;
-            color: #555;
+        .form-control, .form-select {
+            border-radius: 0;
+            border-color: var(--accent-border);
+            font-family: var(--main-font);
             font-size: 0.9rem;
-            border-top: 1px solid rgba(0,0,0,0.1);
+            color: var(--dark-text);
+        }
+        .producto-card {
+            border: 1px solid var(--accent-border);
+            border-radius: 0;
+            box-shadow: none;
+            transition: box-shadow 0.3s, transform 0.3s;
+        }
+        .producto-card:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 1rem 0;
+            font-size: 0.8rem;
+            color: #ccc;
+            border-top: none;
+            margin-top: 5rem;
+        }
+
+        /* MEDIA QUERIES */
+        @media (max-width: 992px) {
+            .page-header-text {
+                font-size: 2.5rem;
+            }
         }
     </style>
 
@@ -115,37 +172,20 @@
 
 <body>
 
-<nav class="navbar lux-navbar">
-    <div class="container d-flex justify-content-between align-items-center">
-        <a class="navbar-brand lux-brand" href="{{ url('/') }}">
-            {{ config('app.name', 'Tienda') }}
-        </a>
+<header class="lux-header">
+    {{-- EL HEADER ESTÁ VACÍO. LA NAV SE GESTIONA EN LA VISTA HOME --}}
+</header>
 
-        <div class="d-flex align-items-center gap-3">
-            <a href="{{ route('muebles.index', request()->query()) }}"
-               class="text-decoration-none text-dark fs-5">
-                <i class="bi bi-house-door-fill"></i>
-            </a>
-
-            <a href="{{ route('carrito.index', ['sesionId' => request()->query('sesionId')]) }}"
-               class="btn cart-btn d-flex align-items-center">
-                <i class="bi bi-cart-fill me-2"></i> Carrito
-            </a>
-        </div>
-    </div>
-</nav>
-
-<main class="container">
+<main>
     @yield('content')
+    @yield('auth-content')
 </main>
 
-<footer class="lux-footer">
-    <small>&copy; {{ date('Y') }} {{ config('app.name', 'Tienda Laravel') }} — Estilo moderno con detalles dorados</small>
+<footer>
+    &copy; {{ date('Y') }} LECTONIC.
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 @stack('scripts')
 </body>
 </html>
-
