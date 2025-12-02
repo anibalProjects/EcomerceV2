@@ -58,7 +58,7 @@
                     {{ session('error') }}
                 </div>
             @endif
-        <form action="{{ route('mueble.filtrar', ['categorias' => $categorias]) }}" method="POST" class="filter-form mb-4 p-3 border rounded">
+        <form action="{{ route('mueble.filtrar', ['categorias' => $categorias]) }}" method="GET" class="filter-form mb-4 p-3 border rounded">
             @csrf
             <div class="row">
                 {{-- Nombre --}}
@@ -205,9 +205,12 @@
                         </div>
                     </div>
                 @endforeach
-            </div> {{-- Fin .product-grid --}}
+            </div>
 
-        @endif {{-- Fin del @if($muebles->isEmpty()) --}}
+            <div class="mt-4 d-flex justify-content-center">
+            {{ $muebles->withQueryString()->links() }}
+            </div>
+            @endif
 
-    </div> {{-- Fin .content-container --}}
+        </div> {{-- Fin .content-container --}}
 @endsection

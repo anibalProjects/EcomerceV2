@@ -50,7 +50,7 @@ Route::resource('carrito', carritoController::class);
 
 Route::resource('muebles', MuebleController::class);
 
-Route::post('filtro', [MuebleController::class, 'filtrar'])->name('mueble.filtrar');
+Route::get('filtro', [MuebleController::class, 'filtrar'])->name('mueble.filtrar');
 Route::post('/carrito/empty', [carritoController::class, 'empty'])->name('carrito.empty');
 Route::post('/guardar-tema', [CookiePersonalizacion::class, 'guardarTema'])->name('preferencias.tema.guardar');
 Route::post('/guardar-moneda', [CookieMoneda::class, 'guardarMoneda'])->name('preferencias.moneda.guardar');

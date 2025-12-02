@@ -56,7 +56,6 @@ class LoginController extends Controller{
             $usuarioJson = json_encode($datosSesion);
             $usuarios[$sesionId] = $usuarioJson;
             Session::put('usuarios_sesion', $usuarios);
-
             return redirect()->route('muebles.index', ['sesionId' => $sesionId]);
 
         } else {

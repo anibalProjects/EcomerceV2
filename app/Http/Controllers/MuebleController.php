@@ -13,8 +13,9 @@ class MuebleController extends Controller
      */
     public function index(Request $request)
     {
+        //FALTA: recoger cookie saul
         $sesionId = $request->sesionId;
-        $muebles = Mueble::all();
+        $muebles = Mueble::paginate(12);
         $categorias = Categoria::all();
         return view('home', compact('muebles', 'categorias','sesionId'));
     }
@@ -130,7 +131,7 @@ class MuebleController extends Controller
             $query->orderBy('id', 'asc');
             break;
     }
-    $muebles = $query->get();
+    $muebles = $query->paginate(12)->withQueryString();
     $categorias = Categoria::all();
 
     return view('home', [
