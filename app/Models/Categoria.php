@@ -13,4 +13,16 @@ class Categoria extends Model
         'nombre',
         'descripcion'
     ];
+
+
+
+    public static function getAllCategories() {
+        $categorias = Categoria::all();
+        return $categorias;
+    }
+
+    public static function getCategoriaPorId($id) {
+        $categoria = Categoria::find($id);
+        return $categoria;
+    }
 }

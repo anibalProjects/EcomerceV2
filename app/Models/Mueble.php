@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 
 class Mueble extends Model
 {
@@ -23,16 +24,18 @@ class Mueble extends Model
         'dimensiones',
         'activo'
     ];
-    /* public function Categoria() {
-        return $this->hasMany(Categoria::class);
-    } */
-    /* public function Galeria() {
+    public function Categoria() {
+        return $this->belongsTo(Categoria::class, 'categoria_id');
+    }
+    public function Galeria() {
         return $this->hasOne(Galeria::class);
-    } */
+    }
 
     public function Carrito() {
         return $this->belongsToMany(Carrito::class);
     }
+
+
 
 
 }

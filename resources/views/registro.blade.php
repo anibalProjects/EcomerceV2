@@ -1,54 +1,71 @@
-<body>
-<form action="{{ route('usuarios.store') }}" method="POST">
-    @csrf
-    {{-- @csrf es equivalente a <?php echo csrf_field(); ?> --}}
+@extends('layout.registerAndLogin')
 
-    <div class="form-row">
+@section('title', 'Crear Nuevo Usuario')
 
-        <div class="form-group col-md-6">
-            <label for="nombre">Nombre:</label>
-            <input type="text" class="form-control" id="nombre" name="nombre" value="{{ old('nombre') }}">
+@section('content')
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <h1 class="mb-4">Registro de Nuevo Usuario Cliente</h1>
+            <p class="lead">Completa el siguiente formulario para crear una nueva cuenta.</p>
+            <hr>
 
-            @error('nombre')
-            <small class="text-danger">{{ $message }} </small>
-            @enderror
+            <form action="{{ route('usuarios.store') }}" method="POST" class="p-4 border rounded shadow-sm bg-white">
+                @csrf
+
+                {{-- Nombre y Apellido: Acomodados verticalmente --}}
+                <div class="row">
+                    {{-- Nombre --}}
+                    <div class="col-md-12 mb-3">
+                        <label for="nombre" class="form-label">Nombre:</label>
+                        <input type="text" class="form-control @error('nombre') is-invalid @enderror" id="nombre" name="nombre" value="{{ old('nombre') }}" required>
+                        @error('nombre')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    {{-- Apellido --}}
+                    <div class="col-md-12 mb-3">
+                        <label for="apellido" class="form-label">Apellidos:</label>
+                        <input type="text" class="form-control @error('apellido') is-invalid @enderror" id="apellido" name="apellido" value="{{ old('apellido') }}" required>
+                        @error('apellido')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="row">
+                    {{-- Email (ya ocupaba el 100% antes, se mantiene) --}}
+                    <div class="col-md-12 mb-3">
+                        <label for="email" class="form-label">Email:</label>
+                        <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" required>
+                        @error('email')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                {{-- Contraseña y Confirmar: Acomodados verticalmente --}}
+                <div class="row">
+                    {{-- Contraseña --}}
+                    <div class="col-md-12 mb-3">
+                        <label for="password" class="form-label">Contraseña:</label>
+                        <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" required>
+                        @error('password')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                </div>
+
+                <div class="d-flex justify-content-start gap-3 mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-person-plus-fill me-2"></i> Crear Usuario Cliente
+                    </button>
+                    <a href="{{ route('welcome') }}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left-circle-fill me-2"></i> Volver
+                    </a>
+                </div>
+            </form>
         </div>
-
-        <div class="form-group col-md-6">
-            <label for="apellido">Apellidos:</label>
-            <input type="text" class="form-control" id="apellido" name="apellido" value="{{ old('apellido') }}">
-
-            @error('apellido')
-            <small class="text-danger">{{ $message }} </small>
-            @enderror
-        </div>
-
-        <div class="form-group col-md-6">
-            <label for="email">Email</label>
-            <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}">
-
-            @error('email')
-            <small class="text-danger">{{ $message }} </small>
-            @enderror
-        </div>
-
-        <div class="form-group col-md-6">
-            <label for="password">Contraseña:</label>
-            <input type="password" class="form-control" id="password" name="password">
-
-            @error('password')
-            <small class="text-danger">{{ $message }} </small>
-            @enderror
-        </div>
-
-        <div class="form-group col-md-6">
-            <label for="password_confirmation">Confirmar Contraseña:</label>
-            <input type="password" class="form-control" id="password_confirmation" name="password_confirmation">
-        </div>
-
-        <br>
-        <button type="submit" class="btn btn-primary">Crear Usuario Cliente</button>
-        <a href="{{ route('welcome') }}" class="btn btn-secondary">Volver</a>
     </div>
-</form>
-
+@endsection
