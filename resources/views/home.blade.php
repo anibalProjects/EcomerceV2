@@ -29,10 +29,19 @@
             {{-- Para móvil, la marca no se puede centrar absolutamente sin solapar el carrito/menú, la dejamos en flujo normal --}}
             <div class="lux-brand d-md-none">L.</div>
 
-            {{-- Botón de carrito (Derecha) --}}
-            <a href="{{ route('carrito.index', ['sesionId' => $sesionId ?? null]) }}" class="btn btn-primary d-flex align-items-center">
-                <i class="bi bi-cart-fill me-1"></i> Ver carrito
-            </a>
+            {{-- Botones de acción (Derecha) --}}
+            <div class="d-flex align-items-center gap-2">
+                @auth
+                    @if(auth()->user()->rol_id === 1)
+                        <a href="{{ route('admin.muebles.index', ['sesionId' => $sesionId ?? null]) }}" class="btn btn-secondary d-flex align-items-center">
+                            <i class="bi bi-gear-fill me-1"></i> Panel Admin
+                        </a>
+                    @endif
+                @endauth
+                <a href="{{ route('carrito.index', ['sesionId' => $sesionId ?? null]) }}" class="btn btn-primary d-flex align-items-center">
+                    <i class="bi bi-cart-fill me-1"></i> Ver carrito
+                </a>
+            </div>
         </div>
     </div>
 

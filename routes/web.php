@@ -55,3 +55,16 @@ Route::post('/carrito/empty', [carritoController::class, 'empty'])->name('carrit
 Route::post('/guardar-tema', [CookiePersonalizacion::class, 'guardarTema'])->name('preferencias.tema.guardar');
 Route::post('/guardar-moneda', [CookieMoneda::class, 'guardarMoneda'])->name('preferencias.moneda.guardar');
 Route::post('/guardar-paginacion', [CookiePaginacion::class, 'guardarPaginacion'])->name('preferencias.paginacion.guardar');
+
+// Rutas de la parte de administrador
+use App\Http\Controllers\MueblesAdministracionController;
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::resource('muebles', MueblesAdministracionController::class);
+    
+    // Rutas de la galeria
+    Route::get('muebles/{id}/galeria', [MueblesAdministracionController::class, 'galeria'])->name('muebles.galeria');
+    Route::post('muebles/{id}/galeria', [MueblesAdministracionController::class, 'uploadGaleria'])->name('muebles.galeria.upload');
+    Route::post('galeria/{id}/principal', [MueblesAdministracionController::class, 'setPrincipalGaleria'])->name('muebles.galeria.principal');
+    Route::delete('galeria/{id}', [MueblesAdministracionController::class, 'deleteImagenGaleria'])->name('muebles.galeria.delete');
+});
