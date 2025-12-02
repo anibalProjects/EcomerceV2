@@ -17,7 +17,6 @@ class RegisterController extends Controller
 
     public function store(Request $request)
     {
-        //dd($request->all());
 
         $request->validate([
             'nombre' => 'required',
@@ -38,8 +37,8 @@ class RegisterController extends Controller
         $usuario->intentos = 0;
         $respUsuario = $usuario->save();
 
-        
 
-        return redirect()->route('registro')->with('success', 'Usuario Cliente creado exitosamente.');
+
+        return redirect()->route('muebles.index')->with('success', 'Usuario Cliente creado exitosamente.');
     }
 }

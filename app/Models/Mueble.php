@@ -22,13 +22,14 @@ class Mueble extends Model
         'novedad',
         'materiales',
         'dimensiones',
+        'imagen_principal',
         'activo'
     ];
-    public function Categoria() {
+    public function categoria() {
         return $this->belongsTo(Categoria::class, 'categoria_id');
     }
-    public function Galeria() {
-        return $this->hasOne(Galeria::class);
+    public function galeria() {
+        return $this->hasMany(Galeria::class);
     }
 
     public function Carrito() {
