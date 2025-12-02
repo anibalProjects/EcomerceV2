@@ -107,7 +107,7 @@ class MuebleController extends Controller
             $query->where('novedad', 1);
         }
 
-        $sesionId = $request->sesionId;
+        $sesionId = $request->input('sesionId');
         return $this->ordenar($query, $request->orden, $filtro, $sesionId);
     }
 
@@ -142,7 +142,6 @@ class MuebleController extends Controller
     }
     $muebles = $query->paginate(12)->withQueryString();
     $categorias = Categoria::all();
-
     return view('home', [
         'muebles' => $muebles,
         'categorias' => $categorias,

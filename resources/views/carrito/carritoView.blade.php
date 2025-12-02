@@ -55,23 +55,30 @@
                             <td class="text-center">
                                 <div class="d-flex justify-content-center align-items-center gap-2">
                                     {{-- Formulario para Modificar Cantidad --}}
-                                    <form action="{{ route('carrito.update', ['carrito' => $item->id, 'sesionId' => $sesionId]) }}" method="POST" class="d-flex gap-1">
+                                    <form
+                                        action="{{ route('carrito.update', ['carrito' => $item->id, 'sesionId' => $sesionId]) }}"
+                                        method="POST" class="d-flex gap-1">
                                         @csrf
                                         @method('PUT')
 
-                                        <button type="submit" name="increment" value="+" class="btn btn-sm btn-outline-success" title="Aumentar cantidad">
+                                        <button type="submit" name="increment" value="+"
+                                            class="btn btn-sm btn-outline-success" title="Aumentar cantidad">
                                             <i class="bi bi-plus-lg"></i>
                                         </button>
-                                        <button type="submit" name="decrement" value="-" class="btn btn-sm btn-outline-warning" title="Disminuir cantidad">
+                                        <button type="submit" name="decrement" value="-"
+                                            class="btn btn-sm btn-outline-warning" title="Disminuir cantidad">
                                             <i class="bi bi-dash-lg"></i>
                                         </button>
                                     </form>
 
                                     {{-- Formulario para Eliminar Item --}}
-                                    <form action="{{ route('carrito.destroy', ['carrito' => $item->id, 'sesionId' => $sesionId]) }}" method="POST" class="m-0">
+                                    <form
+                                        action="{{ route('carrito.destroy', ['carrito' => $item->id, 'sesionId' => $sesionId]) }}"
+                                        method="POST" class="m-0">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar producto">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                            title="Eliminar producto">
                                             <i class="bi bi-trash-fill"></i>
                                         </button>
                                     </form>
@@ -84,7 +91,8 @@
         </div>
 
         <div class="d-flex justify-content-between align-items-center mt-4 p-3 bg-light rounded shadow-sm">
-            <h2 class="h4 mb-0">Total del Carrito: <span class="text-primary fw-bold">{{ number_format($total, 2, ',', '.') }}€</span></h2>
+            <h2 class="h4 mb-0">Total del Carrito: <span
+                    class="text-primary fw-bold">{{ number_format($total, 2, ',', '.') }}€</span></h2>
 
             <div class="d-flex gap-2">
                 <form action="{{ route('carrito.empty', ['sesionId' => $sesionId]) }}" method="POST">
@@ -93,13 +101,15 @@
                         <i class="bi bi-trash3-fill me-2"></i>Vaciar Carrito
                     </button>
                 </form>
-
-                <button class="btn btn-primary" disabled>
-                    <i class="bi bi-box-seam-fill me-2"></i> Procesar Compra (No implementado)
-                </button>
+                <form action="{{ route('carrito.buy',  ['sesionId' => $sesionId]) }}" method="POST">
+                    @csrf
+                    <button class="btn btn-primary">
+                        <input type="hidden" name="sesionId" value="{{ $sesionId }}">
+                        <i class="bi bi-box-seam-fill me-2"></i> Procesar Compra
+                    </button>
+                </form>
             </div>
         </div>
-
     @else
         <div class="alert alert-info text-center py-4" role="alert">
             <h4 class="alert-heading"><i class="bi bi-bag-x-fill me-2"></i> Tu Carrito Está Vacío</h4>

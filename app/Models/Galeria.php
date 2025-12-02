@@ -10,11 +10,12 @@ class Galeria extends Model
     protected $primaryKey = 'id';
     protected $fillable =
     [
-        'id_mueble',
+        'mueble_id',
         'ruta',
-        'es_principal'
+        'es_principal',
+        'orden'
     ];
-    public function Mueble() {
+    public function mueble() {
         return $this->belongsTo(Mueble::class);
     }
 }
