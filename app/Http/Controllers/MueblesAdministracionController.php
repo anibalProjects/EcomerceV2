@@ -169,7 +169,7 @@ class MueblesAdministracionController extends Controller
         if ($request->hasFile('imagenes')) {
             foreach($request->file('imagenes') as $file) {
                 $nombre = 'galeria_' . $id . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                $file->storeAs($this->carpetaPrivada, $nombre, 'public');
+                $file->storeAs($this->carpetaPrivada, $nombre, 'private');
 
                 Galeria::create([
                     'mueble_id' => $mueble->id,

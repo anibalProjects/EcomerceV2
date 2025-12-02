@@ -12,9 +12,7 @@
             <form action="{{ route('usuarios.store') }}" method="POST" class="p-4 border rounded shadow-sm bg-white">
                 @csrf
 
-                {{-- Nombre y Apellido: Acomodados verticalmente --}}
                 <div class="row">
-                    {{-- Nombre --}}
                     <div class="col-md-12 mb-3">
                         <label for="nombre" class="form-label">Nombre:</label>
                         <input type="text" class="form-control @error('nombre') is-invalid @enderror" id="nombre" name="nombre" value="{{ old('nombre') }}" required>
@@ -23,7 +21,6 @@
                         @enderror
                     </div>
 
-                    {{-- Apellido --}}
                     <div class="col-md-12 mb-3">
                         <label for="apellido" class="form-label">Apellidos:</label>
                         <input type="text" class="form-control @error('apellido') is-invalid @enderror" id="apellido" name="apellido" value="{{ old('apellido') }}" required>
@@ -34,7 +31,6 @@
                 </div>
 
                 <div class="row">
-                    {{-- Email (ya ocupaba el 100% antes, se mantiene) --}}
                     <div class="col-md-12 mb-3">
                         <label for="email" class="form-label">Email:</label>
                         <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" required>
@@ -44,9 +40,7 @@
                     </div>
                 </div>
 
-                {{-- Contraseña y Confirmar: Acomodados verticalmente --}}
                 <div class="row">
-                    {{-- Contraseña --}}
                     <div class="col-md-12 mb-3">
                         <label for="password" class="form-label">Contraseña:</label>
                         <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" required>
@@ -61,7 +55,7 @@
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-person-plus-fill me-2"></i> Crear Usuario Cliente
                     </button>
-                    <a href="{{ route('welcome') }}" class="btn btn-secondary">
+                    <a href="{{ route('login.mostrar') }}" class="btn btn-secondary">
                         <i class="bi bi-arrow-left-circle-fill me-2"></i> Volver
                     </a>
                 </div>

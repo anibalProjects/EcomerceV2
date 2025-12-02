@@ -10,7 +10,10 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use Illuminate\Support\Facades\Session;
 
-Route::get('/', function () {return view('welcome');})->name('welcome');
+Route::get('/', function () {
+    $sesionId = session()->getId();
+    return redirect()->route('muebles.index', ['sesionId' => $sesionId]);
+})->name('home');
 
 Route::resource('usuarios', RegisterController::class);
 
@@ -29,23 +32,7 @@ Route::get('/borrar_sesion', function () {
 Route::get('/ver_sesion', function () {
     return   Session::all();
 });
-/*
-Route::get('/', function () {
-    $muebles = Mueble::all();
-    $usuario = User::find(13);
-    $sesionId = Session::getId() . '_' . $usuario->id;
-    $usuarios = Session::get('usuarios_sesion', []);
-    $datosSesion = [
-        'id' => $usuario->id,
-        'nombre' => $usuario->nombre,
-        'sessionId' => $sesionId
-        ];
-        $usuarioJson = json_encode($datosSesion);
-        $usuarios[$sesionId] = $usuarioJson;
-        Session::put('usuarios_sesion', $usuarios);
-        return view('vistaprueba',compact('muebles', 'sesionId'));
-        });
-*/
+
 Route::resource('carrito', carritoController::class);
 Route::post('/carrito/{sesionId}/buy', [carritoController::class,'buy'])->name('carrito.buy');
 Route::get('/carrito/{sesionId}/returnFromBuy', [carritoController::class,'returnFromBuy'])->name('carrito.returnFromBuy');
@@ -62,7 +49,7 @@ use App\Http\Controllers\MueblesAdministracionController;
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('muebles', MueblesAdministracionController::class);
-    
+
     // Rutas de la galeria
     Route::get('muebles/{id}/galeria', [MueblesAdministracionController::class, 'galeria'])->name('muebles.galeria');
     Route::post('muebles/{id}/galeria', [MueblesAdministracionController::class, 'uploadGaleria'])->name('muebles.galeria.upload');
