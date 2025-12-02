@@ -5,7 +5,6 @@
 @section('content')
 
 <div class="content-container">
-
     <div class="d-flex justify-content-between align-items-center pt-4 pb-4 nav-centered-brand"
          style="border-bottom: 1px solid var(--nav-border); position: relative;">
 
@@ -57,7 +56,7 @@
 
             {{-- Opción 2: Preferencias --}}
             <li>
-                <a class="dropdown-item" href="#">
+                <a class="dropdown-item" href="{{ route('preferencias.index', ['userId' => $usuario->id, 'sesionId' => $sesionId]) }}">
                     <i class="bi bi-gear-fill me-2"></i> Preferencias
                 </a>
             </li>
@@ -178,7 +177,7 @@
                             <div class="card-body">
                                 <h5 class="card-title">{{ $mueble->nombre }}</h5>
                                 <p class="producto-price card-text fw-bold text-success">
-                                    {{ number_format($mueble->precio, 2) }} {{ Cookie::get('moneda') ?? 'USD' }}
+                                    {{ number_format($mueble->precio, 2) }} {{ $moneda }}
                                 </p>
                             </div>
                         </a>

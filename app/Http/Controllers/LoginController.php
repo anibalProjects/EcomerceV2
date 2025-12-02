@@ -25,9 +25,6 @@ class LoginController extends Controller
         $datos = $request->validate([
             'email' => 'required|email',
             'password' => 'required|string',
-            'tema' => 'required|string',
-            'moneda' => 'required|string',
-            'paginacion' => 'required|string'
         ]);
 
 
@@ -53,9 +50,7 @@ class LoginController extends Controller
 
             $user = Auth::user();
 
-            $user->preferences()->updateOrCreate(['key' => 'tema'], ['value' => $datos['tema']]);
-            $user->preferences()->updateOrCreate(['key' => 'moneda'], ['value' => $datos['moneda']]);
-            $user->preferences()->updateOrCreate(['key' => 'paginacion'], ['value' => $datos['paginacion']]);
+
 
             $sesionId = Session::getId() . "_" . $user->id;
 
@@ -64,15 +59,12 @@ class LoginController extends Controller
                 'id' => $user->id,
                 'nombre' => $user->nombre,
                 'sesionId' => $sesionId,
-                'tema' => $datos['tema'],
-                'moneda' => $datos['moneda'],
-                'paginacion' => $datos['paginacion']
             ];
 
             $usuarioJson = json_encode($datosSesion);
             $usuarios[$sesionId] = $usuarioJson;
             Session::put('usuarios_sesion', $usuarios);
-            return redirect()->route('muebles.index', ['sesionId' => $sesionId]);
+            return redirect()->route('muebles.index', ['sesionId' => $sesionId, 'usuario' => $user]);
 
         } else {
             $usuarioDB->intentos = ($usuarioDB->intentos ?? 0) + 1;

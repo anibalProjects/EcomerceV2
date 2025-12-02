@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Categoria;
 use App\Models\Mueble;
 use App\Models\User;
+use App\Models\UserPreference;
 use Illuminate\Http\Request;
 
 class MuebleController extends Controller
@@ -14,12 +15,22 @@ class MuebleController extends Controller
      */
     public function index(Request $request)
     {
-        //FALTA: recoger cookie saul
         $sesionId = $request->sesionId;
         $muebles = Mueble::paginate(12);
         $categorias = Categoria::all();
         $usuario = User::buscarUsuario($sesionId);
-        return view('home', compact('muebles', 'categorias','sesionId', 'usuario'));
+        if($usuario) {
+            $tema = UserPreference::where('user_id', $usuario->id)->where('key', 'tema')->value('value');
+            $moneda = UserPreference::where('user_id', $usuario->id)->where('key', 'moneda')->value('value');
+            $paginacion = UserPreference::where('user_id', $usuario->id)->where('key', 'paginacion')->value('value');
+
+        } else {
+            //valores default si no hay usuario logeado
+            $tema = 'claro';
+            $moneda = 'USD';
+            $paginacion = 12;
+        }
+        return view('home', compact('muebles', 'categorias','sesionId', 'usuario', 'tema', 'moneda', 'paginacion'));
     }
 
     /**
