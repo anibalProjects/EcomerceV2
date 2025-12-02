@@ -30,7 +30,13 @@ class MuebleController extends Controller
             $moneda = 'USD';
             $paginacion = 12;
         }
+        MuebleController::getGaleria($sesionId);
         return view('home', compact('muebles', 'categorias','sesionId', 'usuario', 'tema', 'moneda', 'paginacion'));
+    }
+
+    public function getGaleria($sesionId){
+        
+
     }
 
     /**

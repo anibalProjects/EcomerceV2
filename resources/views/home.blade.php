@@ -174,6 +174,7 @@
                                 @endphp
                                 <img src="{{ asset($imagenRuta) }}" alt="{{ $mueble->nombre }}" class="card-img-top">
                             </div>
+                             {{ dd($mueble->where('mueble_id', $mueble->id))}}
                             <div class="card-body">
                                 <h5 class="card-title">{{ $mueble->nombre }}</h5>
                                 <p class="producto-price card-text fw-bold text-success">
