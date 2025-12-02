@@ -1,11 +1,15 @@
 <?php
 
+use App\Http\Controllers\CookieMoneda;
+use App\Http\Controllers\CookiePaginacion;
+use App\Http\Controllers\CookiePersonalizacion;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\carritoController;
 use App\Http\Controllers\MuebleController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use Illuminate\Support\Facades\Session;
+use App\Http\Controllers\ImagenController;
 
 Route::get('/', function () {return view('welcome');})->name('welcome');
 
@@ -47,5 +51,18 @@ Route::resource('carrito', carritoController::class);
 
 Route::resource('muebles', MuebleController::class);
 
-Route::post('filtro', [MuebleController::class, 'filtrar'])->name('mueble.filtrar');
+Route::get('filtro', [MuebleController::class, 'filtrar'])->name('mueble.filtrar');
 Route::post('/carrito/empty', [carritoController::class, 'empty'])->name('carrito.empty');
+Route::post('/guardar-tema', [CookiePersonalizacion::class, 'guardarTema'])->name('preferencias.tema.guardar');
+Route::post('/guardar-moneda', [CookieMoneda::class, 'guardarMoneda'])->name('preferencias.moneda.guardar');
+Route::post('/guardar-paginacion', [CookiePaginacion::class, 'guardarPaginacion'])->name('preferencias.paginacion.guardar');
+
+
+
+//---------------
+Route::get('/mueble/{id}/subir-imagen', [ImagenController::class, 'formularioImagen']);
+Route::post('/mueble/{id}/subir-imagen', [ImagenController::class, 'guardarImagen']);
+Route::post('/mueble/{id}/subir-imagen-principal', [ImagenController::class, 'guardarImagenPrincipal']);
+Route::get('/imagen/{id}', [ImagenController::class, 'mostrarImagen']);
+Route::get('/imagenPrincipal/{id}', [ImagenController::class, 'mostrarImagenSecundaria']);
+

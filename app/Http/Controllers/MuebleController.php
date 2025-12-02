@@ -13,8 +13,9 @@ class MuebleController extends Controller
      */
     public function index(Request $request)
     {
+        //FALTA: recoger cookie saul
         $sesionId = $request->sesionId;
-        $muebles = Mueble::all();
+        $muebles = Mueble::paginate(12);
         $categorias = Categoria::all();
         return view('home', compact('muebles', 'categorias','sesionId'));
     }
@@ -38,9 +39,18 @@ class MuebleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id, Request $request)
     {
-        //
+        $mueble = Mueble::with('Categoria')->findOrFail($id);
+        $sesionId = $request->input('sesionId');
+
+        // Productos relacionados por categoría
+        $productosRelacionados = Mueble::where('categoria_id', $mueble->categoria_id)
+                                        ->where('id', '!=', $mueble->id)
+                                        ->limit(8)
+                                        ->get();
+
+        return view('showMueble', compact('mueble', 'productosRelacionados', 'sesionId'));
     }
 
     /**
@@ -78,7 +88,7 @@ class MuebleController extends Controller
             }
         }
         $query = Mueble::query()
-                       ->with('categoria')
+                        ->with('categoria')
                        ->where('activo', 1);
         if (isset($filtro['nombre'])) {
             $query->where('nombre', 'like', '%' . $filtro['nombre'] . '%');
@@ -130,7 +140,7 @@ class MuebleController extends Controller
             $query->orderBy('id', 'asc');
             break;
     }
-    $muebles = $query->get();
+    $muebles = $query->paginate(12)->withQueryString();
     $categorias = Categoria::all();
 
     return view('home', [

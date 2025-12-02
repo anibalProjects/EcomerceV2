@@ -3,8 +3,10 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\UserPreference;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
@@ -59,11 +61,26 @@ class User extends Authenticatable
         return null;
     }
 
-    static function buscarSesionId($usuario_id){
-        $sesionId = DB::table('sessions')
-            ->where('user_id', $usuario_id)
-            ->latest('last_activity') //sesion mas reciente
-            ->first();
-            return $sesionId->id . '_' . $usuario_id;
+    /**
+     * Get the preferences for the user.
+     */
+    public function preferences(): HasMany
+    {
+        return $this->hasMany(UserPreference::class);
+    }
+
+    /**
+     * Get a specific preference value for the user.
+     *
+     * @param string $key
+     * @param mixed|null $default
+     * @return mixed
+     */
+    public function getPreference(string $key, $default = null)
+    {
+        /** @var UserPreference|null $preference */
+        $preference = $this->preferences()->where('key', $key)->first();
+
+        return $preference ? $preference->value : $default;
     }
 }
