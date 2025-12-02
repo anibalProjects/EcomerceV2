@@ -51,7 +51,7 @@
                                             <button type="submit" class="btn btn-primary btn-sm">Hacer Principal</button>
                                         </form>
                                     @endif
-                                    
+
                                     <form action="{{ route('admin.muebles.galeria.delete', [$imagen->id, 'sesionId' => $sesionId]) }}" method="POST" style="display: inline;">
                                         @csrf
                                         @method('DELETE')

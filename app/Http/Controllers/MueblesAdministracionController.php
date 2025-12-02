@@ -12,7 +12,7 @@ class MueblesAdministracionController extends Controller
 {
     protected $carpetaPrivada = 'muebles';
 
-    private function validarAcceso()
+    private function validarAcceso(): void
     {
         if (!auth()->check()) {
             abort(403, 'Debes iniciar sesión.');
@@ -29,7 +29,7 @@ class MueblesAdministracionController extends Controller
         $sesionId = $request->get('sesionId');
 
         $muebles = Mueble::with('categoria')->get();
-        
+
         // Filtrado
         if ($request->has('texto') && $request->texto) {
             $muebles = $muebles->filter(function($mueble) use ($request) {
@@ -72,7 +72,7 @@ class MueblesAdministracionController extends Controller
         if ($request->hasFile('imagen_principal')) {
             $file = $request->file('imagen_principal');
             $nombre = 'principal_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->storeAs($this->carpetaPrivada, $nombre, 'public'); 
+            $file->storeAs($this->carpetaPrivada, $nombre, 'public');
             $data['imagen_principal'] = $nombre;
         }
 
@@ -143,7 +143,7 @@ class MueblesAdministracionController extends Controller
             Storage::disk('public')->delete($this->carpetaPrivada . '/' . $img->ruta);
             $img->delete();
         }
-        
+
         $mueble->delete();
         return redirect()->route('admin.muebles.index', ['sesionId' => $sesionId])->with('success', 'Mueble eliminado correctamente');
     }
@@ -161,7 +161,7 @@ class MueblesAdministracionController extends Controller
     {
         $this->validarAcceso();
         $mueble = Mueble::findOrFail($id);
-        
+
         $request->validate([
             'imagenes.*' => 'required|image|max:4096'
         ]);
@@ -170,7 +170,7 @@ class MueblesAdministracionController extends Controller
             foreach($request->file('imagenes') as $file) {
                 $nombre = 'galeria_' . $id . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
                 $file->storeAs($this->carpetaPrivada, $nombre, 'public');
-                
+
                 Galeria::create([
                     'mueble_id' => $mueble->id,
                     'ruta' => $nombre,
@@ -193,18 +193,18 @@ class MueblesAdministracionController extends Controller
         $imagen->delete();
         return back()->with('success', 'Imagen eliminada');
     }
-    
+
     public function setPrincipalGaleria($id) {
         $this->validarAcceso();
         $imagen = Galeria::findOrFail($id);
         $mueble = $imagen->mueble;
-        
+
         // Quita la principal anterior
         $mueble->galeria()->update(['es_principal' => false]);
-        
+
         // Y pone la nueva como principal
         $imagen->update(['es_principal' => true]);
-        
+
         return back()->with('success', 'Imagen principal actualizada');
     }
 }
