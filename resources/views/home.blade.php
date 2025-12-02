@@ -6,12 +6,18 @@
 
 <div class="content-container">
 
-    {{-- BARRA DE NAVEGACIÓN --}}
-    <div class="nav-wrapper">
+    {{-- BARRA DE NAVEGACIÓN COMPLETA (Arreglo de estructura y botones) --}}
+    <div class="d-flex justify-content-between align-items-center pt-4 pb-4 nav-centered-brand"
+         style="border-bottom: 1px solid var(--nav-border); position: relative;">
+
+        {{-- IZQUIERDA: Menú e Íconos Secundarios --}}
         <div class="d-flex align-items-center">
+            {{-- Ícono de Menú Hamburguesa (Móvil) --}}
             <a href="#" class="menu-toggle d-md-none me-3">
                 <i class="bi bi-list"></i>
             </a>
+
+            {{-- Links de Navegación de Escritorio --}}
             <nav class="nav-links-desktop d-none d-md-flex align-items-center">
                 <a href="{{ route('muebles.index') }}" class="me-3">
                     <img src="{{ asset('img/Logo png.png') }}" alt="LECTONIC" style="height:70px; object-fit:contain;">
@@ -19,13 +25,27 @@
             </nav>
         </div>
 
-        <div class="nav-centered d-none d-md-block">
-            <span class="lux-brand">LECTONIC</span>
-        </div>
+        {{-- CENTRO: MARCA LECTONIC (Centrado Forzado) --}}
+        {{-- Usamos la clase 'centered' definida en el layout para el centrado absoluto --}}
+        <div class="lux-brand centered d-none d-md-block">LECTONIC</div>
 
-        <a href="{{ route('carrito.index', ['sesionId' => $sesionId ?? null]) }}" class="btn btn-primary d-flex align-items-center">
-            <i class="bi bi-cart-fill me-1"></i> Ver carrito
-        </a>
+        {{-- DERECHA: Botones de Carrito y Admin --}}
+        <div class="d-flex align-items-center">
+
+            {{-- Botón de Carrito --}}
+            <a href="{{ route('carrito.index', ['sesionId' => $sesionId ?? null]) }}" class="btn btn-primary d-flex align-items-center">
+                <i class="bi bi-cart-fill me-1"></i> Ver carrito
+            </a>
+
+            {{-- Botón Panel Admin (Añadido al lado de Carrito) --}}
+            @auth
+                @if(auth()->user()->rol_id === 1)
+                    <a href="{{ route('admin.muebles.index', ['sesionId' => $sesionId ?? null]) }}" class="btn btn-secondary d-flex align-items-center ms-2">
+                        <i class="bi bi-gear-fill me-1"></i> Panel Admin
+                    </a>
+                @endif
+            @endauth
+        </div>
     </div>
 
     {{-- ENCABEZADO --}}
@@ -37,8 +57,9 @@
     <h2>Filtro:</h2>
     <hr>
 
-    <form action="{{ route('mueble.filtrar') }}" method="GET" class="filter-form mb-4 p-3 border rounded">
+    <form action="{{ route('mueble.filtrar', ['sesionId' => $sesionId]) }}" method="GET" class="filter-form mb-4 p-3 border rounded">
         <div class="row">
+            <input type="hidden" name="sesionId" value="{{ $sesionId }}">
             {{-- Nombre --}}
             <div class="col-md-3 mb-3">
                 <label for="nombre">Nombre:</label>

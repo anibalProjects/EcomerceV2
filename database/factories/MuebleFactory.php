@@ -22,9 +22,9 @@ class MuebleFactory extends Factory
             'nombre'       => ucfirst($this->faker->words(2, true)),
             'descripcion'  => $this->faker->text(200),
             'precio'       => $this->faker->randomFloat(2, 20, 2000),
-            'color'        => $this->faker->safeColorName(),
+            'color' => $this->faker->safeColorName(),
             'stock'        => $this->faker->numberBetween(0, 100),
-            'novedad'      => $this->faker->boolean(30),
+            'novedad'    => $this->faker->boolean(30),
             'materiales'   => $this->faker->randomElement(['Madera', 'Metal', 'Vidrio', 'Aglomerado', 'Pino']),
             'dimensiones'  => $this->faker->numberBetween(50, 200) . 'x' .
                               $this->faker->numberBetween(40, 100) . 'x' .
