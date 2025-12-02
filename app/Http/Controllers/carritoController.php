@@ -36,7 +36,6 @@ class carritoController extends Controller
 
     public function store(Request $request){
 
-
         $request->validate([
             'cantidad' => 'required|int|min:1|max:10'
         ]);

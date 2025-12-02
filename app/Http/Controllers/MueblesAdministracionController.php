@@ -69,13 +69,9 @@ class MueblesAdministracionController extends Controller
         $data['destacado'] = $request->has('destacado');
         $data['activo'] = $request->has('activo');
 
-        if ($request->hasFile('imagen_principal')) {
-            $file = $request->file('imagen_principal');
-            $nombre = 'principal_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->storeAs($this->carpetaPrivada, $nombre, 'public');
-            $data['imagen_principal'] = $nombre;
-        }
+        $ruta = $request->file('imagen_principal')->store('imagenes/pagprincipal');
 
+        $data['imagen_principal'] = $ruta;
         $mueble = Mueble::create($data);
 
         return redirect()->route('admin.muebles.index', ['sesionId' => $sesionId])->with('success', 'Mueble creado correctamente');
@@ -112,17 +108,8 @@ class MueblesAdministracionController extends Controller
         $data['destacado'] = $request->has('destacado');
         $data['activo'] = $request->has('activo');
 
-        if ($request->hasFile('imagen_principal')) {
-            // Elimina la imagen anterior si existe
-            if ($mueble->imagen_principal && Storage::disk('public')->exists($this->carpetaPrivada . '/' . $mueble->imagen_principal)) {
-                Storage::disk('public')->delete($this->carpetaPrivada . '/' . $mueble->imagen_principal);
-            }
-
-            $file = $request->file('imagen_principal');
-            $nombre = 'principal_' . $id . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->storeAs($this->carpetaPrivada, $nombre, 'public');
-            $data['imagen_principal'] = $nombre;
-        }
+        $ruta = $request->file('imagen_principal')->store('imagenes/pagprincipal');
+        $data['imagen_principal'] = $ruta;
 
         $mueble->update($data);
 
@@ -160,24 +147,20 @@ class MueblesAdministracionController extends Controller
     public function uploadGaleria(Request $request, $id)
     {
         $this->validarAcceso();
-        $mueble = Mueble::findOrFail($id);
-
         $request->validate([
             'imagenes.*' => 'required|image|max:4096'
         ]);
 
-        if ($request->hasFile('imagenes')) {
-            foreach($request->file('imagenes') as $file) {
-                $nombre = 'galeria_' . $id . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                $file->storeAs($this->carpetaPrivada, $nombre, 'private');
+        $mueble = Mueble::findOrFail($id);
+        foreach($request->file('imagenes') as $file) {
+            $ruta = $file->store('imagenes/secundarias');
 
                 Galeria::create([
                     'mueble_id' => $mueble->id,
-                    'ruta' => $nombre,
+                    'ruta' => $ruta,
                     'es_principal' => false,
                     'orden' => 0
                 ]);
-            }
         }
 
         return back()->with('success', 'Imágenes subidas correctamente');

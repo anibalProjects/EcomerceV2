@@ -10,6 +10,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Models\User;
 use Illuminate\Support\Facades\Session;
+use App\Http\Controllers\ImagenController;
 
 Route::get('/', function () {
     $sesionId = session()->getId();

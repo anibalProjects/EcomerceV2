@@ -17,13 +17,20 @@ class RegisterController extends Controller
 
     public function store(Request $request)
     {
-
         $request->validate([
             'nombre' => 'required',
             'apellido' => 'required',
             'email' => 'required',
             'password' => 'required',
         ]);
+
+
+        $existe = Usuario::where('apellido', $request->apellido)->first();
+
+        if ($existe) {
+            return back()->withErrors(['email' => "Ya has sido registrado con ese usaurio"]);
+        }
+
 
         $usuario = new Usuario();
         $usuario->nombre = $request->nombre;

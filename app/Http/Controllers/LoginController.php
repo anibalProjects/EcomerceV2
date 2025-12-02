@@ -28,8 +28,11 @@ class LoginController extends Controller
         ]);
 
 
-
         $usuarioDB = Usuario::where('email', $datos['email'])->first();
+
+        if (!$usuarioDB) {
+            return back()->withErrors(['email' => "El usuario con el que intentas iniciar sesion no existe"]);
+        }
 
         if ($usuarioDB && $usuarioDB->bloqueo_temporal && now()->lessThan($usuarioDB->bloqueo_temporal)) {
             $restante = $usuarioDB->bloqueo_temporal->diffInSeconds(now());
@@ -97,7 +100,7 @@ class LoginController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
+        //REVISAR
         return redirect()->route('muebles.index')->with('mensaje', 'Sesión cerrada correctamente.');
     }
 

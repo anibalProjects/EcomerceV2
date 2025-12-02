@@ -60,7 +60,7 @@ class User extends Authenticatable
         }
         return null;
     }
-    
+
     /**
      * Get the preferences for the user.
      */
