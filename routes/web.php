@@ -55,6 +55,7 @@ Route::post('/guardar-paginacion', [CookiePaginacion::class, 'guardarPaginacion'
 
 // Rutas de la parte de administrador
 use App\Http\Controllers\MueblesAdministracionController;
+use App\Http\Controllers\CategoriasAdministracionController;
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('muebles', MueblesAdministracionController::class);
@@ -64,4 +65,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('muebles/{id}/galeria', [MueblesAdministracionController::class, 'uploadGaleria'])->name('muebles.galeria.upload');
     Route::post('galeria/{id}/principal', [MueblesAdministracionController::class, 'setPrincipalGaleria'])->name('muebles.galeria.principal');
     Route::delete('galeria/{id}', [MueblesAdministracionController::class, 'deleteImagenGaleria'])->name('muebles.galeria.delete');
+    
+    // Rutas de categorías
+    Route::resource('categorias', CategoriasAdministracionController::class);
 });
