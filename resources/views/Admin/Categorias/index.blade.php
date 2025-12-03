@@ -41,6 +41,9 @@
                     @csrf
                     <button type="submit" class="btn btn-danger">Cerrar Sesión</button>
                 </form>
+                <a href="{{ route('admin.muebles.index', ['sesionId' => $sesionId]) }}" class="btn btn-secondary">
+                    <i class="bi bi-house-door-fill me-1"></i> Muebles
+                </a>
             </div>
         </div>
         <p class="mb-3 small-muted">Administra las categorías de productos de la tienda.</p>
