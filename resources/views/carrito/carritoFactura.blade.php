@@ -1,4 +1,9 @@
-@extends('layout.app')
+@php
+    $tema = $tema ?? \Illuminate\Support\Facades\Cookie::get('tema_visual', 'claro');
+    $layout = ($tema === 'oscuro') ? 'layout.oscuro' : 'layout.app';
+@endphp
+
+@extends($layout)
 
 @section('title', 'Factura de Compra')
 

@@ -1,6 +1,7 @@
 @php
     // asegurarse de que $tema tiene valor ('claro' por defecto)
-    $tema = $tema ?? 'claro';
+    // asegurarse de que $tema tiene valor ('claro' por defecto)
+    $tema = $tema ?? \Illuminate\Support\Facades\Cookie::get('tema_visual', 'claro');
     $layout = ($tema === 'oscuro') ? 'layout.oscuro' : 'layout.app';
 @endphp
 

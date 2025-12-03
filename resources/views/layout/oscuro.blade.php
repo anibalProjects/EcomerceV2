@@ -12,26 +12,28 @@
 
     <style>
         :root {
-            /* Colores base invertidos para Modo Oscuro */
-            --dark-bg: #1A1A1A;          /* Negro profundo para el fondo */
-            --medium-bg: #2C2C2C;        /* Gris oscuro para contenedores/filtros */
-            --light-text: #E0E0E0;       /* Texto principal claro */
-            --subtle-text: #AAAAAA;      /* Texto secundario gris claro */
-
-            --accent-dark: #FFFFFF;      /* El acento más oscuro ahora es blanco para contraste */
-            --accent-border: #444444;    /* Borde gris oscuro */
-
-            /* Acentos dorados/lujo (se mantienen igual) */
+            --white-bg: #121212;
+            --dark-text: #e0e0e0;
+            --light-text: #b0b0b0;
+            --accent-dark: #ffffff;
+            --accent-border: #333333;
             --brand-font: "Playfair Display", serif;
             --main-font: "Lora", serif;
             --gold: #ad8516;
+            --wood-shadow: rgba(0,0,0,0.5);
+            --light-bg: #1e1e1e;
             --dark-gold-border: #a3873d;
+            
+            /* Variables adicionales para modo oscuro */
+            --card-bg: #1e1e1e;
+            --input-bg: #2c2c2c;
+            --input-text: #ffffff;
         }
 
         body {
             font-family: var(--main-font);
-            background: var(--dark-bg); /* Fondo oscuro */
-            color: var(--light-text);   /* Texto claro */
+            background: var(--white-bg);
+            color: var(--dark-text);
             min-height: 100vh;
             transition: background 0.3s, color 0.3s;
         }
@@ -43,7 +45,8 @@
             justify-content: space-between;
             align-items: center;
             padding: 1rem 2rem;
-            border-bottom: 1px solid var(--accent-border); /* Borde sutil oscuro */
+            border-bottom: 1px solid var(--accent-border);
+            background-color: var(--white-bg);
         }
 
         .nav-centered {
@@ -63,14 +66,14 @@
             font-family: var(--brand-font);
             font-size: 2.5rem;
             font-weight: 500;
-            color: var(--light-text) !important; /* Marca clara */
+            color: var(--dark-text) !important;
             margin: 0;
             padding: 0;
             white-space: nowrap;
         }
 
         .nav-links-desktop a {
-            color: var(--subtle-text); /* Enlaces sutiles */
+            color: var(--light-text);
             font-family: var(--main-font);
             font-size: 1rem;
             font-weight: 400;
@@ -80,7 +83,7 @@
         }
 
         .nav-links-desktop a:hover {
-            color: var(--accent-dark); /* Hover se vuelve blanco puro */
+            color: var(--accent-dark);
             text-decoration: underline;
             text-decoration-thickness: 1px;
         }
@@ -94,7 +97,7 @@
         .page-header-text, .content-container h2 {
             font-family: var(--brand-font);
             font-weight: 400;
-            color: var(--light-text); /* Títulos claros */
+            color: var(--dark-text);
         }
 
         .page-header-text {
@@ -114,64 +117,89 @@
         /* FORMS & CARDS */
         .filter-form {
             border: 1px solid var(--accent-border) !important;
-            background-color: var(--medium-bg); /* Contenedor de filtro oscuro */
+            background-color: var(--light-bg) !important;
         }
 
         .form-control, .form-select {
             border-radius: 0;
             border-color: var(--accent-border);
-            background-color: var(--medium-bg); /* Fondo de input oscuro */
-            color: var(--light-text); /* Texto de input claro */
             font-family: var(--main-font);
             font-size: 0.9rem;
+            background-color: var(--input-bg);
+            color: var(--input-text);
         }
-        .form-control::placeholder {
-            color: var(--subtle-text);
-        }
+        
         .form-control:focus, .form-select:focus {
-            background-color: var(--medium-bg);
-            box-shadow: 0 0 0 0.15rem rgba(255, 255, 255, 0.1); /* Sombra clara sutil */
-            border-color: var(--light-text);
-        }
-
-        /* Checkboxes y Radio buttons (generalmente necesitan overrides específicos de Bootstrap) */
-        input[type="checkbox"] + span {
-            color: var(--light-text);
+            background-color: #333;
+            color: #fff;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 0.25rem rgba(173, 133, 22, 0.25);
         }
 
         .producto-card {
             border: 1px solid var(--accent-border);
-            background-color: var(--medium-bg); /* Fondo de tarjeta oscuro */
             border-radius: 0;
             box-shadow: none;
             transition: box-shadow 0.3s, transform 0.3s;
+            background-color: var(--card-bg);
         }
 
         .producto-card:hover {
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5); /* Sombra más fuerte */
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.05);
             transform: translateY(-2px);
         }
 
         .producto-price {
-            color: #4CAF50 !important; /* Verde adaptado al oscuro */
+            color: #4caf50 !important; /* Lighter green for dark mode */
             font-family: var(--main-font);
             font-weight: 600;
         }
+        
+        .card-body, .card-footer {
+            background-color: var(--card-bg) !important;
+            color: var(--dark-text);
+        }
+        
+        .text-dark {
+            color: var(--dark-text) !important;
+        }
+        
+        .bg-white {
+            background-color: var(--card-bg) !important;
+        }
 
-        /* BOTONES (Dorados/Acento) */
         .btn-primary {
             background: var(--gold);
             border: 1px solid var(--dark-gold-border);
-            color: var(--dark-text); /* Texto oscuro sobre dorado */
+            color: #ffffff;
             font-weight: 600;
             border-radius: 4px;
             transition: background 0.2s, border-color 0.2s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
         .btn-primary:hover {
             background: #b59035;
             border-color: #8d765d;
+        }
+        
+        /* Specific overrides for dark mode elements */
+        .dropdown-menu {
+            background-color: var(--card-bg);
+            border-color: var(--accent-border);
+        }
+        
+        .dropdown-item {
+            color: var(--dark-text);
+        }
+        
+        .dropdown-item:hover {
+            background-color: var(--accent-border);
+            color: var(--white-bg);
+        }
+        
+        hr {
+            border-color: var(--accent-border);
+            opacity: 0.5;
         }
 
         /* PAGINATION */
@@ -180,27 +208,28 @@
         }
 
         .page-link {
-            color: var(--light-text);
+            color: var(--dark-text);
             border: 1px solid var(--accent-border);
-            background-color: var(--medium-bg); /* Fondo de paginación oscuro */
+            background-color: var(--card-bg);
         }
 
         .page-link:hover {
-            color: var(--light-text);
-            background-color: #383838;
+            color: var(--white-bg);
+            background-color: var(--accent-border);
+            border-color: var(--accent-border);
         }
 
         .page-item.active .page-link {
             background-color: var(--gold);
             border-color: var(--dark-gold-border);
-            color: var(--dark-text); /* Texto oscuro en el activo */
+            color: #fff;
         }
 
         footer {
             text-align: center;
             padding: 1rem 0;
             font-size: 0.8rem;
-            color: #666; /* Texto de footer más oscuro que el texto principal */
+            color: #888;
             margin-top: 5rem;
         }
 
