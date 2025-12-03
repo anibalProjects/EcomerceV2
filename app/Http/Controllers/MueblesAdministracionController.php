@@ -66,12 +66,16 @@ class MueblesAdministracionController extends Controller
         ]);
 
         $data = $request->all();
-        $data['destacado'] = $request->has('destacado');
+        $data['novedad'] = $request->has('novedad');
         $data['activo'] = $request->has('activo');
 
-        $ruta = $request->file('imagen_principal')->store('imagenes/pagprincipal');
+        if ($request->hasFile('imagen_principal')) {
+            $file = $request->file('imagen_principal');
+            $nombre = 'principal_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->storeAs($this->carpetaPrivada, $nombre, 'public'); 
+            $data['imagen_principal'] = $nombre;
+        }
 
-        $data['imagen_principal'] = $ruta;
         $mueble = Mueble::create($data);
 
         return redirect()->route('admin.muebles.index', ['sesionId' => $sesionId])->with('success', 'Mueble creado correctamente');
@@ -105,11 +109,20 @@ class MueblesAdministracionController extends Controller
         ]);
 
         $data = $request->all();
-        $data['destacado'] = $request->has('destacado');
+        $data['novedad'] = $request->has('novedad');
         $data['activo'] = $request->has('activo');
 
-        $ruta = $request->file('imagen_principal')->store('imagenes/pagprincipal');
-        $data['imagen_principal'] = $ruta;
+        if ($request->hasFile('imagen_principal')) {
+            // Delete old image if exists
+            if ($mueble->imagen_principal && Storage::disk('public')->exists($this->carpetaPrivada . '/' . $mueble->imagen_principal)) {
+                Storage::disk('public')->delete($this->carpetaPrivada . '/' . $mueble->imagen_principal);
+            }
+
+            $file = $request->file('imagen_principal');
+            $nombre = 'principal_' . $id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->storeAs($this->carpetaPrivada, $nombre, 'public');
+            $data['imagen_principal'] = $nombre;
+        }
 
         $mueble->update($data);
 
