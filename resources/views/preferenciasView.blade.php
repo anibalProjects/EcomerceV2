@@ -6,52 +6,102 @@
 
 @extends($layout)
 
-<div class="mt-4">
-    <form action="{{ route('preferencias.update', ['userId' => $usuario_id, 'sesionId' => $sesionId])}}" method="POST">
-        @csrf
-        <h6 class="text-center text-muted mb-3">Preferencias de Sesión</h6>
+@section('title', 'Preferencias')
 
-            <div class="row g-3">
+@section('content')
+<div class="content-container">
+    <div class="nav-wrapper mb-4">
+        <div class="nav-centered">
+            <span class="lux-brand">LECTONIC</span>
+        </div>
+    </div>
 
-                {{-- Moneda --}}
-                <div class="col-sm-6">
-                    <label for="moneda" class="form-label small mb-1 text-muted">Moneda</label>
-                    <select name="moneda" id="moneda" class="form-select form-select-sm">
-                        <option value="EUR" {{ (Cookie::get('moneda') ?? 'EUR') == 'EUR' ? 'selected' : '' }}>Euro (€)</option>
-                        <option value="USD" {{ (Cookie::get('moneda') ?? 'EUR') == 'USD' ? 'selected' : '' }}>Dólar ($)</option>
-                        <option value="GBP" {{ (Cookie::get('moneda') ?? 'EUR') == 'GBP' ? 'selected' : '' }}>Libra (£)</option>
-                    </select>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white border-0 p-3">
+                    <h4 class="mb-0">Preferencias de Sesión</h4>
                 </div>
 
-                {{-- Paginación --}}
-                <div class="col-sm-6">
-                    <label for="paginacion" class="form-label small mb-1 text-muted">Prod. por página</label>
-                    @php $paginacion = Cookie::get('paginacion') ?? '12'; @endphp
-                    <select name="paginacion" id="paginacion" class="form-select form-select-sm">
-                        <option value="6" {{ $paginacion == '6' ? 'selected' : '' }}>6</option>
-                        <option value="12" {{ $paginacion == '12' ? 'selected' : '' }}>12</option>
-                        <option value="24" {{ $paginacion == '24' ? 'selected' : '' }}>24</option>
-                    </select>
-                </div>
+                <div class="card-body">
+                    @if(session('success'))
+                        <div class="alert alert-success small mb-3">{{ session('success') }}</div>
+                    @endif
+                    @if($errors->any())
+                        <div class="alert alert-danger small mb-3">
+                            <ul class="mb-0">
+                                @foreach($errors->all() as $err)
+                                    <li>{{ $err }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
 
-                {{-- Tema Visual --}}
-                <div class="col-sm-12 mt-3">
-                    <label class="form-label small mb-2 text-muted d-block">Tema Visual</label>
-                    @php $tema = Cookie::get('tema_visual') ?? 'claro'; @endphp
-                    <div class="d-flex justify-content-center gap-4">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="tema" id="tema-claro" value="claro" {{ $tema == 'claro' ? 'checked' : '' }}>
-                            <label class="form-check-label small" for="tema-claro">Claro</label>
+                    <form action="{{ route('preferencias.update', ['userId' => $usuario_id, 'sesionId' => $sesionId]) }}" method="POST" class="row g-3">
+                        @csrf
+
+                        <div class="col-md-6">
+                            <label for="moneda" class="form-label small text-muted">Moneda</label>
+                            @php $monedaCookie = Cookie::get('moneda') ?? 'EUR'; @endphp
+                            <select id="moneda" name="moneda" class="form-select form-select-sm">
+                                <option value="EUR" {{ $monedaCookie == 'EUR' ? 'selected' : '' }}>Euro (€)</option>
+                                <option value="USD" {{ $monedaCookie == 'USD' ? 'selected' : '' }}>Dólar ($)</option>
+                                <option value="GBP" {{ $monedaCookie == 'GBP' ? 'selected' : '' }}>Libra (£)</option>
+                            </select>
                         </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="tema" id="tema-oscuro" value="oscuro" {{ $tema == 'oscuro' ? 'checked' : '' }}>
-                            <label class="form-check-label small" for="tema-oscuro">Oscuro</label>
+
+                        <div class="col-md-6">
+                            <label for="paginacion" class="form-label small text-muted">Productos por página</label>
+                            @php $paginacion = Cookie::get('paginacion') ?? '12'; @endphp
+                            <select id="paginacion" name="paginacion" class="form-select form-select-sm">
+                                <option value="6"  {{ $paginacion == '6'  ? 'selected' : '' }}>6</option>
+                                <option value="12" {{ $paginacion == '12' ? 'selected' : '' }}>12</option>
+                                <option value="24" {{ $paginacion == '24' ? 'selected' : '' }}>24</option>
+                            </select>
                         </div>
+
+                        <div class="col-12 mt-2">
+                            <label class="form-label small text-muted d-block mb-2">Tema visual</label>
+                            @php $temaCookie = Cookie::get('tema_visual') ?? 'claro'; @endphp
+                            <div class="d-flex gap-3 align-items-center">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tema" id="tema-claro" value="claro" {{ $temaCookie == 'claro' ? 'checked' : '' }}>
+                                    <label class="form-check-label small" for="tema-claro">Claro</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tema" id="tema-oscuro" value="oscuro" {{ $temaCookie == 'oscuro' ? 'checked' : '' }}>
+                                    <label class="form-check-label small" for="tema-oscuro">Oscuro</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 mt-3 d-flex justify-content-end gap-2">
+                            <a href="{{ route('muebles.index', ['sesionId' => $sesionId]) }}" class="btn cart-btn">Cancelar</a>
+                            <button type="submit" class="btn btn-primary">Actualizar preferencias</button>
+                        </div>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="small text-muted">
+                        Estas preferencias se guardan en cookies y en las preferencias de usuario si estás identificado.
                     </div>
                 </div>
-
             </div>
-            <button type="submit">Actualizar preferencias</button>
-    </form>
-
         </div>
+    </div>
+</div>
+
+@push('head')
+<style>
+/* Ajustes locales para que encaje con el diseño (responsive y limpio) */
+.card { border-radius: 10px; }
+.form-label.small { color: var(--light-text, #666); }
+.cart-btn { border: 1px solid var(--gold); color: var(--gold); background: transparent; }
+.cart-btn:hover { background: rgba(201,168,75,0.06); }
+@media (max-width: 576px) {
+    .card-body { padding: 1rem; }
+}
+</style>
+@endpush
+@endsection
