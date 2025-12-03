@@ -21,11 +21,16 @@
     <div class="row g-4">
 
         <div class="col-lg-6">
-            <div class="producto-detalle-imagen">
+            <div class="producto-image p-3">
                 @php
-                    $imagenRuta = $mueble->imagen_ruta ?? 'images/muebles/placeholder.jpg';
+                    // elegir imagen principal si existe, sino la primera de la galería
+                    $imagen = $mueble->galeria()->where('es_principal', true)->first() ?? $mueble->galeria()->first();
+                    $imgUrl = $imagen ? route('imagen.mueble', ['path' => $imagen->ruta]) : asset('images/muebles/placeholder.jpg');
                 @endphp
-                <img src="{{ asset($imagenRuta) }}" alt="{{ $mueble->nombre }}" class="img-fluid rounded shadow-lg">
+
+                <div style="border: 1px solid #ddd; padding: 10px; text-align: center;">
+                    <img src="{{ $imgUrl }}" alt="{{ $mueble->nombre }}" style="width: 150px; height: 150px; object-fit: cover;">
+                </div>
             </div>
         </div>
 

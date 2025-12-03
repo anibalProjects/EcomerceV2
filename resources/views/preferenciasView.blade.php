@@ -1,3 +1,11 @@
+@php
+    // asegurarse de que $tema tiene valor ('claro' por defecto)
+    $tema = $tema ?? 'claro';
+    $layout = ($tema === 'oscuro') ? 'layout.oscuro' : 'layout.app';
+@endphp
+
+@extends($layout)
+
 <div class="mt-4">
     <form action="{{ route('preferencias.update', ['userId' => $usuario_id, 'sesionId' => $sesionId])}}" method="POST">
         @csrf

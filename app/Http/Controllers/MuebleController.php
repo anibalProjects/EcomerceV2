@@ -8,9 +8,12 @@ use App\Models\User;
 use App\Models\UserPreference;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Storage;
 
 class MuebleController extends Controller
 {
+
+    protected $carpetaPrivadaPrincipal = 'imagenes/pagprincipal';
     /**
      * Display a listing of the resource.
      */
@@ -59,7 +62,7 @@ class MuebleController extends Controller
         ->where('activo', 1)
         ->limit(4)
         ->get();
-        
+
         return view('showMueble', compact('mueble', 'productosRelacionados', 'sesionId', 'moneda', 'tema'));
     }
 
@@ -135,7 +138,7 @@ class MuebleController extends Controller
         }
 
         $categorias = Categoria::all();
-        
+
         $preferencias = CookiePersonalizacion::getPersonalizacion($sesionId);
         $tema = $preferencias['tema'];
         $moneda = $preferencias['moneda'];
@@ -152,5 +155,20 @@ class MuebleController extends Controller
             'moneda' => $moneda,
             'usuario' => $usuario,
         ]);
+    }
+
+    public function showMueble(string $path)
+    {
+        $path = urldecode($path);
+        $disk = Storage::disk('local'); // storage/app/private
+
+        if (! $disk->exists($path)) {
+            abort(404);
+        }
+
+        $fullPath = $disk->path($path);
+        $mime = $disk->mimeType($path) ?? 'application/octet-stream';
+
+        return response()->file($fullPath, ['Content-Type' => $mime]);
     }
 }

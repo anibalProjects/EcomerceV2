@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Galería de Imágenes - {{ $mueble->nombre }}</title>
-    @php
-        $tema = Cookie::get('tema_visual', 'claro');
-    @endphp
+    @php $tema = Cookie::get('tema_visual', 'claro'); @endphp
     <link rel="stylesheet" href="{{ asset("css/{$tema}.css") }}">
 </head>
 <body>
@@ -37,11 +35,14 @@
         <div class="card" style="margin-top: 20px;">
             <div class="card-header">Imágenes de la Galería</div>
             <div class="card-body">
-                @if($mueble->galeria->count() > 0)
+                @if($mueble->galeria && $mueble->galeria->count() > 0)
                     <div style="display: flex; flex-wrap: wrap; gap: 10px;">
                         @foreach($mueble->galeria as $imagen)
+                            @php
+                                $imgUrl = route('imagen.mueble', ['path' => rawurlencode($imagen->ruta)]);
+                            @endphp
                             <div style="border: 1px solid #ddd; padding: 10px; text-align: center;">
-                                <img src="{{ asset('storage/muebles/' . $imagen->ruta) }}" alt="Imagen" style="width: 150px; height: 150px; object-fit: cover;">
+                                <img src="{{ $imgUrl }}" alt="Imagen" style="width: 150px; height: 150px; object-fit: cover;">
                                 <div style="margin-top: 10px;">
                                     @if($imagen->es_principal)
                                         <span style="color: green; font-weight: bold;">Principal</span>

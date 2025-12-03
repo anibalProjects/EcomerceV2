@@ -37,6 +37,11 @@ Route::get('/ver_sesion', function () {
     return   Session::all();
 });
 
+Route::get('/imagen/{nombre}', [MuebleController::class, 'mostrarGaleria'])->name('imagen.mostrar');
+Route::get('imagen/muebles/{path}', [MuebleController::class, 'showMueble'])
+    ->where('path', '.*')
+    ->name('imagen.mueble');
+
 Route::resource('carrito', carritoController::class);
 Route::post('/carrito/{sesionId}/buy', [carritoController::class,'buy'])->name('carrito.buy');
 Route::get('/carrito/{sesionId}/returnFromBuy', [carritoController::class,'returnFromBuy'])->name('carrito.returnFromBuy');

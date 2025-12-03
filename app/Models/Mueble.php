@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Container\Attributes\Storage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage as FacadesStorage;
 
 class Mueble extends Model
 {
@@ -36,8 +38,10 @@ class Mueble extends Model
         return $this->belongsToMany(Carrito::class);
     }
 
-    public function prueba($id) {
-        return $id;
+    public function getImagenRutaAttribute()
+    {
+        $galeria = Galeria::where('mueble_id', $this->id)->get();
+        return $galeria;
     }
 
 

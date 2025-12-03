@@ -1,4 +1,11 @@
-@extends('layout.app')
+
+@php
+    // asegurarse de que $tema tiene valor ('claro' por defecto)
+    $tema = $tema ?? 'claro';
+    $layout = ($tema === 'oscuro') ? 'layout.oscuro' : 'layout.app';
+@endphp
+
+@extends($layout)
 
 @section('title', 'Filtrar y Ordenar Muebles')
 
@@ -170,9 +177,14 @@
                         <a href="{{ route('muebles.show', ['mueble' => $mueble->id, 'sesionId' => $sesionId]) }}" class="text-decoration-none text-dark">
                             <div class="producto-image p-3">
                                 @php
-                                    $imagenRuta = $mueble->imagen_ruta ?? 'images/muebles/placeholder.jpg';
+                                    // elegir imagen principal si existe, sino la primera de la galería
+                                    $imagen = $mueble->galeria()->where('es_principal', true)->first() ?? $mueble->galeria()->first();
+                                    $imgUrl = $imagen ? route('imagen.mueble', ['path' => $imagen->ruta]) : asset('images/muebles/placeholder.jpg');
                                 @endphp
-                                <img src="{{ asset($imagenRuta) }}" alt="{{ $mueble->nombre }}" class="card-img-top">
+
+                                <div style="border: 1px solid #ddd; padding: 10px; text-align: center;">
+                                    <img src="{{ $imgUrl }}" alt="{{ $mueble->nombre }}" style="width: 150px; height: 150px; object-fit: cover;">
+                                </div>
                             </div>
                             <div class="card-body">
                                 <h5 class="card-title">{{ $mueble->nombre }}</h5>
@@ -180,7 +192,6 @@
                                     {{ number_format($mueble->precio, 2) }} {{ $moneda }}
                                 </p>
                             </div>
-                            <div>{{ $mueble->prueba($mueble->id) }}</div>
                         </a>
                         <div class="card-footer bg-white border-0">
                             <form method="POST" action="{{ route('carrito.store') }}" class="add-cart-form">
