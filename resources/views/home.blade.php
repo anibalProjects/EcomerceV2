@@ -1,4 +1,3 @@
-
 @php
     // asegurarse de que $tema tiene valor ('claro' por defecto)
     $tema = $tema ?? 'claro';
@@ -26,67 +25,43 @@
         <div class="lux-brand centered d-none d-md-block">LECTONIC</div>
 
         <div class="d-flex align-items-center">
-
             <div class="d-flex align-items-center">
-
 @if ($usuario)
-
-
-
-    <div class="dropdown">
-
-        {{-- Botón que activa el menú (Solo visible si hay usuario autenticado) --}}
-        <button class="btn btn-primary d-flex align-items-center dropdown-toggle"
-                type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-                style="letter-spacing: normal; padding-right: 1.5rem;"
-        >
-            <i class="bi bi-person-circle me-1"></i> Mi Cuenta
-        </button>
-
-        {{-- El Menú Desplegable --}}
-        <ul class="dropdown-menu dropdown-menu-end">
-
-            {{-- Opción 1: Ver carrito --}}
-            <li>
-                <a class="dropdown-item d-flex justify-content-between align-items-center"
-                   href="{{ route('carrito.index', ['sesionId' => $sesionId ?? null]) }}"
-                >
-                    <span class="fw-bold">Ver carrito</span>
-                    <i class="bi bi-cart-fill ms-3"></i>
-                </a>
-            </li>
-
-            {{-- Separador --}}
-            <li><hr class="dropdown-divider"></li>
-
-            {{-- Opción 2: Preferencias --}}
-            <li>
-                <a class="dropdown-item" href="{{ route('preferencias.index', ['userId' => $usuario->id, 'sesionId' => $sesionId]) }}">
-                    <i class="bi bi-gear-fill me-2"></i> Preferencias
-                </a>
-            </li>
-
-            {{-- Opción 3: Cerrar Sesión --}}
-            <li>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                   <button type="submit" class="dropdown-item text-danger">
-                        <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
-                    </button>
-                </form>
-            </li>
-        </ul>
-    </div>
+    <!-- Botón de carrito a la izquierda del usuario -->
+    <a href="{{ route('carrito.index', ['sesionId' => $sesionId ?? null]) }}"
+       class="btn btn-primary d-flex align-items-center me-2">
+        <i class="bi bi-cart-fill me-1"></i> Ver carrito
+    </a>
+    <!-- Botón de usuario -->
+    <button class="btn btn-primary d-flex align-items-center dropdown-toggle"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            style="letter-spacing: normal; padding-right: 1.5rem;">
+        <i class="bi bi-person-circle me-1"></i> {{ $usuario->nombre }}
+    </button>
+    <!-- Menú desplegable solo con preferencias y logout -->
+    <ul class="dropdown-menu dropdown-menu-end">
+        <li>
+            <a class="dropdown-item" href="{{ route('preferencias.index', ['userId' => $usuario->id, 'sesionId' => $sesionId]) }}">
+                <i class="bi bi-gear-fill me-2"></i> Preferencias
+            </a>
+        </li>
+        <li>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="dropdown-item text-danger">
+                    <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
+                </button>
+            </form>
+        </li>
+    </ul>
 @endif
 
 @if (!$usuario)
-<a href="{{ route('login.mostrar') }}" class="btn btn-primary">Iniciar Sesión</a>
-
+    <a href="{{ route('login.mostrar') }}" class="btn btn-primary">Iniciar Sesión</a>
 @endif
-
-</div>
+            </div>
             @auth
                 @if(auth()->user()->rol_id === 1)
                     <a href="{{ route('admin.muebles.index', ['sesionId' => $sesionId ?? null]) }}" class="btn btn-secondary d-flex align-items-center ms-2">

@@ -6,79 +6,120 @@
 
 @section('title', 'Galería de Imágenes - ' . $mueble->nombre)
 
+@push('head')
+<style>
+.galeria-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+.galeria-card {
+    background: var(--card-bg, #fff);
+    border: 1px solid var(--accent-border, #e9e9e9);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    padding: 1rem;
+    text-align: center;
+    position: relative;
+    transition: box-shadow 0.2s;
+}
+.galeria-card:hover {
+    box-shadow: 0 8px 24px rgba(201,168,75,0.08);
+}
+.galeria-img {
+    width: 100%;
+    max-width: 160px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    margin-bottom: 0.5rem;
+}
+.galeria-actions {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+.galeria-principal {
+    color: #4CAF50;
+    font-weight: bold;
+    font-size: 0.95rem;
+}
+@media (max-width: 576px) {
+    .galeria-img { max-width: 100px; height: 70px; }
+    .galeria-card { padding: 0.5rem; }
+}
+</style>
+@endpush
+
 @section('content')
-
-<div class="card">
-    <h2>Galería de imágenes - {{ $mueble->nombre }}</h2>
-
-    <a href="{{ route('admin.muebles.index', ['sesionId' => $sesionId]) }}" class="btn btn-secondary">
-        ⬅ Volver
-    </a>
-
-    @if(session('success'))
-        <div class="alert alert-success" style="color: green; margin: 10px 0;">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    {{-- Subir Imágenes --}}
-    <div class="card" style="margin-top: 20px;">
-        <div class="card-header">Subir Imágenes</div>
-        <div class="card-body">
-            <form action="{{ route('admin.muebles.galeria.upload', [$mueble->id, 'sesionId' => $sesionId]) }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <input type="file" name="imagenes[]" multiple accept="image/*" required>
-                <button type="submit" class="btn btn-success">Subir</button>
-            </form>
+<div class="content-container">
+    <div class="nav-wrapper mb-4">
+        <a href="{{ route('admin.muebles.index', ['sesionId' => $sesionId]) }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-2"></i> Volver
+        </a>
+        <div class="nav-centered">
+            <span class="lux-brand">LECTONIC</span>
         </div>
     </div>
 
-    {{-- Listado de Imágenes --}}
-    <div class="card" style="margin-top: 20px;">
-        <div class="card-header">Imágenes de la Galería</div>
-        <div class="card-body">
+    <div class="card p-4 mb-4">
+        <h2 class="mb-3 text-center">Galería de imágenes - {{ $mueble->nombre }}</h2>
 
-            @if($mueble->galeria && $mueble->galeria->count() > 0)
-                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-                    @foreach($mueble->galeria as $imagen)
-                        @php
-                            $imgUrl = route('imagen.mueble', ['path' => rawurlencode($imagen->ruta)]);
-                        @endphp
+        @if(session('success'))
+            <div class="alert alert-success mb-3">{{ session('success') }}</div>
+        @endif
 
-                        <div style="border: 1px solid #ddd; padding: 10px; text-align: center;">
-
-                            <img src="{{ $imgUrl }}" alt="Imagen" style="width: 150px; height: 150px; object-fit: cover;">
-
-                            <div style="margin-top: 10px;">
-
-                                @if($imagen->es_principal)
-                                    <span style="color: green; font-weight: bold;">Principal</span>
-                                @else
-                                    <form action="{{ route('admin.muebles.galeria.principal', [$imagen->id, 'sesionId' => $sesionId]) }}"
-                                          method="POST" style="display: inline;">
-                                        @csrf
-                                        <button type="submit" class="btn btn-primary btn-sm">Hacer Principal</button>
-                                    </form>
-                                @endif
-
-                                <form action="{{ route('admin.muebles.galeria.delete', [$imagen->id, 'sesionId' => $sesionId]) }}"
-                                      method="POST" style="display: inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Eliminar?')">🗑</button>
-                                </form>
-
-                            </div>
-                        </div>
-                    @endforeach
+        <form action="{{ route('admin.muebles.galeria.upload', [$mueble->id, 'sesionId' => $sesionId]) }}" method="POST" enctype="multipart/form-data" class="mb-4">
+            @csrf
+            <div class="row g-2 align-items-center">
+                <div class="col-md-8">
+                    <input type="file" name="imagenes[]" multiple accept="image/*" required class="form-control">
                 </div>
-            @else
-                <p>No hay imágenes en la galería.</p>
-            @endif
+                <div class="col-md-4 text-end">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-upload me-1"></i> Subir Imágenes
+                    </button>
+                </div>
+            </div>
+        </form>
 
-        </div>
+        @if($mueble->galeria && $mueble->galeria->count() > 0)
+            <div class="galeria-grid">
+                @foreach($mueble->galeria as $imagen)
+                    @php
+                        $imgUrl = route('imagen.mueble', ['path' => rawurlencode($imagen->ruta)]);
+                    @endphp
+                    <div class="galeria-card">
+                        <img src="{{ $imgUrl }}" alt="Imagen" class="galeria-img">
+                        @if($imagen->es_principal)
+                            <div class="galeria-principal"><i class="bi bi-star-fill me-1"></i> Principal</div>
+                        @endif
+                        <div class="galeria-actions">
+                            @if(!$imagen->es_principal)
+                                <form action="{{ route('admin.muebles.galeria.principal', [$imagen->id, 'sesionId' => $sesionId]) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-sm btn-warning" title="Hacer principal">
+                                        <i class="bi bi-star"></i>
+                                    </button>
+                                </form>
+                            @endif
+                            <form action="{{ route('admin.muebles.galeria.delete', [$imagen->id, 'sesionId' => $sesionId]) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-danger" title="Eliminar" onclick="return confirm('¿Eliminar esta imagen?')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <div class="alert alert-info mt-3">No hay imágenes en la galería.</div>
+        @endif
     </div>
-
 </div>
-
 @endsection
