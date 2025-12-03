@@ -27,12 +27,10 @@
         <div class="d-flex align-items-center">
             <div class="d-flex align-items-center">
 @if ($usuario)
-    <!-- Botón de carrito a la izquierda del usuario -->
     <a href="{{ route('carrito.index', ['sesionId' => $sesionId ?? null]) }}"
        class="btn btn-primary d-flex align-items-center me-2">
         <i class="bi bi-cart-fill me-1"></i> Ver carrito
     </a>
-    <!-- Botón de usuario -->
     <button class="btn btn-primary d-flex align-items-center dropdown-toggle"
             type="button"
             data-bs-toggle="dropdown"
@@ -40,7 +38,6 @@
             style="letter-spacing: normal; padding-right: 1.5rem;">
         <i class="bi bi-person-circle me-1"></i> {{ $usuario->nombre }}
     </button>
-    <!-- Menú desplegable solo con preferencias y logout -->
     <ul class="dropdown-menu dropdown-menu-end">
         <li>
             <a class="dropdown-item" href="{{ route('preferencias.index', ['userId' => $usuario->id, 'sesionId' => $sesionId]) }}">

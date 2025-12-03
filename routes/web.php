@@ -29,12 +29,6 @@ Route::post('/logout', [LoginController::class, 'cerrarSesion'])->name('logout')
 Route::get('/preferencias/{userId}', [CookiePersonalizacion::class, 'index'])->name('preferencias.index');
 Route::post('/preferencias/{userId}/update', [CookiePersonalizacion::class, 'update'])->name('preferencias.update');
 
-
-//Borrar todas las sesiones "temporal"
-Route::get('/borrar_sesion', function () {
-    return   Session::flush();
-});
-
 Route::get('/ver_sesion', function () {
     return   Session::all();
 });

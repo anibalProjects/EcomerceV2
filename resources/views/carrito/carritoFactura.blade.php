@@ -109,12 +109,10 @@
         border-color: #aaa !important;
     }
 
-    /* Bordes */
     hr, .border-top, .border-bottom {
         border-color: #333 !important;
     }
 
-    /* Inputs (por si en el futuro los usas en factura) */
     input, select, textarea {
         background-color: #1e1e1e !important;
         color: #fff !important;
