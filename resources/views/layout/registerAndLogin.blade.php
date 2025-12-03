@@ -130,7 +130,7 @@
 </main>
 
 <footer class="lux-footer">
-    <small>&copy; {{ date('Y') }} {{ config('app.name', 'Tienda Laravel') }} — Lectonic</small>
+    <small>&copy; {{ date('Y') }}  — Lectonic</small>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
