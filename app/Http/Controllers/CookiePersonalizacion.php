@@ -4,21 +4,25 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Symfony\Component\HttpFoundation\Request as HttpFoundationRequest;
 
 class CookiePersonalizacion extends Controller
 {
-    private const PREFERENCIA_TEMA = 'tema';
-
+    
     /**
      *
-     *
-     * @param Request $request
-     * @return JsonResponse
-     */
+    *
+    * @param Request $request
+    * @return JsonResponse
+    */
     public function guardarTema(Request $request): JsonResponse
     {
+        Auth::user()->id;
+        $PREFERENCIA_TEMA = 'tema_' . Auth::user()->id;
+        $DURACION_COOKIE = 60 * 24 * 365;
         $datos = $request->validate([
+            
             'tema' => ['required', 'string', 'in:claro,oscuro'],
         ]);
 
@@ -29,9 +33,11 @@ class CookiePersonalizacion extends Controller
         }
 
         $user->preferences()->updateOrCreate(
-            ['key' => self::PREFERENCIA_TEMA],
+            ['key' => $PREFERENCIA_TEMA],
             ['value' => $datos['tema']]
         );
+
+        Cookie::queue($PREFERENCIA_TEMA, $datos['tema'], $DURACION_COOKIE);
 
         return response()->json(['mensaje' => 'Tema guardado con éxito.']);
     }
@@ -42,6 +48,7 @@ class CookiePersonalizacion extends Controller
     }
 
     public function update(Request $request, $userId) {
+        CookiePaginacion::guardarPaginacion($request);
         $user = Auth::user();
         $user->preferences()->updateOrCreate(['key' => 'tema'], ['value' => $request->tema]);
         $user->preferences()->updateOrCreate(['key' => 'moneda'], ['value' => $request->moneda]);
