@@ -108,8 +108,11 @@ class MueblesAdministracionController extends Controller
         $data['destacado'] = $request->has('destacado');
         $data['activo'] = $request->has('activo');
 
-        $ruta = $request->file('imagen_principal')->store('imagenes/pagprincipal');
-        $data['imagen_principal'] = $ruta;
+        // Solo guardar imagen si se subió una nueva
+        if ($request->hasFile('imagen_principal')) {
+            $ruta = $request->file('imagen_principal')->store('imagenes/pagprincipal');
+            $data['imagen_principal'] = $ruta;
+        }
 
         $mueble->update($data);
 

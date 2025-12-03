@@ -46,7 +46,11 @@ class CookiePersonalizacion extends Controller
 
     public function index(Request $request, $userId) {
 
-        return view('preferenciasView', ['usuario_id' => $userId, 'sesionId' => $request->sesionId]);
+        $sesionId = $request->sesionId;
+        $preferencias = CookiePersonalizacion::getPersonalizacion($sesionId);
+        $tema = $preferencias['tema'];
+        $moneda = $preferencias['moneda'];
+        return view('preferenciasView', ['usuario_id' => $userId, 'sesionId' => $request->sesionId, 'tema' => $tema, 'moneda' => $moneda]);
     }
 
     public function update(Request $request, $userId) {
