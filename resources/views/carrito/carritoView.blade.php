@@ -116,6 +116,75 @@
             border: 1px dashed var(--accent-border, #e9e9e9);
         }
     </style>
+
+    @if ($tema === 'oscuro')
+<style>
+    /* Contenedor general */
+    .producto-row,
+    .total-panel {
+        background: var(--card-bg, #1e1e1e) !important;
+        border-color: var(--accent-border, #444) !important;
+    }
+
+    .producto-image {
+        background: #2a2a2a !important;
+        border-color: rgba(255, 255, 255, 0.06) !important;
+    }
+
+    .producto-nombre,
+    .producto-meta,
+    .small-muted,
+    .total-row span {
+        color: var(--light-text, #ddd) !important;
+    }
+
+    .cantidad-badge {
+        background: #2c2c2c !important;
+        color: var(--light-text, #eee) !important;
+        border: 1px solid var(--accent-border, #444) !important;
+    }
+
+    .empty-state {
+        background: #1e1e1e !important;
+        border-color: #444 !important;
+        color: var(--light-text, #ddd) !important;
+    }
+
+    /* Botones o acciones (dependen del layout, pero por si acaso) */
+    .actions-row button {
+        background: var(--primary-bg, #333) !important;
+        color: var(--light-text, #eee) !important;
+        border-color: var(--accent-border, #444) !important;
+    }
+
+    .actions-row button:hover {
+        background: var(--primary-hover, #444) !important;
+    }
+
+    .cart-btn {
+    background: var(--primary-bg, #333) !important;
+    color: var(--light-text, #eee) !important;
+    border-color: var(--accent-border, #444) !important;
+}
+
+.cart-btn:hover {
+    background: var(--primary-hover, #444) !important;
+    color: var(--light-text, #fff) !important;
+}
+
+.btn-orange {
+    background-color: #ff8c00 !important;
+    border-color: #ff8c00 !important;
+    color: #fff !important;
+    font-weight: 600;
+}
+
+.btn-orange:hover {
+    background-color: #e67a00 !important;
+    border-color: #e67a00 !important;
+}
+</style>
+@endif
 @endpush
 
 @section('content')
