@@ -28,7 +28,11 @@ class carritoController extends Controller
                 $total += $mueble->precio * $mueble->pivot->cantidad;
             }
 
-            return view('carrito.carritoView', ['sesionId' => $sesionId, 'productosDelCarrito' => $carrito->muebles, 'total' => $total]);
+            $preferencias = CookiePersonalizacion::getPersonalizacion($sesionId);
+            $tema = $preferencias['tema'];
+            $moneda = $preferencias['moneda'];
+
+            return view('carrito.carritoView', ['sesionId' => $sesionId, 'productosDelCarrito' => $carrito->muebles, 'total' => $total, 'moneda' => $moneda, 'tema' => $tema]);
         }else{
             return redirect()->route('login.mostrar')->with('error', 'debes iniciar sesion para ver el carrito');
         }
@@ -157,7 +161,11 @@ class carritoController extends Controller
                 }
             }
             $productosDelCarrito = $carrito->muebles;
-            return view('carrito.carritoFactura', compact('sesionId', 'usuario','email' ,'productosDelCarrito'));
+
+            $preferencias = CookiePersonalizacion::getPersonalizacion($sesionId);
+            $tema = $preferencias['tema'];
+            $moneda = $preferencias['moneda'];
+            return view('carrito.carritoFactura', compact('sesionId', 'usuario','email' ,'productosDelCarrito', 'tema', 'moneda'));
         }else{
             return redirect()->route('login.mostrar')->with('error', 'debes iniciar sesion');
         }

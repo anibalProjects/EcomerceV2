@@ -75,10 +75,10 @@
                                             <span class="badge bg-info">{{ $item->pivot->cantidad }}</span>
                                         </td>
                                         <td class="text-end">
-                                            {{ number_format($item->precio, 2, ',', '.') }}€
+                                            {{ number_format($item->precio, 2, ',', '.') }} {{ $moneda }}
                                         </td>
                                         <td class="text-end fw-bold text-success">
-                                            {{ number_format($subtotal, 2, ',', '.') }}€
+                                            {{ number_format($subtotal, 2, ',', '.') }} {{ $moneda }}
                                         </td>
                                     </tr>
                                 @endforeach
@@ -93,17 +93,17 @@
                         <div class="col-md-4">
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Subtotal:</span>
-                                <span>{{ number_format($total, 2, ',', '.') }}€</span>
+                                <span>{{ number_format($total, 2, ',', '.') }} {{ $moneda }}</span>
                             </div>
                             <div class="d-flex justify-content-between mb-3">
                                 <span>IVA (21%):</span>
                                 @php $iva = $total * 0.21; @endphp
-                                <span>{{ number_format($iva, 2, ',', '.') }}€</span>
+                                <span>{{ number_format($iva, 2, ',', '.') }} {{ $moneda }}</span>
                             </div>
                             <div class="d-flex justify-content-between p-3 bg-light rounded border-top border-bottom">
                                 <strong>Total a Pagar:</strong>
                                 @php $totalConIva = $total + $iva; @endphp
-                                <strong class="text-success fs-5">{{ number_format($totalConIva, 2, ',', '.') }}€</strong>
+                                <strong class="text-success fs-5">{{ number_format($totalConIva, 2, ',', '.') }} {{ $moneda }}</strong>
                             </div>
                         </div>
                     </div>

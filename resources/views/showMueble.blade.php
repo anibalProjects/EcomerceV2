@@ -44,7 +44,7 @@
 
             <div class="precio-section mb-4 p-3 rounded" style="background: rgba(201, 168, 75, 0.1); border-left: 4px solid #c9a84b;">
                 <span class="text-muted d-block small mb-2">Precio</span>
-                <h2 class="text-success fw-bold">{{ number_format($mueble->precio, 2, ',', '.') }}€</h2>
+                <h2 class="text-success fw-bold">{{ number_format($mueble->precio, 2, ',', '.')}} {{ $moneda }}</h2>
             </div>
 
             <div class="stock-section mb-4">
@@ -131,7 +131,7 @@
                                 <div class="card-body">
                                     <h6 class="card-title">{{ $relacionado->nombre }}</h6>
                                     <p class="producto-price card-text fw-bold text-success">
-                                        {{ number_format($relacionado->precio, 2) }}€
+                                        {{ number_format($relacionado->precio, 2) }} {{ $moneda }}
                                     </p>
                                 </div>
                             </a>

@@ -45,12 +45,12 @@
                             <td>
                                 <span class="fw-bold">{{ $item->nombre }}</span>
                             </td>
-                            <td class="text-end">{{ number_format($item->precio, 2, ',', '.') }}€</td>
+                            <td class="text-end">{{ number_format($item->precio, 2, ',', '.') }} {{ $moneda }}</td>
                             <td class="text-center">
                                 <span class="badge bg-secondary">{{ $item->pivot->cantidad }}</span>
                             </td>
                             <td class="text-end fw-bold text-success">
-                                {{ number_format($item->precio * $item->pivot->cantidad, 2, ',', '.') }}€
+                                {{ number_format($item->precio * $item->pivot->cantidad, 2, ',', '.') }} {{ $moneda }}
                             </td>
                             <td class="text-center">
                                 <div class="d-flex justify-content-center align-items-center gap-2">
@@ -92,7 +92,7 @@
 
         <div class="d-flex justify-content-between align-items-center mt-4 p-3 bg-light rounded shadow-sm">
             <h2 class="h4 mb-0">Total del Carrito: <span
-                    class="text-primary fw-bold">{{ number_format($total, 2, ',', '.') }}€</span></h2>
+                    class="text-primary fw-bold">{{ number_format($total, 2, ',', '.') }} {{ $moneda }}</span></h2>
 
             <div class="d-flex gap-2">
                 <form action="{{ route('carrito.empty', ['sesionId' => $sesionId]) }}" method="POST">

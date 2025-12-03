@@ -36,6 +36,10 @@ class Mueble extends Model
         return $this->belongsToMany(Carrito::class);
     }
 
+    public function prueba($id) {
+        return $id;
+    }
+
 
 
 

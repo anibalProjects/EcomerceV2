@@ -174,13 +174,13 @@
                                 @endphp
                                 <img src="{{ asset($imagenRuta) }}" alt="{{ $mueble->nombre }}" class="card-img-top">
                             </div>
-                             {{ dd($mueble->where('mueble_id', $mueble->id))}}
                             <div class="card-body">
                                 <h5 class="card-title">{{ $mueble->nombre }}</h5>
                                 <p class="producto-price card-text fw-bold text-success">
                                     {{ number_format($mueble->precio, 2) }} {{ $moneda }}
                                 </p>
                             </div>
+                            <div>{{ $mueble->prueba($mueble->id) }}</div>
                         </a>
                         <div class="card-footer bg-white border-0">
                             <form method="POST" action="{{ route('carrito.store') }}" class="add-cart-form">

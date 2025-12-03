@@ -1,28 +1,30 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Models\User;
+use App\Models\UserPreference;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
-use Symfony\Component\HttpFoundation\Request as HttpFoundationRequest;
 
 class CookiePersonalizacion extends Controller
 {
-    
+
     /**
      *
     *
     * @param Request $request
     * @return JsonResponse
     */
-    public function guardarTema(Request $request): JsonResponse
+    public static function guardarTema(Request $request): JsonResponse
     {
         Auth::user()->id;
         $PREFERENCIA_TEMA = 'tema_' . Auth::user()->id;
         $DURACION_COOKIE = 60 * 24 * 365;
         $datos = $request->validate([
-            
+
             'tema' => ['required', 'string', 'in:claro,oscuro'],
         ]);
 
@@ -49,10 +51,34 @@ class CookiePersonalizacion extends Controller
 
     public function update(Request $request, $userId) {
         CookiePaginacion::guardarPaginacion($request);
+        CookieMoneda::guardarMoneda($request);
+        CookiePersonalizacion::guardarTema($request);
         $user = Auth::user();
         $user->preferences()->updateOrCreate(['key' => 'tema'], ['value' => $request->tema]);
         $user->preferences()->updateOrCreate(['key' => 'moneda'], ['value' => $request->moneda]);
         $user->preferences()->updateOrCreate(['key' => 'paginacion'], ['value' => $request->paginacion]);
         return redirect()->route('muebles.index', ['sesionId' => $request->query('sesionId')]);
     }
+
+    public static function getPersonalizacion($sesionId) {
+        $usuario = User::buscarUsuario($sesionId);
+        if($usuario) {
+            $moneda = Cookie::get('moneda_' . $usuario->id) ?? 'USD';
+            $tema = Cookie::get('tema_' . $usuario->id) ?? 'light';
+            $paginacion = Cookie::get('paginacion_' . $usuario->id) ?? 12;
+
+        } else {
+            //valores default si no hay usuario logeado
+            $tema = 'claro';
+            $moneda = 'USD';
+            $paginacion = 12;
+        }
+
+         return [
+        'tema' => $tema,
+        'moneda' => $moneda,
+        'paginacion' => $paginacion,
+        ];
+    }
 }
+

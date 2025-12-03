@@ -10,14 +10,14 @@ use Illuminate\Support\Facades\Cookie;
 
 class CookieMoneda extends Controller
 {
-    
+
     /**
      * Guarda la preferencia de moneda del usuario en una cookie.
     *
     * @param Request $request
     * @return JsonResponse
     */
-    public function guardarMoneda(Request $request): JsonResponse
+    public static function guardarMoneda(Request $request): JsonResponse
     {
         $PREFERENCIA_MONEDA = 'moneda_'. Auth::user()->id;
         $DURACION_COOKIE = 60 * 24 * 365;
