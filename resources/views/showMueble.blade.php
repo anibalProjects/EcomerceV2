@@ -23,13 +23,12 @@
         <div class="col-lg-6">
             <div class="producto-image p-3">
                 @php
-                    // elegir imagen principal si existe, sino la primera de la galería
                     $imagen = $mueble->galeria()->where('es_principal', true)->first() ?? $mueble->galeria()->first();
-                    $imgUrl = $imagen ? route('imagen.mueble', ['path' => $imagen->ruta]) : asset('images/muebles/placeholder.jpg');
+                    $imgUrl = $imagen ? route('imagen.mueble', ['path' => rawurlencode($imagen->ruta)]) : asset('images/muebles/placeholder.jpg');
                 @endphp
 
-                <div style="border: 1px solid #ddd; padding: 10px; text-align: center;">
-                    <img src="{{ $imgUrl }}" alt="{{ $mueble->nombre }}" style="width: 150px; height: 150px; object-fit: cover;">
+                <div class="detalle-img-wrapper">
+                    <img src="{{ $imgUrl }}" alt="{{ $mueble->nombre }}" class="detalle-img">
                 </div>
             </div>
         </div>
@@ -163,6 +162,34 @@
     .producto-detalle-imagen {
         position: sticky;
         top: 20px;
+    }
+
+    .detalle-img-wrapper {
+        width: 100%;
+        aspect-ratio: 4/3;
+        min-height: 320px;
+        max-height: 480px;
+        background: #fafafa;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        margin: 0 auto;
+    }
+    .detalle-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 12px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+    @media (max-width: 768px) {
+        .detalle-img-wrapper {
+            min-height: 180px;
+            aspect-ratio: 1/1;
+        }
     }
 </style>
 
