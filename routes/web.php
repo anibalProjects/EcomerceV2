@@ -11,6 +11,8 @@ use App\Http\Controllers\RegisterController;
 use App\Models\User;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\ImagenController;
+use App\Http\Controllers\MueblesAdministracionController;
+use App\Http\Controllers\CategoriasAdministracionController;
 
 Route::get('/', function () {
     $sesionId = session()->getId();
@@ -53,9 +55,6 @@ Route::post('/guardar-tema', [CookiePersonalizacion::class, 'guardarTema'])->nam
 Route::post('/guardar-moneda', [CookieMoneda::class, 'guardarMoneda'])->name('preferencias.moneda.guardar');
 Route::post('/guardar-paginacion', [CookiePaginacion::class, 'guardarPaginacion'])->name('preferencias.paginacion.guardar');
 
-// Rutas de la parte de administrador
-use App\Http\Controllers\MueblesAdministracionController;
-use App\Http\Controllers\CategoriasAdministracionController;
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('muebles', MueblesAdministracionController::class);

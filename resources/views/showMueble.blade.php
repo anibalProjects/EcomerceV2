@@ -1,4 +1,10 @@
-@extends('layout.app')
+@php
+    // asegurarse de que $tema tiene valor ('claro' por defecto)
+    $tema = $tema ?? 'claro';
+    $layout = ($tema === 'oscuro') ? 'layout.oscuro' : 'layout.app';
+@endphp
+
+@extends($layout)
 
 @section('title', $mueble->nombre)
 

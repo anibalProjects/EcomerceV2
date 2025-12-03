@@ -35,7 +35,8 @@ class LoginController extends Controller
         }
 
         if ($usuarioDB && $usuarioDB->bloqueo_temporal && now()->lessThan($usuarioDB->bloqueo_temporal)) {
-            $restante = $usuarioDB->bloqueo_temporal->diffInSeconds(now());
+            $bloqueo = Carbon::parse($usuarioDB->bloqueo_temporal);
+            $restante = $bloqueo->diffInSeconds(now());
 
             return back()->withErrors([
                 'email' => "Este usuario está bloqueado. Intenta nuevamente en " . ceil($restante / 60) . " minuto(s)."
