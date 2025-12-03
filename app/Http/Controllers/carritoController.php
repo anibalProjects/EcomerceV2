@@ -174,7 +174,7 @@ class carritoController extends Controller
     public function returnFromBuy(Request $request){
         $sesionId = $request->input('sesionId');
         $usuario = User::buscarUsuario($sesionId);
-       
+
         $carrito = Carrito::where('usuario_id', $usuario->id)->first();
         $carrito->muebles()->detach();
 
