@@ -23,12 +23,6 @@ Route::resource('usuarios', RegisterController::class);
 
 Route::post('usuarios/create', [RegisterController::class, 'crear'])->name('registro');
 
-Route::get('/login', [LoginController::class, 'mostrar'])->name('login.mostrar');
-Route::post('/login', [LoginController::class, 'login'])->name('login.post');
-Route::post('/logout', [LoginController::class, 'cerrarSesion'])->name('logout');
-Route::get('/preferencias/{userId}', [CookiePersonalizacion::class, 'index'])->name('preferencias.index');
-Route::post('/preferencias/{userId}/update', [CookiePersonalizacion::class, 'update'])->name('preferencias.update');
-
 
 //Borrar todas las sesiones "temporal"
 Route::get('/borrar_sesion', function () {

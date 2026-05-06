@@ -1,0 +1,103 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\User;
+use App\Models\UserPreference;
+use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
+
+class CookiePersonalizacion extends Controller
+{
+
+    /**
+     *
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public static function guardarTema(Request $request): JsonResponse
+    {
+        Auth::user()->id;
+        $PREFERENCIA_TEMA = 'tema_' . Auth::user()->id;
+        $DURACION_COOKIE = 60 * 24 * 365;
+        $datos = $request->validate([
+
+            'tema' => ['required', 'string', 'in:claro,oscuro'],
+        ]);
+
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json(['mensaje' => 'Usuario no autenticado.'], 401);
+        }
+
+        $user->preferences()->updateOrCreate(
+            ['key' => $PREFERENCIA_TEMA],
+            ['value' => $datos['tema']]
+        );
+
+        Cookie::queue($PREFERENCIA_TEMA, $datos['tema'], $DURACION_COOKIE);
+
+        return response()->json([
+            'preferences' => [
+                'tema' => $datos['tema'],
+                'moneda' => $datos['moneda'],
+                'paginacion' => $datos['paginacion']
+            ],
+            'mensaje' => 'Tema guardado con éxito.'    
+        ]);
+    }
+
+    public function index(Request $request, $userId)
+    {
+
+        $sesionId = $request->sesionId;
+        $preferencias = CookiePersonalizacion::getPersonalizacion($sesionId);
+        $tema = $preferencias['tema'];
+        $moneda = $preferencias['moneda'];
+
+        return response()->json([
+        'usuario_id' => $userId, 
+        'sesionId' => $request->sesionId, 
+        'tema' => $tema, 
+        'moneda' => $moneda]);
+    }
+
+    public function update(Request $request, $userId)
+    {
+        CookiePaginacion::guardarPaginacion($request);
+        CookieMoneda::guardarMoneda($request);
+        CookiePersonalizacion::guardarTema($request);
+        $user = Auth::user();
+        $user->preferences()->updateOrCreate(['key' => 'tema'], ['value' => $request->tema]);
+        $user->preferences()->updateOrCreate(['key' => 'moneda'], ['value' => $request->moneda]);
+        $user->preferences()->updateOrCreate(['key' => 'paginacion'], ['value' => $request->paginacion]);
+        return response()->json([
+            'mensaje' => 'Preferencias actualizadas con éxito.'
+            ]);
+        //return redirect()->route('muebles.index', ['sesionId' => $request->query('sesionId')]);
+    }
+
+    public static function getPersonalizacion($sesionId)
+    {
+        $usuario = User::buscarUsuario($sesionId);
+        if ($usuario) {
+            $moneda = Cookie::get('moneda_' . $usuario->id) ?? 'USD';
+            $tema = Cookie::get('tema_' . $usuario->id) ?? 'light';
+            $paginacion = Cookie::get('paginacion_' . $usuario->id) ?? 12;
+        } else {
+            //valores default si no hay usuario logeado
+            $tema = 'claro';
+            $moneda = 'USD';
+            $paginacion = 12;
+        }
+        return [
+            'tema' => $tema,
+            'moneda' => $moneda,
+            'paginacion' => $paginacion,
+        ];
+    }
+}
