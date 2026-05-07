@@ -47,7 +47,6 @@ class AuthController extends Controller
         }
 
         if (Auth::attempt(['email' => $datos['email'], 'password' => $datos['password']])) {
-            //$request->session()->regenerate();
 
             if ($usuarioDB) {
                 $usuarioDB->intentos = 0;
@@ -56,14 +55,9 @@ class AuthController extends Controller
             }
 
             $user = $request->user();
+            $abilities = $this->abilitiesForRole($user->rol_id);
+            $token = $user->createToken('auth_token', $abilities)->plainTextToken;
 
-            $token = Str::random(80);
-            $user->access_token = $token;
-            $user->save();
-
-            //$sesionId = Session::getId() . "_" . $user->id;
-
-            //$usuarios = Session::get('usuarios_sesion', []);
             $datosSesion = [
                 'id' => $user->id,
                 'nombre' => $user->nombre,
@@ -71,18 +65,13 @@ class AuthController extends Controller
                 'email' => $user->email,
                 'token' => $token,
                 'rol' => $user->rol_id,
-                //'sesionId' => $sesionId,
+                'abilities' => $abilities,
             ];
-
-            $usuarioJson = json_encode($datosSesion);
-            //$usuarios[$sesionId] = $usuarioJson;
-            //Session::put('usuarios_sesion', $usuarios);
 
             return response()->json([
                 'mensaje' => 'Inicio de sesión exitoso.',
                 'usuario' => $datosSesion,
             ]);
-            //return redirect()->route('muebles.index', ['sesionId' => $sesionId, 'usuario' => $user]);
         } else {
             $usuarioDB->intentos = ($usuarioDB->intentos ?? 0) + 1;
 
@@ -103,11 +92,6 @@ class AuthController extends Controller
             ], 401);
         }
     }
-    
-    public function create()
-    {
-        return view('registro');
-    }
 
     public function store(Request $request)
     {
@@ -122,7 +106,9 @@ class AuthController extends Controller
         $existe = Usuario::where('email', $request->email)->first();
 
         if ($existe) {
-            return back()->withErrors(['email' => "Ya has sido registrado con ese usaurio"]);
+            return response()->json([
+                'mensaje' => 'El email ya está registrado.'
+            ], 409);
         }
 
 
@@ -140,31 +126,50 @@ class AuthController extends Controller
 
 
 
-        return redirect()->route('muebles.index')->with('success', 'Usuario Cliente creado exitosamente.');
+        return response()->json([
+            'mensaje' => 'Usuario registrado exitosamente.',
+            'usuario' => [
+                'id' => $usuario->id,
+                'nombre' => $usuario->nombre,
+                'apellido' => $usuario->apellido,
+                'email' => $usuario->email,
+            ]
+        ], 201);
     }
     public function cerrarSesion(Request $request)
     {
-        //todo: eliminar token de la bd
-
-        $sesionId = $request->query('sesionId');
-        //$usuarios = Session::get('usuarios_sesion', []);
-
-        //if (isset($usuarios[$sesionId])) {
-        //    unset($usuarios[$sesionId]);
-        //    Session::put('usuarios_sesion', $usuarios);
-        //}
-
         if ($user = $request->user()) {
-            $user->access_token = null;
-            $user->save();
+            $currentToken = $user->currentAccessToken();
+            if ($currentToken) {
+                $currentToken->delete();
+            }
         }
 
-        Auth::logout();
-        //$request->session()->invalidate();
-        //$request->session()->regenerateToken();
-        //REVISAR
         return response()->json([
             'mensaje' => 'Sesión cerrada correctamente.'
         ]);
+    }
+
+    /**
+     * Get default token abilities for a role.
+     */
+    private function abilitiesForRole(int $rolId): array
+    {
+        return match ($rolId) {
+            1 => [
+                'admin:read',
+                'admin:create',
+                'admin:update',
+                'admin:delete',
+            ],
+            3 => [
+                'web:view',
+                'web:buy',
+                'web:profile:update',
+            ],
+            default => [
+                'web:view',
+            ],
+        };
     }
 }
