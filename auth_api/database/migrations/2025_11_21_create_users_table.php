@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('access_token', 80)->unique()->nullable();
             $table->rememberToken();
             $table->timestamps();
             $table->timestamp('bloqueo_temporal')->nullable();

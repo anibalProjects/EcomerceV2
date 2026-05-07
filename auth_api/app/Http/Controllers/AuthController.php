@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Enum\RolUsuario;
-use Illuminate\Support\Facades\Hash;
 use App\Models\Usuario;
-use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -27,7 +28,6 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required|string',
         ]);
-
 
         $usuarioDB = Usuario::where('email', $datos['email'])->first();
 
@@ -55,9 +55,11 @@ class AuthController extends Controller
                 $usuarioDB->save();
             }
 
-            $user = Auth::user();
+            $user = $request->user();
 
-
+            $token = Str::random(80);
+            $user->access_token = $token;
+            $user->save();
 
             //$sesionId = Session::getId() . "_" . $user->id;
 
@@ -65,6 +67,10 @@ class AuthController extends Controller
             $datosSesion = [
                 'id' => $user->id,
                 'nombre' => $user->nombre,
+                'apellido' => $user->apellido,
+                'email' => $user->email,
+                'token' => $token,
+                'rol' => $user->rol_id,
                 //'sesionId' => $sesionId,
             ];
 
@@ -74,7 +80,7 @@ class AuthController extends Controller
 
             return response()->json([
                 'mensaje' => 'Inicio de sesión exitoso.',
-                'usuario' => $datosSesion
+                'usuario' => $datosSesion,
             ]);
             //return redirect()->route('muebles.index', ['sesionId' => $sesionId, 'usuario' => $user]);
         } else {
@@ -97,6 +103,45 @@ class AuthController extends Controller
             ], 401);
         }
     }
+    
+    public function create()
+    {
+        return view('registro');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'nombre' => 'required',
+            'apellido' => 'required',
+            'email' => 'required',
+            'password' => 'required',
+        ]);
+
+
+        $existe = Usuario::where('email', $request->email)->first();
+
+        if ($existe) {
+            return back()->withErrors(['email' => "Ya has sido registrado con ese usaurio"]);
+        }
+
+
+        $usuario = new Usuario();
+        $usuario->nombre = $request->nombre;
+        $usuario->apellido = $request->apellido;
+        $usuario->email = $request->email;
+        $usuario->password = Hash::make($request->password);
+        $usuario->email_verified_at = Carbon::now();
+        $usuario->remember_token = Str::random(10);
+        $usuario->rol_id = 3;
+        $usuario->bloqueo_temporal = null;
+        $usuario->intentos = 0;
+        $respUsuario = $usuario->save();
+
+
+
+        return redirect()->route('muebles.index')->with('success', 'Usuario Cliente creado exitosamente.');
+    }
     public function cerrarSesion(Request $request)
     {
         //todo: eliminar token de la bd
@@ -108,6 +153,11 @@ class AuthController extends Controller
         //    unset($usuarios[$sesionId]);
         //    Session::put('usuarios_sesion', $usuarios);
         //}
+
+        if ($user = $request->user()) {
+            $user->access_token = null;
+            $user->save();
+        }
 
         Auth::logout();
         //$request->session()->invalidate();
