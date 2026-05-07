@@ -10,6 +10,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Storage;
 
+use Illuminate\Support\Facades\Http;
+use Illuminate\Pagination\LengthAwarePaginator;
+
 class MuebleController extends Controller
 {
 
@@ -20,14 +23,32 @@ class MuebleController extends Controller
     public function index(Request $request)
     {
         $sesionId = $request->sesionId ?? session()->getId();
-        $usuario = User::buscarUsuario($sesionId);
+        
 
+        
+        // Consumimos la API de Muebles
+        try {
+            $url = env('FORNITURE_API_URL') . '/muebles';
+            $response = Http::get($url);
+            
+            if ($response->successful()) {
+                $mueblesData = json_decode($response->body());
+                $muebles = collect($mueblesData);
+            } else {
+                $muebles = collect([]);
+            }
+        } catch (\Exception $e) {
+            $muebles = collect([]);
+        }
+
+        // Otros datos necesarios
         $preferencias = CookiePersonalizacion::getPersonalizacion($sesionId);
-        $tema = $preferencias['tema'];
-        $moneda = $preferencias['moneda'];
-        $muebles = Mueble::paginate($preferencias['paginacion']);
-        /* $paginacion = $preferencias['paginacion']; */
-        $categorias = Categoria::all();
+        $tema = $preferencias['tema'] ?? 'light';
+        $moneda = $preferencias['moneda'] ?? 'EUR';
+        $usuario = User::buscarUsuario($sesionId);
+        
+        // De momento, categorías vacías hasta que hagamos el endpoint en la API
+        $categorias = collect([]); 
 
         return view('home', compact('muebles', 'categorias', 'sesionId', 'usuario', 'tema', 'moneda'));
     }

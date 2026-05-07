@@ -172,4 +172,30 @@ class AuthController extends Controller
             ],
         };
     }
+
+    /**
+     * Valida un token y comprueba si tiene una habilidad específica.
+     */
+    public function validateToken(Request $request)
+    {
+        $ability = $request->query('ability');
+
+        // Si se solicita una habilidad específica, comprobamos si el token la tiene
+        if ($ability && !$request->user()->tokenCan($ability)) {
+            return response()->json([
+                'valido' => false,
+                'mensaje' => "No tiene el permiso necesario para: {$ability}"
+            ], 403);
+        }
+
+        return response()->json([
+            'valido' => true,
+            'usuario' => [
+                'id' => $request->user()->id,
+                'email' => $request->user()->email,
+                'rol_id' => $request->user()->rol_id,
+            ],
+            'abilities' => $request->user()->currentAccessToken()->abilities
+        ]);
+    }
 }

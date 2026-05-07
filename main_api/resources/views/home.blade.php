@@ -152,9 +152,10 @@
                         <a href="{{ route('muebles.show', ['mueble' => $mueble->id, 'sesionId' => $sesionId]) }}" class="text-decoration-none text-dark">
                             <div class="producto-image p-3">
                                 @php
-                                    // elegir imagen principal si existe, sino la primera de la galería
-                                    $imagen = $mueble->galeria()->where('es_principal', true)->first() ?? $mueble->galeria()->first();
-                                    $imgUrl = $imagen ? route('imagen.mueble', ['path' => $imagen->ruta]) : asset('images/muebles/placeholder.jpg');
+                                    // Seleccionamos la primera imagen de la galería que viene de la API
+                                    $galeria = collect($mueble->galeria ?? []);
+                                    $imagen = $galeria->first();
+                                    $imgUrl = $imagen ? $imagen->url : asset('images/muebles/placeholder.jpg');
                                 @endphp
 
                                 <div style="border: 1px solid #ddd; padding: 10px; text-align: center;">
@@ -187,6 +188,8 @@
             @endforeach
         </div>
 
+        {{-- Paginación comentada temporalmente hasta implementar paginación en la API --}}
+        {{--
         <div class="mt-4 d-flex justify-content-center">
             {{ $muebles->withQueryString()->links('pagination::bootstrap-4') }}
         </div>
@@ -196,6 +199,7 @@
                 Mostrando {{ $muebles->firstItem() }} a {{ $muebles->lastItem() }} de {{ $muebles->total() }} resultados
             </div>
         @endif
+        --}}
     @endif
 </div>
 
