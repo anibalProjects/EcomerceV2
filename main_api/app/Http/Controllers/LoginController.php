@@ -2,24 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Enum\RolUsuario;
-use Illuminate\Support\Facades\Hash;
-use App\Models\Usuario;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
+use App\Services\AuthApiService;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Session;
 
 class LoginController extends Controller
 {
 
-    public function mostrar()
+    public function mostrar(Request $request)
     {
         return view('login');
     }
 
-    public function login(Request $request)
+    public function login(Request $request, AuthApiService $authService)
     {
 
         $datos = $request->validate([
@@ -27,65 +24,10 @@ class LoginController extends Controller
             'password' => 'required|string',
         ]);
 
+        $respuesta = $authService->login($datos);
 
-        $usuarioDB = Usuario::where('email', $datos['email'])->first();
-
-        if (!$usuarioDB) {
-            return back()->withErrors(['email' => "El usuario con el que intentas iniciar sesion no existe"]);
-        }
-
-        if ($usuarioDB && $usuarioDB->bloqueo_temporal && now()->lessThan($usuarioDB->bloqueo_temporal)) {
-            $bloqueo = Carbon::parse($usuarioDB->bloqueo_temporal);
-            $restante = $bloqueo->diffInSeconds(now());
-
-            return back()->withErrors([
-                'email' => "Este usuario está bloqueado. Intenta nuevamente en " . ceil($restante / 60) . " minuto(s)."
-            ]);
-        }
-
-        if (Auth::attempt(['email' => $datos['email'], 'password' => $datos['password']])) {
-            $request->session()->regenerate();
-
-            if ($usuarioDB) {
-                $usuarioDB->intentos = 0;
-                $usuarioDB->bloqueo_temporal = null;
-                $usuarioDB->save();
-            }
-
-            $user = Auth::user();
-
-
-
-            $sesionId = Session::getId() . "_" . $user->id;
-
-            $usuarios = Session::get('usuarios_sesion', []);
-            $datosSesion = [
-                'id' => $user->id,
-                'nombre' => $user->nombre,
-                'sesionId' => $sesionId,
-            ];
-
-            $usuarioJson = json_encode($datosSesion);
-            $usuarios[$sesionId] = $usuarioJson;
-            Session::put('usuarios_sesion', $usuarios);
-            return redirect()->route('muebles.index', ['sesionId' => $sesionId, 'usuario' => $user]);
-
-        } else {
-            $usuarioDB->intentos = ($usuarioDB->intentos ?? 0) + 1;
-
-            if ($usuarioDB->intentos >= 3) {
-
-                $usuarioDB->bloqueo_temporal = now()->addMinutes(5);
-                $usuarioDB->intentos = 0;
-                $usuarioDB->save();
-
-                return back()->withErrors(['email' => "Has superado el límite de intentos. Inténtalo dentro de 5 minutos."]);
-            }
-
-            $usuarioDB->save();
-            return back()->withErrors(['email' => "Credenciales incorrecta!!"]);
-
-        }
+        //dd($respuesta['datos']['usuario']);
+        return redirect()->route('muebles.index')->with('mensaje', $respuesta['datos']['mensaje'] . ' Usuario: ' . json_encode($respuesta['datos']['usuario']));
 
     }
     public function cerrarSesion(Request $request)

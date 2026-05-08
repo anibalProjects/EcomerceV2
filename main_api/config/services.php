@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'remote_auth_api' => [
+        'base_url' => env('REMOTE_AUTH_API_URL'),
+    ],
+
 ];
