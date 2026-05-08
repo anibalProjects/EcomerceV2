@@ -13,12 +13,9 @@ return new class extends Migration
     {
         Schema::create('carrito', function (Blueprint $table){
             $table->id();
-            $table->integer('cantidad_productos')->default(0);
-            $table->float('precio')->default(0);
-            $table->string('sesionId');
-            $table->timestamps();
             $table->unsignedBigInteger('usuario_id')->nullable();
-            $table->foreign('usuario_id')->references('id')->on('users')->onDelete('set null');
+            $table->string('sesionId')->nullable();
+            $table->timestamps();
         });
     }
 

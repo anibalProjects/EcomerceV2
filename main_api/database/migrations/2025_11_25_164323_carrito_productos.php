@@ -13,12 +13,10 @@ return new class extends Migration
     {
         Schema::create('carrito_productos', function (Blueprint $table){
             $table->id();
-            $table->unsignedBigInteger('mueble_id')->nullable();
-            $table->unsignedBigInteger('carrito_id')->nullable();
-            $table->Integer('cantidad');
+            $table->unsignedBigInteger('carrito_id');
+            $table->unsignedBigInteger('mueble_id');
+            $table->integer('cantidad')->default(1);
             $table->timestamps();
-            $table->foreign('mueble_id')->references('id')->on('muebles')->onDelete('set null');
-            $table->foreign('carrito_id')->references('id')->on('carrito')->onDelete('set null');
         });
     }
 
