@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Hash;
-use App\Models\Usuario;
-use Illuminate\Support\Str;
+use App\Services\AuthApiService;
 use Illuminate\Http\Request;
 
 class RegisterController extends Controller
@@ -15,37 +13,25 @@ class RegisterController extends Controller
         return view('registro');
     }
 
-    public function store(Request $request)
+    public function store(Request $request, AuthApiService $authService)
     {
-        $request->validate([
-            'nombre' => 'required',
-            'apellido' => 'required',
-            'email' => 'required',
-            'password' => 'required',
+        // Validaciones previas
+        $datos = $request->validate([
+            'nombre' => 'required|string|max:255',
+            'apellido' => 'required|string|max:255',
+            'email' => 'required|email',
+            'password' => 'required|string|min:8',
         ]);
 
+        // Llamada al microservicio de autenticación
+        $respuesta = $authService->registrar($datos);
 
-        $existe = Usuario::where('apellido', $request->apellido)->first();
-
-        if ($existe) {
-            return back()->withErrors(['email' => "Ya has sido registrado con ese usaurio"]);
+        if ($respuesta['estado'] === 201) {
+            return redirect()->route('login.mostrar')->with('mensaje', 'Usuario registrado exitosamente. Ya puedes iniciar sesión.');
         }
 
-
-        $usuario = new Usuario();
-        $usuario->nombre = $request->nombre;
-        $usuario->apellido = $request->apellido;
-        $usuario->email = $request->email;
-        $usuario->password = Hash::make($request->password);
-        $usuario->email_verified_at = now();
-        $usuario->remember_token = Str::random(10);
-        $usuario->rol_id = 3;
-        $usuario->bloqueo_temporal = null;
-        $usuario->intentos = 0;
-        $respUsuario = $usuario->save();
-
-
-
-        return redirect()->route('muebles.index')->with('success', 'Usuario Cliente creado exitosamente.');
+        // Manejo de errores de la API (ej: email duplicado)
+        $mensajeError = $respuesta['datos']['mensaje'] ?? 'Error al registrar el usuario';
+        return back()->withInput()->withErrors(['email' => $mensajeError]);
     }
 }

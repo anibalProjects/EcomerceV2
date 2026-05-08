@@ -30,7 +30,13 @@ class MuebleController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $mueble = Mueble::with(['category', 'galeria'])->find($id);
+
+        if (!$mueble) {
+            return response()->json(['mensaje' => 'Mueble no encontrado'], 404);
+        }
+
+        return response()->json($mueble);
     }
 
     /**

@@ -35,11 +35,11 @@ class AuthApiService
     {
         $response = Http::acceptJson()
             ->timeout(10)
-            ->post($this->baseUrl . '/registrar', [
-                'name' => $data['name'],
+            ->post($this->baseUrl . '/register', [
+                'nombre' => $data['nombre'],
+                'apellido' => $data['apellido'],
                 'email' => $data['email'],
                 'password' => $data['password'],
-                'password_confirmation' => $data['password'],
             ]);
 
         return [
@@ -68,7 +68,7 @@ class AuthApiService
         $response = Http::acceptJson()
             ->withToken($token)
             ->timeout(10)
-            ->get($this->baseUrl . '/logout');
+            ->post($this->baseUrl . '/logout');
 
         return [
             'estado' => $response->status(),

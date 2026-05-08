@@ -21,7 +21,6 @@ Route::get('/', function () {
 
 Route::resource('usuarios', RegisterController::class);
 
-Route::post('usuarios/create', [RegisterController::class, 'crear'])->name('registro');
 
 Route::get('/login', [LoginController::class, 'mostrar'])->name('login.mostrar');
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');

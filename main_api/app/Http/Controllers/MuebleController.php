@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Categoria;
 use App\Models\Mueble;
-use App\Models\User;
 use App\Models\UserPreference;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 
 use Illuminate\Support\Facades\Http;
@@ -45,7 +45,9 @@ class MuebleController extends Controller
         $preferencias = CookiePersonalizacion::getPersonalizacion($sesionId);
         $tema = $preferencias['tema'] ?? 'light';
         $moneda = $preferencias['moneda'] ?? 'EUR';
-        $usuario = User::buscarUsuario($sesionId);
+        $usuario = Session::get('usuario_logueado');
+        // Convertimos el array de sesión en objeto para que la vista pueda usar $usuario->nombre etc.
+        $usuario = $usuario ? (object) $usuario : null;
         
         // De momento, categorías vacías hasta que hagamos el endpoint en la API
         $categorias = collect([]); 
@@ -73,16 +75,20 @@ class MuebleController extends Controller
      */
     public function show(string $id, Request $request)
     {
-        $mueble = Mueble::with('Categoria')->findOrFail($id);
-        $sesionId = $request->input('sesionId');
+        $sesionId = $request->input('sesionId') ?? session()->getId();
+        
+        // Pedimos el mueble a la API
+        $url = env('FORNITURE_API_URL') . '/muebles/' . $id;
+        $response = Http::get($url);
+
+        if ($response->failed()) {
+            abort(404, 'Mueble no encontrado en la API');
+        }
+        $mueble = json_decode($response->body());
+
         $preferencias = CookiePersonalizacion::getPersonalizacion($sesionId);
-        $tema = $preferencias['tema'];
-        $moneda = $preferencias['moneda'];
-        $productosRelacionados = Mueble::where('categoria_id', $mueble->categoria_id)
-        ->where('id', '!=', $mueble->id)
-        ->where('activo', 1)
-        ->limit(4)
-        ->get();
+        $tema = $preferencias['tema'] ?? 'light';
+        $moneda = $preferencias['moneda'] ?? 'EUR';
 
         return view('showMueble', compact('mueble', 'productosRelacionados', 'sesionId', 'moneda', 'tema'));
     }
@@ -163,7 +169,8 @@ class MuebleController extends Controller
         $preferencias = CookiePersonalizacion::getPersonalizacion($sesionId);
         $tema = $preferencias['tema'];
         $moneda = $preferencias['moneda'];
-        $usuario = User::buscarUsuario($sesionId);
+        $usuario = Session::get('usuario_logueado');
+        $usuario = $usuario ? (object) $usuario : null;
         $muebles = $query->paginate($preferencias['paginacion'])->withQueryString();
 
         return view('home', [

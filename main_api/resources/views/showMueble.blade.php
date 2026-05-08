@@ -29,8 +29,10 @@
         <div class="col-lg-6">
             <div class="producto-image p-3">
                 @php
-                    $imagen = $mueble->galeria()->where('es_principal', true)->first() ?? $mueble->galeria()->first();
-                    $imgUrl = $imagen ? route('imagen.mueble', ['path' => rawurlencode($imagen->ruta)]) : asset('images/muebles/placeholder.jpg');
+                    // Seleccionamos la primera imagen de la galería de la API
+                    $galeria = collect($mueble->galeria ?? []);
+                    $imagen = $galeria->first();
+                    $imgUrl = $imagen ? $imagen->url : asset('images/muebles/placeholder.jpg');
                 @endphp
 
                 <div class="detalle-img-wrapper">
@@ -42,7 +44,7 @@
         <div class="col-lg-6">
 
             <div class="mb-3">
-                <span class="badge bg-info">{{ $mueble->Categoria->nombre ?? 'Sin categoría' }}</span>
+                <span class="badge bg-info">{{ $mueble->category->nombre ?? 'Sin categoría' }}</span>
                 @if($mueble->novedad)
                     <span class="badge bg-danger ms-2"><i class="bi bi-star-fill me-1"></i>Novedad</span>
                 @endif
@@ -81,21 +83,14 @@
                     <div class="col-md-6">
                         <div class="card-caracteristica p-3 rounded">
                             <span class="text-muted small d-block mb-2"><i class="bi bi-palette-fill me-2"></i>Color</span>
-                            <span class="fw-bold">{{ ucfirst($mueble->color) }}</span>
+                            <span class="fw-bold">{{ ucfirst($mueble->color ?? 'No especificado') }}</span>
                         </div>
                     </div>
 
                     <div class="col-md-6">
                         <div class="card-caracteristica p-3 rounded">
-                            <span class="text-muted small d-block mb-2"><i class="bi bi-box-fill me-2"></i>Materiales</span>
-                            <span class="fw-bold">{{ $mueble->materiales }}</span>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="card-caracteristica p-3 rounded">
-                            <span class="text-muted small d-block mb-2"><i class="bi bi-rulers me-2"></i>Dimensiones</span>
-                            <span class="fw-bold">{{ $mueble->dimensiones }}</span>
+                            <span class="text-muted small d-block mb-2"><i class="bi bi-box-fill me-2"></i>Estado</span>
+                            <span class="fw-bold">{{ $mueble->activo ? 'Disponible' : 'No disponible' }}</span>
                         </div>
                     </div>
 

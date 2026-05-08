@@ -26,12 +26,26 @@ class LoginController extends Controller
 
         $respuesta = $authService->login($datos);
 
-        //dd($respuesta['datos']['usuario']);
-        return redirect()->route('muebles.index')->with('mensaje', $respuesta['datos']['mensaje'] . ' Usuario: ' . json_encode($respuesta['datos']['usuario']));
+        if ($respuesta['estado'] === 200 && isset($respuesta['datos']['usuario']['token'])) {
+            // Guardar el token y los datos del usuario en la sesión para uso posterior
+            Session::put('api_token', $respuesta['datos']['usuario']['token']);
+            Session::put('usuario_logueado', $respuesta['datos']['usuario']);
 
+            return redirect()->route('muebles.index')->with('mensaje', $respuesta['datos']['mensaje']);
+        }
+
+        // Si falla el login, devolvemos a la vista anterior con el error
+        $mensajeError = $respuesta['datos']['mensaje'] ?? ('Auth API respondió [' . $respuesta['estado'] . '] sin mensaje.');
+        return back()->withErrors(['email' => $mensajeError]);
     }
-    public function cerrarSesion(Request $request)
+    public function cerrarSesion(Request $request, AuthApiService $authService)
     {
+        // Avisamos a la API de autenticación que invalide el token actual
+        $token = Session::get('api_token');
+        if ($token) {
+            $authService->logout($token);
+        }
+
         $sesionId = $request->query('sesionId');
         $usuarios = Session::get('usuarios_sesion', []);
 
@@ -40,10 +54,14 @@ class LoginController extends Controller
             Session::put('usuarios_sesion', $usuarios);
         }
 
+        // Limpiamos los datos que guardamos durante el login
+        Session::forget('api_token');
+        Session::forget('usuario_logueado');
+
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        //REVISAR
+        
         return redirect()->route('muebles.index')->with('mensaje', 'Sesión cerrada correctamente.');
     }
 

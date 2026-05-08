@@ -198,4 +198,21 @@ class AuthController extends Controller
             'abilities' => $request->user()->currentAccessToken()->abilities
         ]);
     }
+
+    /**
+     * Devuelve los datos del usuario autenticado vía token.
+     */
+    public function perfil(Request $request)
+    {
+        $user = $request->user();
+
+        return response()->json([
+            'id'       => $user->id,
+            'nombre'   => $user->nombre,
+            'apellido' => $user->apellido,
+            'email'    => $user->email,
+            'rol_id'   => $user->rol_id,
+            'abilities' => $user->currentAccessToken()->abilities,
+        ]);
+    }
 }
