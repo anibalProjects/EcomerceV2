@@ -161,11 +161,32 @@ class AuthController extends Controller
                 'admin:create',
                 'admin:update',
                 'admin:delete',
+                'perfil.ver',
+                'usuarios.ver',
+                'usuarios.crear',
+                'usuarios.editar',
+                'usuarios.eliminar',
+                'muebles.ver',
+                'muebles.crear',
+                'muebles.editar',
+                'muebles.eliminar',
+                'admin.panel'
+            ],
+            2 => [
+                'perfil.ver',
+                'muebles.ver',
+                'muebles.crear',
+                'muebles.editar',
+                'muebles.eliminar'
             ],
             3 => [
                 'web:view',
                 'web:buy',
                 'web:profile:update',
+                'perfil.ver',
+                'muebles.ver',
+                'carrito.gestionar',
+                'pedidos.crear'
             ],
             default => [
                 'web:view',
