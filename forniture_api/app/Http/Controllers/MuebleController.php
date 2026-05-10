@@ -4,25 +4,36 @@ namespace App\Http\Controllers;
 
 use App\Models\Mueble;
 use Illuminate\Http\Request;
+use App\Http\Resources\MuebleResource;
+use App\Http\Requests\StoreMuebleRequest;
 
 class MuebleController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $muebles = Mueble::with(['category', 'galeria'])->where('activo', true)->get();
+        $muebles = Mueble::with(['category', 'galeria'])
+            ->activos() 
+            ->deCategoria($request->query('categoria_id')) 
+            ->ordenarPrecio($request->query('orden', 'asc')) 
+            ->get();
 
-        return response()->json($muebles);
+        return MuebleResource::collection($muebles);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreMuebleRequest $request)
     {
-        //
+        if (!$request->user()->tokenCan('muebles.crear')) {
+            return response()->json(['mensaje' => 'No tienes permiso para crear muebles'], 403);
+        }
+
+        $mueble = Mueble::create($request->validated());
+        return new MuebleResource($mueble);
     }
 
     /**
@@ -36,7 +47,7 @@ class MuebleController extends Controller
             return response()->json(['mensaje' => 'Mueble no encontrado'], 404);
         }
 
-        return response()->json($mueble);
+        return new MuebleResource($mueble);
     }
 
     /**

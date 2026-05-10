@@ -21,6 +21,7 @@ return new class extends Migration
             $table->boolean('novedad')->default(false);
             $table->boolean('activo')->default(true);
             $table->foreignId('categoria_id')->constrained('categories')->onDelete('cascade');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
