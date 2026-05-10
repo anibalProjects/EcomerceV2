@@ -43,6 +43,11 @@
     <!-- Menú desplegable solo con preferencias y logout -->
     <ul class="dropdown-menu dropdown-menu-end">
         <li>
+            <a class="dropdown-item" href="{{ route('perfil.show', ['sesionId' => $sesionId]) }}">
+                <i class="bi bi-person-lines-fill me-2"></i> Mi perfil
+            </a>
+        </li>
+        <li>
             <a class="dropdown-item" href="{{ route('preferencias.index', ['userId' => $usuario->id, 'sesionId' => $sesionId]) }}">
                 <i class="bi bi-gear-fill me-2"></i> Preferencias
             </a>

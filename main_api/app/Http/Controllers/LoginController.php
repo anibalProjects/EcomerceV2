@@ -61,8 +61,31 @@ class LoginController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        
+
         return redirect()->route('muebles.index')->with('mensaje', 'Sesión cerrada correctamente.');
+    }
+
+    public function perfil(Request $request, AuthApiService $authService)
+    {
+        $usuarioSesion = Session::get('usuario_logueado');
+
+
+        if (!$usuarioSesion) {
+            return redirect()->route('login.mostrar')->withErrors([
+                'email' => 'Debes iniciar sesión para ver tu perfil.',
+            ]);
+        }
+
+        $usuario = (object) $usuarioSesion;
+        $abilitiesSesion = is_array($usuarioSesion['abilities'] ?? null) ? $usuarioSesion['abilities'] : [];
+
+        if (!in_array('perfil.ver', $abilitiesSesion, true)) {
+            abort(403, 'No tienes permisos para ver tu perfil.');
+        }
+
+        $sesionId = $request->query('sesionId', session()->getId());
+
+        return view('perfil', compact('usuario', 'sesionId'));
     }
 
 }

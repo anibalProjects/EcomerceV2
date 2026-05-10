@@ -6,10 +6,13 @@ use App\Http\Controllers\CookiePaginacion;
 use App\Http\Controllers\CookiePersonalizacion;
 use Illuminate\Support\Facades\Route;
 
+
+Route::middleware('auth:sanctum')->group(function () {
+	Route::post('/logout', [AuthController::class, 'cerrarSesion'])->name('logout');
+	Route::get('/validate-token', [AuthController::class, 'validateToken']);
+	Route::get('/perfil', [AuthController::class, 'perfil'])->middleware('abilities:perfil.ver');
+});
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
-Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'cerrarSesion'])->name('logout');
-Route::middleware('auth:sanctum')->get('/validate-token', [AuthController::class, 'validateToken']);
-Route::middleware('auth:sanctum')->get('/perfil', [AuthController::class, 'perfil']);
 Route::post('/register', [AuthController::class, 'store'])->name('register.post');
 
 Route::post('/guardar-tema', [CookiePersonalizacion::class, 'guardarTema'])->name('preferencias.tema.guardar');

@@ -25,6 +25,7 @@ Route::resource('usuarios', RegisterController::class);
 Route::get('/login', [LoginController::class, 'mostrar'])->name('login.mostrar');
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 Route::post('/logout', [LoginController::class, 'cerrarSesion'])->name('logout');
+Route::get('/perfil', [LoginController::class, 'perfil'])->name('perfil.show');
 Route::get('/preferencias/{userId}', [CookiePersonalizacion::class, 'index'])->name('preferencias.index');
 Route::post('/preferencias/{userId}/update', [CookiePersonalizacion::class, 'update'])->name('preferencias.update');
 
@@ -63,7 +64,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('muebles/{id}/galeria', [MueblesAdministracionController::class, 'uploadGaleria'])->name('muebles.galeria.upload');
     Route::post('galeria/{id}/principal', [MueblesAdministracionController::class, 'setPrincipalGaleria'])->name('muebles.galeria.principal');
     Route::delete('galeria/{id}', [MueblesAdministracionController::class, 'deleteImagenGaleria'])->name('muebles.galeria.delete');
-    
+
     // Rutas de categorías
     Route::resource('categorias', CategoriasAdministracionController::class);
 });
