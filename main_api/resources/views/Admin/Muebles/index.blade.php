@@ -52,13 +52,13 @@
             <span class="lux-brand">LECTONIC</span>
         </div>
         <div class="d-flex gap-2">
-            <a href="{{ route('admin.muebles.create', ['sesionId' => $sesionId]) }}" class="btn btn-primary">
+            <a href="{{ route('admin.muebles.create') }}" class="btn btn-primary">
                 <i class="bi bi-plus-circle me-1"></i> Nuevo Mueble
             </a>
-            <a href="{{ route('admin.categorias.index', ['sesionId' => $sesionId]) }}" class="btn btn-secondary">
+            <a href="{{ route('admin.categorias.index') }}" class="btn btn-secondary">
                 <i class="bi bi-tags-fill me-1"></i> Categorías
             </a>
-            <a href="{{ route('muebles.index', ['sesionId' => $sesionId]) }}" class="btn btn-outline-dark">
+            <a href="{{ route('muebles.index') }}" class="btn btn-outline-dark">
                 <i class="bi bi-house-door-fill me-1"></i> Ir al Home
             </a>
         </div>
@@ -68,7 +68,6 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2 class="lux-brand mb-0">Listado de Muebles</h2>
             <form action="{{ route('admin.muebles.index') }}" method="GET" class="d-flex gap-2">
-                <input type="hidden" name="sesionId" value="{{ $sesionId }}">
                 <input type="text" name="texto" placeholder="Buscar por nombre o descripción..." value="{{ request('texto') }}" class="form-control w-50">
                 <button type="submit" class="btn btn-secondary">Buscar</button>
             </form>
@@ -122,13 +121,13 @@
                                     @endif
                                 </td>
                                 <td class="d-flex gap-1 justify-content-center">
-                                    <a href="{{ route('admin.muebles.edit', [$mueble->id, 'sesionId' => $sesionId]) }}" class="btn btn-warning btn-sm">
+                                    <a href="{{ route('admin.muebles.edit', [$mueble->id]) }}" class="btn btn-warning btn-sm">
                                         <i class="bi bi-pencil-fill"></i> Editar
                                     </a>
-                                    <a href="{{ route('admin.muebles.galeria', [$mueble->id, 'sesionId' => $sesionId]) }}" class="btn btn-secondary btn-sm">
+                                    <a href="{{ route('admin.muebles.galeria', [$mueble->id]) }}" class="btn btn-secondary btn-sm">
                                         <i class="bi bi-images"></i> Galería
                                     </a>
-                                    <form action="{{ route('admin.muebles.destroy', [$mueble->id, 'sesionId' => $sesionId]) }}" method="POST" onsubmit="return confirm('¿Estás seguro?')">
+                                    <form action="{{ route('admin.muebles.destroy', [$mueble->id]) }}" method="POST" onsubmit="return confirm('¿Estás seguro?')">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger btn-sm">

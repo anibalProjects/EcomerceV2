@@ -21,10 +21,9 @@ class CategoriasAdministracionController extends Controller
     public function index(Request $request)
     {
         $this->validarAcceso();
-        $sesionId = $request->get('sesionId');
 
         $categorias = Categoria::all();
-        
+
         // Filtrado
         if ($request->has('texto') && $request->texto) {
             $categorias = $categorias->filter(function($categoria) use ($request) {
@@ -33,21 +32,19 @@ class CategoriasAdministracionController extends Controller
             });
         }
 
-        return view('Admin.Categorias.index', compact('categorias', 'sesionId'));
+        return view('Admin.Categorias.index', compact('categorias'));
     }
 
     public function create(Request $request)
     {
         $this->validarAcceso();
-        $sesionId = $request->get('sesionId');
-        return view('Admin.Categorias.create', compact('sesionId'));
+        return view('Admin.Categorias.create');
     }
 
     public function store(Request $request)
     {
         $this->validarAcceso();
-        $sesionId = $request->get('sesionId');
-        
+
         $request->validate([
             'nombre' => 'required|string|max:255',
             'descripcion' => 'nullable|string',
@@ -56,21 +53,19 @@ class CategoriasAdministracionController extends Controller
         $data = $request->all();
         Categoria::create($data);
 
-        return redirect()->route('admin.categorias.index', ['sesionId' => $sesionId])->with('success', 'Categoría creada correctamente');
+        return redirect()->route('admin.categorias.index')->with('success', 'Categoría creada correctamente');
     }
 
     public function edit(Request $request, $id)
     {
         $this->validarAcceso();
-        $sesionId = $request->get('sesionId');
         $categoria = Categoria::findOrFail($id);
-        return view('Admin.Categorias.edit', compact('categoria', 'sesionId'));
+        return view('Admin.Categorias.edit', compact('categoria'));
     }
 
     public function update(Request $request, $id)
     {
         $this->validarAcceso();
-        $sesionId = $request->get('sesionId');
         $categoria = Categoria::findOrFail($id);
 
         $request->validate([
@@ -81,21 +76,20 @@ class CategoriasAdministracionController extends Controller
         $data = $request->all();
         $categoria->update($data);
 
-        return redirect()->route('admin.categorias.index', ['sesionId' => $sesionId])->with('success', 'Categoría actualizada correctamente');
+        return redirect()->route('admin.categorias.index')->with('success', 'Categoría actualizada correctamente');
     }
 
     public function destroy(Request $request, $id)
     {
         $this->validarAcceso();
-        $sesionId = $request->get('sesionId');
         $categoria = Categoria::findOrFail($id);
-        
+
         // Check if category has products
         if ($categoria->muebles()->count() > 0) {
-            return redirect()->route('admin.categorias.index', ['sesionId' => $sesionId])->with('error', 'No se puede eliminar la categoría porque tiene productos asociados');
+            return redirect()->route('admin.categorias.index')->with('error', 'No se puede eliminar la categoría porque tiene productos asociados');
         }
-        
+
         $categoria->delete();
-        return redirect()->route('admin.categorias.index', ['sesionId' => $sesionId])->with('success', 'Categoría eliminada correctamente');
+        return redirect()->route('admin.categorias.index')->with('success', 'Categoría eliminada correctamente');
     }
 }

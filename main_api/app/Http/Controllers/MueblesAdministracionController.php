@@ -15,8 +15,6 @@ class MueblesAdministracionController extends Controller
 
     public function index(Request $request)
     {
-        $sesionId = $request->get('sesionId');
-
         $muebles = Mueble::with('categoria')->get();
 
         // Filtrado
@@ -27,19 +25,17 @@ class MueblesAdministracionController extends Controller
             });
         }
 
-        return view('Admin.Muebles.index', compact('muebles', 'sesionId'));
+        return view('Admin.Muebles.index', compact('muebles'));
     }
 
     public function create(Request $request)
     {
-        $sesionId = $request->get('sesionId');
         $categorias = Categoria::all();
-        return view('Admin.Muebles.create', compact('categorias', 'sesionId'));
+        return view('Admin.Muebles.create', compact('categorias'));
     }
 
     public function store(Request $request)
     {
-        $sesionId = $request->get('sesionId');
         $request->validate([
             'nombre' => 'required|string|max:255',
             'categoria_id' => 'required|exists:categorias,id',
@@ -59,26 +55,24 @@ class MueblesAdministracionController extends Controller
         if ($request->hasFile('imagen_principal')) {
             $file = $request->file('imagen_principal');
             $nombre = 'principal_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->storeAs($this->carpetaPrivada, $nombre, 'public'); 
+            $file->storeAs($this->carpetaPrivada, $nombre, 'public');
             $data['imagen_principal'] = $nombre;
         }
 
         $mueble = Mueble::create($data);
 
-        return redirect()->route('admin.muebles.index', ['sesionId' => $sesionId])->with('success', 'Mueble creado correctamente');
+        return redirect()->route('admin.muebles.index')->with('success', 'Mueble creado correctamente');
     }
 
     public function edit(Request $request, $id)
     {
-        $sesionId = $request->get('sesionId');
         $mueble = Mueble::findOrFail($id);
         $categorias = Categoria::all();
-        return view('Admin.Muebles.edit', compact('mueble', 'categorias', 'sesionId'));
+        return view('Admin.Muebles.edit', compact('mueble', 'categorias'));
     }
 
     public function update(Request $request, $id)
     {
-        $sesionId = $request->get('sesionId');
         $mueble = Mueble::findOrFail($id);
 
         $request->validate([
@@ -105,12 +99,11 @@ class MueblesAdministracionController extends Controller
 
         $mueble->update($data);
 
-        return redirect()->route('admin.muebles.index', ['sesionId' => $sesionId])->with('success', 'Mueble actualizado correctamente');
+        return redirect()->route('admin.muebles.index')->with('success', 'Mueble actualizado correctamente');
     }
 
     public function destroy(Request $request, $id)
     {
-        $sesionId = $request->get('sesionId');
         $mueble = Mueble::findOrFail($id);
         // Elimina imagen principal
         if ($mueble->imagen_principal) {
@@ -123,15 +116,14 @@ class MueblesAdministracionController extends Controller
         }
 
         $mueble->delete();
-        return redirect()->route('admin.muebles.index', ['sesionId' => $sesionId])->with('success', 'Mueble eliminado correctamente');
+        return redirect()->route('admin.muebles.index')->with('success', 'Mueble eliminado correctamente');
     }
 
     // GALERÍA
     public function galeria(Request $request, $id)
     {
-        $sesionId = $request->get('sesionId');
         $mueble = Mueble::with('galeria')->findOrFail($id);
-        return view('Admin.Muebles.galeria', compact('mueble', 'sesionId'));
+        return view('Admin.Muebles.galeria', compact('mueble'));
     }
 
     public function uploadGaleria(Request $request, $id)

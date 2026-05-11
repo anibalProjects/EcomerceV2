@@ -22,7 +22,6 @@ class MuebleController extends Controller
      */
     public function index(Request $request)
     {
-        //$sesionId = $request->sesionId ?? session()->getId();
         
         // Consumimos la API de Muebles
         try {
@@ -39,8 +38,7 @@ class MuebleController extends Controller
             $muebles = collect([]);
         }
         // Otros datos necesarios
-        //$preferencias = CookiePersonalizacion::getPersonalizacion($sesionId);
-        $tema = $preferencias['tema'] ?? 'light';
+        $tema = 'light';
         $moneda = $preferencias['moneda'] ?? 'EUR';
         $usuario = Session::get('usuario_logueado');
         // Convertimos el array de sesión en objeto para que la vista pueda usar $usuario->nombre etc.
@@ -52,7 +50,7 @@ class MuebleController extends Controller
         return view('home', compact('muebles', 'categorias', 'usuario', 'tema', 'moneda'));
     }
 
-    public function getGaleria($sesionId)
+    public function getGaleria()
     {
         // Implementar si es necesario
     }
@@ -72,7 +70,6 @@ class MuebleController extends Controller
      */
     public function show(string $id, Request $request)
     {
-        //$sesionId = $request->input('sesionId') ?? session()->getId();
         
         // Pedimos el mueble a la API
         $url = env('FORNITURE_API_URL') . '/muebles/' . $id;
@@ -83,9 +80,8 @@ class MuebleController extends Controller
         }
         $mueble = json_decode($response->body())->data;
 
-        //$preferencias = CookiePersonalizacion::getPersonalizacion($sesionId);
-        $tema = $preferencias['tema'] ?? 'light';
-        $moneda = $preferencias['moneda'] ?? 'EUR';
+        $tema = 'light';
+        $moneda = 'EUR';
 
         return view('showMueble', compact('mueble', /* 'productosRelacionados' */'moneda', 'tema'));
     }
@@ -158,8 +154,6 @@ class MuebleController extends Controller
     }
 
 
-        //$sesionId = $request->sesionId;
-
         return $this->ordenar($muebles, $request->orden ?? '', $filtro);
     }
 
@@ -185,21 +179,14 @@ class MuebleController extends Controller
 
         $categorias = Categoria::all();
 
-        //$preferencias = CookiePersonalizacion::getPersonalizacion($sesionId);
-        //$tema = $preferencias['tema'];
-        //$moneda = $preferencias['moneda'];
         $usuario = Session::get('usuario_logueado');
         $usuario = $usuario ? (object) $usuario : null;
-        //$muebles = $muebles->paginate(12)->withQueryString();
 
         return view('home', [
             'muebles' => $muebles,
             'categorias' => $categorias,
             'filtro' => $filtro,
             'orden' => $orden,
-            //'sesionId' => $sesionId,
-            //'tema' => $tema,
-            //'moneda' => $moneda,
             'usuario' => $usuario,
         ]);
     }

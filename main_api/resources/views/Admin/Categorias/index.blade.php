@@ -34,14 +34,14 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2 class="lux-brand mb-0">Gestión de Categorías</h2>
             <div class="d-flex gap-2">
-                <a href="{{ route('muebles.index', ['sesionId' => $sesionId]) }}" class="btn btn-secondary">
+                <a href="{{ route('muebles.index') }}" class="btn btn-secondary">
                     <i class="bi bi-house-door-fill me-1"></i> Ir al Home
                 </a>
-                <form action="{{ route('logout', ['sesionId' => $sesionId]) }}" method="POST">
+                <form action="{{ route('logout') }}" method="POST">
                     @csrf
                     <button type="submit" class="btn btn-danger">Cerrar Sesión</button>
                 </form>
-                <a href="{{ route('admin.muebles.index', ['sesionId' => $sesionId]) }}" class="btn btn-secondary">
+                <a href="{{ route('admin.muebles.index') }}" class="btn btn-secondary">
                     <i class="bi bi-house-door-fill me-1"></i> Muebles
                 </a>
             </div>
@@ -56,11 +56,10 @@
         @endif
 
         <div class="mb-3 d-flex gap-2">
-            <a href="{{ route('admin.categorias.create', ['sesionId' => $sesionId]) }}" class="btn btn-primary">
+            <a href="{{ route('admin.categorias.create') }}" class="btn btn-primary">
                 <i class="bi bi-plus-circle me-1"></i> Nueva Categoría
             </a>
             <form action="{{ route('admin.categorias.index') }}" method="GET" class="d-flex gap-2">
-                <input type="hidden" name="sesionId" value="{{ $sesionId }}">
                 <input type="text" name="texto" placeholder="Buscar por nombre o descripción..." value="{{ request('texto') }}" class="form-control w-50">
                 <button type="submit" class="btn btn-secondary">Buscar</button>
             </form>
@@ -89,10 +88,10 @@
                             <span class="badge bg-info">{{ $categoria->muebles->count() }}</span>
                         </td>
                         <td class="d-flex gap-1 justify-content-center">
-                            <a href="{{ route('admin.categorias.edit', [$categoria->id, 'sesionId' => $sesionId]) }}" class="btn btn-warning btn-sm">
+                            <a href="{{ route('admin.categorias.edit', [$categoria->id]) }}" class="btn btn-warning btn-sm">
                                 <i class="bi bi-pencil-fill"></i> Editar
                             </a>
-                            <form action="{{ route('admin.categorias.destroy', [$categoria->id, 'sesionId' => $sesionId]) }}" method="POST" onsubmit="return confirm('¿Estás seguro?')">
+                            <form action="{{ route('admin.categorias.destroy', [$categoria->id]) }}" method="POST" onsubmit="return confirm('¿Estás seguro?')">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger btn-sm">

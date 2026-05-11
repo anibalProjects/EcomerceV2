@@ -50,7 +50,7 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('admin.categorias.update', [$categoria->id, 'sesionId' => $sesionId]) }}">
+                <form method="POST" action="{{ route('admin.categorias.update', [$categoria->id]) }}">
                     @csrf
                     @method('PUT')
 
@@ -70,7 +70,7 @@
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-pencil-fill me-1"></i> Actualizar Categoría
                         </button>
-                        <a href="{{ route('admin.categorias.index', ['sesionId' => $sesionId]) }}" class="btn cart-btn">
+                        <a href="{{ route('admin.categorias.index') }}" class="btn cart-btn">
                             <i class="bi bi-arrow-left me-1"></i> Cancelar
                         </a>
                     </div>

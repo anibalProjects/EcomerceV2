@@ -49,7 +49,7 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('admin.muebles.update', [$mueble->id, 'sesionId' => $sesionId]) }}" enctype="multipart/form-data">
+                <form method="POST" action="{{ route('admin.muebles.update', [$mueble->id]) }}" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
 
@@ -122,7 +122,7 @@
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-pencil-fill me-1"></i> Actualizar Mueble
                         </button>
-                        <a href="{{ route('admin.muebles.index', ['sesionId' => $sesionId]) }}" class="btn cart-btn">
+                        <a href="{{ route('admin.muebles.index') }}" class="btn cart-btn">
                             <i class="bi bi-arrow-left me-1"></i> Cancelar
                         </a>
                     </div>

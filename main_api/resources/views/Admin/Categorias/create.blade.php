@@ -52,7 +52,7 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('admin.categorias.store', ['sesionId' => $sesionId]) }}">
+                <form method="POST" action="{{ route('admin.categorias.store') }}">
                     @csrf
 
                     <div class="mb-3">
@@ -71,7 +71,7 @@
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-plus-circle me-1"></i> Crear Categoría
                         </button>
-                        <a href="{{ route('admin.categorias.index', ['sesionId' => $sesionId]) }}" class="btn cart-btn">
+                        <a href="{{ route('admin.categorias.index') }}" class="btn cart-btn">
                             <i class="bi bi-arrow-left me-1"></i> Cancelar
                         </a>
                     </div>

@@ -73,8 +73,7 @@ class LoginController extends Controller
             abort(403, 'No tienes permisos para ver tu perfil.');
         }
 
-        $sesionId = $request->query('sesionId', session()->getId());
-        return view('perfil', compact('usuario', 'sesionId'));
+        return view('perfil', compact('usuario'));
     }
 
 }

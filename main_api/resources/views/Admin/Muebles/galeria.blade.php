@@ -57,7 +57,7 @@
 @section('content')
 <div class="content-container">
     <div class="nav-wrapper mb-4">
-        <a href="{{ route('admin.muebles.index', ['sesionId' => $sesionId]) }}" class="btn btn-secondary">
+        <a href="{{ route('admin.muebles.index') }}" class="btn btn-secondary">
             <i class="bi bi-arrow-left me-2"></i> Volver
         </a>
         <div class="nav-centered">
@@ -72,7 +72,7 @@
             <div class="alert alert-success mb-3">{{ session('success') }}</div>
         @endif
 
-        <form action="{{ route('admin.muebles.galeria.upload', [$mueble->id, 'sesionId' => $sesionId]) }}" method="POST" enctype="multipart/form-data" class="mb-4">
+        <form action="{{ route('admin.muebles.galeria.upload', [$mueble->id]) }}" method="POST" enctype="multipart/form-data" class="mb-4">
             @csrf
             <div class="row g-2 align-items-center">
                 <div class="col-md-8">
@@ -99,14 +99,14 @@
                         @endif
                         <div class="galeria-actions">
                             @if(!$imagen->es_principal)
-                                <form action="{{ route('admin.muebles.galeria.principal', [$imagen->id, 'sesionId' => $sesionId]) }}" method="POST">
+                                <form action="{{ route('admin.muebles.galeria.principal', [$imagen->id]) }}" method="POST">
                                     @csrf
                                     <button type="submit" class="btn btn-sm btn-warning" title="Hacer principal">
                                         <i class="bi bi-star"></i>
                                     </button>
                                 </form>
                             @endif
-                            <form action="{{ route('admin.muebles.galeria.delete', [$imagen->id, 'sesionId' => $sesionId]) }}" method="POST">
+                            <form action="{{ route('admin.muebles.galeria.delete', [$imagen->id]) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-danger" title="Eliminar" onclick="return confirm('¿Eliminar esta imagen?')">
