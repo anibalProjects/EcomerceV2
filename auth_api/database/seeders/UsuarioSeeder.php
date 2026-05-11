@@ -14,16 +14,40 @@ class UsuarioSeeder extends Seeder
      */
     public function run()
     {
-        // Usuario admin para pruebas
-        Usuario::factory()->create([
-            'nombre' => 'Admin',
-            'apellido' => 'User',
-            'email' => 'admin@example.com',
-            'password' => bcrypt('password'), // Hash::make('password')?
-            'rol_id' => 1,
-        ]);
+        // Admin 
+        Usuario::updateOrCreate(
+            ['email' => 'admin@tienda.com'],
+            [
+                'nombre' => 'Admin',
+                'apellido' => 'Tienda',
+                'password' => bcrypt('password'),
+                'rol_id' => 1,
+                'intentos' => 0,
+            ]
+        );
 
-        // Resto de usuarios
-        Usuario::factory(10)->create();
+        // Gestor 
+        Usuario::updateOrCreate(
+            ['email' => 'gestor@tienda.com'],
+            [
+                'nombre' => 'Gestor',
+                'apellido' => 'Tienda',
+                'password' => bcrypt('password'),
+                'rol_id' => 2,
+                'intentos' => 0,
+            ]
+        );
+
+        // Cliente 
+        Usuario::updateOrCreate(
+            ['email' => 'cliente@tienda.com'],
+            [
+                'nombre' => 'Cliente',
+                'apellido' => 'Tienda',
+                'password' => bcrypt('password'),
+                'rol_id' => 3,
+                'intentos' => 0,
+            ]
+        );
     }
 }
