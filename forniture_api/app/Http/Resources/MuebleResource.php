@@ -16,8 +16,13 @@ class MuebleResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'nombre_producto' => $this->nombre,
-            'precio_venta' => $this->precio,
+            'nombre' => $this->nombre,
+            'descripcion' => $this->descripcion,
+            'precio' => $this->precio,
+            'stock' => $this->stock,
+            'color' => $this->color,
+            'novedad' => $this->novedad,
+            'activo' => $this->activo,
             'categoria' => $this->category?->nombre,
             'imagenes' => $this->galeria->pluck('url'),
         ];

@@ -99,5 +99,82 @@ class MuebleSeeder extends Seeder
             'activo' => true,
             'categoria_id' => 2,
         ]);
+
+        \App\Models\Mueble::create([
+            'nombre' => 'Butaca de Terciopelo',
+            'descripcion' => 'Butaca elegante con patas de madera y tapizado suave en color esmeralda.',
+            'precio' => 185.50,
+            'stock' => 6,
+            'color' => 'Verde',
+            'novedad' => true,
+            'activo' => true,
+            'categoria_id' => 1,
+        ]);
+
+        \App\Models\Mueble::create([
+            'nombre' => 'Mesita de Noche Vintage',
+            'descripcion' => 'Mesita de noche con dos cajones y tiradores de bronce tallados a mano.',
+            'precio' => 75.00,
+            'stock' => 24,
+            'color' => 'Nogal',
+            'novedad' => false,
+            'activo' => true,
+            'categoria_id' => 2,
+        ]);
+
+        \App\Models\Mueble::create([
+            'nombre' => 'Aparador Nórdico',
+            'descripcion' => 'Mueble bajo con amplio almacenaje, puertas correderas y acabado en madera clara.',
+            'precio' => 290.00,
+            'stock' => 3,
+            'color' => 'Haya',
+            'novedad' => true,
+            'activo' => true,
+            'categoria_id' => 1,
+        ]);
+
+        \App\Models\Mueble::create([
+            'nombre' => 'Silla de Comedor Velvet',
+            'descripcion' => 'Silla de comedor con respaldo curvo y tapizado en lino gris de alta calidad.',
+            'precio' => 89.99,
+            'stock' => 32,
+            'color' => 'Gris Marengo',
+            'novedad' => false,
+            'activo' => true,
+            'categoria_id' => 1,
+        ]);
+
+        \App\Models\Mueble::create([
+            'nombre' => 'Escritorio Juvenil',
+            'descripcion' => 'Escritorio compacto ideal para espacios pequeños, con pasacables integrado.',
+            'precio' => 115.00,
+            'stock' => 12,
+            'color' => 'Azul Pastel',
+            'novedad' => true,
+            'activo' => true,
+            'categoria_id' => 3,
+        ]);
+
+        \App\Models\Mueble::create([
+            'nombre' => 'Isla de Cocina Portátil',
+            'descripcion' => 'Mesa auxiliar con ruedas y superficie de preparación de madera de bambú.',
+            'precio' => 145.00,
+            'stock' => 5,
+            'color' => 'Natural',
+            'novedad' => false,
+            'activo' => true,
+            'categoria_id' => 4,
+        ]);
+
+        \App\Models\Mueble::create([
+            'nombre' => 'Espejo de Cuerpo Entero',
+            'descripcion' => 'Espejo con marco de madera minimalista para dormitorio o vestidor.',
+            'precio' => 120.00,
+            'stock' => 10,
+            'color' => 'Blanco',
+            'novedad' => false,
+            'activo' => true,
+            'categoria_id' => 2,
+        ]);
     }
 }
