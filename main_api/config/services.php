@@ -39,4 +39,8 @@ return [
         'base_url' => env('AUTH_API_URL'),
     ],
 
+    'remote_furniture_api' => [
+        'base_url' => env('FORNITURE_API_URL'),
+    ],
+
 ];

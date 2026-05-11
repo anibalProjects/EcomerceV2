@@ -208,31 +208,33 @@
                 <div>
                     @foreach ($productosDelCarrito as $item)
                         @php
-                            $imagen = $item->galeria()->where('es_principal', true)->first() ?? $item->galeria()->first();
-                            $imgUrl = $imagen ? route('imagen.mueble', ['path' => rawurlencode($imagen->ruta)]) : asset('images/muebles/placeholder.jpg');
-                            $subtotal = $item->precio * $item->pivot->cantidad;
+                            // La API devuelve imagenes[] como array de URLs
+                            $imgUrl = !empty($item['imagenes'])
+                                ? $item['imagenes'][0]
+                                : asset('images/muebles/placeholder.jpg');
+                            $subtotal = $item['precio_venta'] * $item['cantidad'];
                         @endphp
 
                         <div class="producto-row mb-3">
                             <div class="producto-image">
-                                <img src="{{ $imgUrl }}" alt="{{ $item->nombre }}"
+                                <img src="{{ $imgUrl }}" alt="{{ $item['nombre_producto'] }}"
                                     style="width:100%; height:100%; object-fit:cover;">
                             </div>
 
                             <div class="producto-info">
-                                <div class="producto-nombre">{{ $item->nombre }}</div>
+                                <div class="producto-nombre">{{ $item['nombre_producto'] }}</div>
                                 <div class="producto-meta">
-                                    <span>Precio: <strong>{{ number_format($item->precio, 2, ',', '.') }} {{ $moneda }}</strong>
+                                    <span>Precio: <strong>{{ number_format($item['precio_venta'], 2, ',', '.') }} {{ $moneda }}</strong>
                                     </span>
                                     <span class="mx-2">·</span>
-                                    <span>ID: #{{ str_pad($item->id, 5, '0', STR_PAD_LEFT) }}</span>
-                                    <div class="small-muted mt-1">{{ Str::limit($item->descripcion, 80) }}</div>
+                                    <span>ID: #{{ str_pad($item['id'], 5, '0', STR_PAD_LEFT) }}</span>
+                                    <div class="small-muted mt-1">{{ Str::limit($item['descripcion'] ?? '', 80) }}</div>
                                 </div>
                             </div>
 
                             <div class="text-end" style="min-width:160px;">
                                 <div class="cantidad-controls mb-2 justify-content-end">
-                                    <form action="{{ route('carrito.update', ['carrito' => $item->id]) }}"
+                                    <form action="{{ route('carrito.update', ['carrito' => $item['id']]) }}"
                                         method="POST" class="d-flex">
                                         @csrf
                                         @method('PUT')
@@ -240,7 +242,7 @@
                                             class="btn btn-sm btn-outline-warning" title="Disminuir">
                                             <i class="bi bi-dash-lg"></i>
                                         </button>
-                                        <div class="cantidad-badge mx-1">{{ $item->pivot->cantidad }}</div>
+                                        <div class="cantidad-badge mx-1">{{ $item['cantidad'] }}</div>
                                         <button type="submit" name="increment" value="+"
                                             class="btn btn-sm btn-outline-success" title="Aumentar">
                                             <i class="bi bi-plus-lg"></i>
@@ -252,7 +254,7 @@
 
                                 <div class="d-flex justify-content-end gap-2">
                                     <form
-                                        action="{{ route('carrito.destroy', ['carrito' => $item->id]) }}"
+                                        action="{{ route('carrito.destroy', ['carrito' => $item['id']]) }}"
                                         method="POST" class="m-0">
                                         @csrf
                                         @method('DELETE')
@@ -261,7 +263,7 @@
                                         </button>
                                     </form>
 
-                                    <a href="{{ route('muebles.show', ['mueble' => $item->id]) }}"
+                                    <a href="{{ route('muebles.show', ['mueble' => $item['id']]) }}"
                                         class="btn btn-sm btn-outline-secondary" title="Ver producto">
                                         <i class="bi bi-eye"></i>
                                     </a>

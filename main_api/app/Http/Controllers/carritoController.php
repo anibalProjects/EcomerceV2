@@ -7,12 +7,13 @@ use App\Models\CarritoProducto;
 use App\Models\Mueble;
 use App\Models\User;
 use App\Services\AuthApiService;
+use App\Services\FurnitureServices;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 
 class carritoController extends Controller
 {
-    public function index(Request $request, AuthApiService $authApiService)
+    public function index(Request $request, AuthApiService $authApiService, FurnitureServices $furnitureServices)
     {
         $token = Session::get('api_token');
         $usuario = $authApiService->validateToken($token);
@@ -20,24 +21,31 @@ class carritoController extends Controller
             $sesionId = Session::get('usuario_logueado');
         }
 
-        //dd($usuario['datos']['usuario']['id']);
         if($usuario){
-             //Busco el carrito del usuario o si no lo creo
             $carrito = Carrito::firstOrCreate(
                 ['usuario_id' => $usuario['datos']['usuario']['id']],
             );
 
-            $total = 0;
-            //Recorro muebles y recojo el precio de cada mueble y a total le sumo su cantidad gracias a la tabla intermedia
-            foreach ($carrito->muebles as $mueble) {
-                $total += $mueble->precio * $mueble->pivot->cantidad;
-            }
+            $carritoProductos = CarritoProducto::where('carrito_id', $carrito->id)->get();
 
-            $preferencias = CookiePersonalizacion::getPersonalizacion($sesionId);
-            $tema = $preferencias['tema'];
-            $moneda = $preferencias['moneda'];
+            $response = $furnitureServices->getMueblesByIds($carritoProductos->pluck('mueble_id')->toArray());
+            $mueblesApi = collect($response['datos']['data'] ?? []);
 
-            return view('carrito.carritoView', ['sesionId' => $sesionId, 'productosDelCarrito' => $carrito->muebles, 'total' => $total, 'moneda' => $moneda, 'tema' => $tema]);
+            $productosDelCarrito = $mueblesApi->map(function ($mueble) use ($carritoProductos) {
+                $product = $carritoProductos->where('mueble_id', $mueble['id'])->first();
+                $cantidad = $product ? $product->cantidad : 1;
+                return array_merge($mueble, [
+                    'cantidad' => $cantidad,
+                    'subtotal' => $mueble['precio_venta'] * $cantidad
+                ]);
+            });
+
+            $total = $productosDelCarrito->sum('subtotal');
+
+            $tema  = 'light';
+            $moneda = 'EUR';
+
+            return view('carrito.carritoView', compact('usuario', 'productosDelCarrito', 'tema', 'moneda', 'total'));
         }else{
             return redirect()->route('login.mostrar')->with('error', 'debes iniciar sesion para ver el carrito');
         }
@@ -109,28 +117,31 @@ class carritoController extends Controller
 
         $carrito = Carrito::where('usuario_id', $usuario['datos']['usuario']['id'])->first();
 
+        $productoEnCarrito = CarritoProducto::where('mueble_id', $producto_id)
+            ->where('carrito_id', $carrito->id)
+            ->first();
 
-        
-        $productoEnCarrito = CarritoProducto::where('mueble_id', $producto_id)->where('carrito_id', $carrito->id)->first();
-        if($usuario){
-            if( $producto_id ){
-                if($request->increment){
-                    $productoEnCarrito->cantidad++;
-                    $productoEnCarrito->save();
-                }
-
-                if ($request->decrement) {
-                    if ($productoEnCarrito->cantidad > 1) {
-                        $productoEnCarrito->cantidad--;
-                        $productoEnCarrito->save();
-                    } else {
-                        $carrito->muebles()->detach($producto_id);
-                        return redirect()->back()->with('success', 'Se ha eliminado el producto del carrito ' . $producto->nombre);
-                    }
-                }
-                return redirect()->back();
+        if ($usuario) {
+            if (!$productoEnCarrito) {
+                return redirect()->back()->with('error', 'Producto no encontrado en el carrito.');
             }
-        }else{
+
+            if ($request->increment) {
+                $productoEnCarrito->cantidad++;
+                $productoEnCarrito->save();
+            }
+
+            if ($request->decrement) {
+                if ($productoEnCarrito->cantidad > 1) {
+                    $productoEnCarrito->cantidad--;
+                    $productoEnCarrito->save();
+                } else {
+                    $productoEnCarrito->delete();
+                    return redirect()->back()->with('success', 'Producto eliminado del carrito.');
+                }
+            }
+            return redirect()->back();
+        } else {
             return redirect()->route('login.mostrar')->with('error', 'debes iniciar sesion');
         }
     }

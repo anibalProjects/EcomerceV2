@@ -10,7 +10,7 @@ class AuthApiService
 
     public function __construct()
     {
-        // obtenemos la URL del servicio de API http://localhost:8002/api
+        // obtenemos la URL del servicio de API http://localhost:8000/api
         $this->baseUrl = rtrim(config('services.remote_auth_api.base_url'), '/');
     }
 

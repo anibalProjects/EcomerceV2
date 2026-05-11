@@ -29,13 +29,13 @@ class MuebleController extends Controller
      */
     public function showByIds(Request $request)
     {
-        $ids = $request->query('ids');
+        $ids = $request->input('ids');
 
         if (!$ids) {
             return response()->json(['mensaje' => 'No se proporcionaron IDs'], 400);
         }
 
-        $arrayIds = explode(',', $ids);
+        $arrayIds = is_array($ids) ? $ids : explode(',', $ids);
         $muebles = Mueble::with(['category', 'galeria'])->whereIn('id', $arrayIds)->get();
 
         return MuebleResource::collection($muebles);
