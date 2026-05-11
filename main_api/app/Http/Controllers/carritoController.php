@@ -16,14 +16,14 @@ class carritoController extends Controller
         $token = Session::get('api_token');
         $usuario = $authApiService->validateToken($token);
         if ($usuario['estado'] === 200) {
-        $sesionId = Session::get('usuario_logueado');
+            $sesionId = Session::get('usuario_logueado');
         }
 
+        //dd($usuario['datos']['usuario']['id']);
         if($usuario){
              //Busco el carrito del usuario o si no lo creo
             $carrito = Carrito::firstOrCreate(
                 ['usuario_id' => $usuario['datos']['usuario']['id']],
-                ['sesionId' => $sesionId]
             );
 
             $total = 0;
@@ -50,8 +50,6 @@ class carritoController extends Controller
 
         $token = Session::get('api_token');
         $usuario = $authApiService->validateToken($token);
-        if ($usuario['estado'] === 200) {
-        }
         if($usuario){
                 //Busco el carrito del usuario o si no lo creo
                 $carrito = Carrito::firstOrCreate(
