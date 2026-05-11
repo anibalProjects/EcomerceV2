@@ -92,7 +92,6 @@ class MueblesAdministracionController extends Controller
         }
 
         return back()->with('error', 'Error al crear : ' . $response->body());
-        return back()->with('error', 'Error al crear en la API: ' . $response->body());
     }
 
     public function edit(Request $request, $id)
