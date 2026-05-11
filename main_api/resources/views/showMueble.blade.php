@@ -6,6 +6,7 @@
 
 @extends($layout)
 
+
 @section('title', $mueble->nombre)
 
 @section('content')
@@ -19,7 +20,7 @@
         <div class="nav-centered d-none d-md-block">
             <span class="lux-brand">LECTONIC</span>
         </div>
-        <a href="{{ route('carrito.index', ['sesionId' => $sesionId ?? null]) }}" class="btn btn-primary d-flex align-items-center">
+        <a href="{{ route('carrito.index') }}" class="btn btn-primary d-flex align-items-center">
             <i class="bi bi-cart-fill me-1"></i> Ver carrito
         </a>
     </div>
@@ -29,10 +30,10 @@
         <div class="col-lg-6">
             <div class="producto-image p-3">
                 @php
-                    // Seleccionamos la primera imagen de la galería de la API
-                    $galeria = collect($mueble->galeria ?? []);
-                    $imagen = $galeria->first();
-                    $imgUrl = $imagen ? $imagen->url : asset('images/muebles/placeholder.jpg');
+                    // La API devuelve ->imagenes como array de URLs
+                    $imgUrl = !empty($mueble->imagenes)
+                        ? $mueble->imagenes[0]
+                        : asset('images/muebles/placeholder.jpg');
                 @endphp
 
                 <div class="detalle-img-wrapper">
@@ -44,10 +45,7 @@
         <div class="col-lg-6">
 
             <div class="mb-3">
-                <span class="badge bg-info">{{ $mueble->category->nombre ?? 'Sin categoría' }}</span>
-                @if($mueble->novedad)
-                    <span class="badge bg-danger ms-2"><i class="bi bi-star-fill me-1"></i>Novedad</span>
-                @endif
+                <span class="badge bg-info">{{ $mueble->categoria ?? 'Sin categoría' }}</span>
             </div>
 
             <h1 class="lux-brand mb-3">{{ $mueble->nombre }}</h1>
@@ -109,19 +107,18 @@
                 <form method="POST" action="{{ route('carrito.store') }}" class="add-cart-form">
                     @csrf
                     <input type="hidden" name="producto_id" value="{{ $mueble->id }}">
-                    <input type="hidden" name="sesionId" value="{{ $sesionId }}">
                     <div class="mb-2">
                         <label for="cantidad_{{ $mueble->id }}" class="form-label d-block text-center small">Cantidad</label>
-                        <input type="number" id="cantidad_{{ $mueble->id }}" name="cantidad" value="1" min="1" max="{{ $mueble->stock }}" class="form-control form-control-sm text-center">
+                        <input type="number" id="cantidad_{{ $mueble->id }}" name="cantidad" value="1" min="1" max="{{ $mueble->stock ?? 99 }}" class="form-control form-control-sm text-center">
                     </div>
-                    <button type="submit" class="btn add-cart-btn w-100 {{ $mueble->stock==0?'btn-outline-danger':'btn-primary' }}" {{ $mueble->stock==0?'disabled':'' }}>
-                        {{ $mueble->stock==0?'Sin stock':'Añadir al carrito' }}
+                    <button type="submit" class="btn add-cart-btn w-100 {{ ($mueble->stock ?? 1)==0 ? 'btn-outline-danger' : 'btn-primary' }}" {{ ($mueble->stock ?? 1)==0 ? 'disabled' : '' }}>
+                        {{ ($mueble->stock ?? 1)==0 ? 'Sin stock' : 'Añadir al carrito' }}
                     </button>
                 </form>
             </div>
         </div>
     </div>
-     @if($productosRelacionados->count() > 0)
+     {{-- @if($productosRelacionados->count() > 0)
         <hr class="my-5">
         <div class="productos-relacionados">
             <h3 class="lux-brand mb-4"><i class="bi bi-collection me-2"></i>Productos Relacionados</h3>
@@ -145,7 +142,7 @@
                 @endforeach
             </div>
         </div>
-    @endif
+    @endif --}}
 </div>
 
 <style>

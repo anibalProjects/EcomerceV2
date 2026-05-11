@@ -26,9 +26,9 @@
 
         <div class="d-flex align-items-center">
             <div class="d-flex align-items-center">
-@if ($usuario)
+                @if ($usuario)
     <!-- Botón de carrito a la izquierda del usuario -->
-    <a href="{{ route('carrito.index', ['sesionId' => $sesionId ?? null]) }}"
+    <a href="{{ route('carrito.index') }}"
        class="btn btn-primary d-flex align-items-center me-2">
         <i class="bi bi-cart-fill me-1"></i> Ver carrito
     </a>
@@ -43,12 +43,12 @@
     <!-- Menú desplegable solo con preferencias y logout -->
     <ul class="dropdown-menu dropdown-menu-end">
         <li>
-            <a class="dropdown-item" href="{{ route('perfil.show', ['sesionId' => $sesionId]) }}">
+            <a class="dropdown-item" href="{{ route('perfil.show') }}">
                 <i class="bi bi-person-lines-fill me-2"></i> Mi perfil
             </a>
         </li>
         <li>
-            <a class="dropdown-item" href="{{ route('preferencias.index', ['userId' => $usuario->id, 'sesionId' => $sesionId]) }}">
+            <a class="dropdown-item" href="{{ route('preferencias.index', ['userId' => $usuario->id]) }}">
                 <i class="bi bi-gear-fill me-2"></i> Preferencias
             </a>
         </li>
@@ -69,7 +69,7 @@
             </div>
             @auth
                 @if(auth()->user()->rol_id === 1)
-                    <a href="{{ route('admin.muebles.index', ['sesionId' => $sesionId ?? null]) }}" class="btn btn-secondary d-flex align-items-center ms-2">
+                    <a href="{{ route('admin.muebles.index') }}" class="btn btn-secondary d-flex align-items-center ms-2">
                         <i class="bi bi-gear-fill me-1"></i> Panel Admin
                     </a>
                 @endif
@@ -84,9 +84,8 @@
     <h2>Filtro:</h2>
     <hr>
 
-    <form action="{{ route('mueble.filtrar', ['sesionId' => $sesionId]) }}" method="GET" class="filter-form mb-4 p-3 border rounded">
+    <form action="{{ route('mueble.filtrar') }}" method="GET" class="filter-form mb-4 p-3 border rounded">
         <div class="row">
-            <input type="hidden" name="sesionId" value="{{ $sesionId }}">
             <div class="col-md-3 mb-3">
                 <label for="nombre">Nombre:</label>
                 <input type="text" name="filtro[nombre]" id="nombre" class="form-control" value="{{ $filtro['nombre'] ?? '' }}">
@@ -154,13 +153,13 @@
             @foreach($muebles as $mueble)
                 <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
                     <div class="producto-card card h-100">
-                        <a href="{{ route('muebles.show', ['mueble' => $mueble->id, 'sesionId' => $sesionId]) }}" class="text-decoration-none text-dark">
+                        <a href="{{ route('muebles.show', ['mueble' => $mueble->id]) }}" class="text-decoration-none text-dark">
                             <div class="producto-image p-3">
-                                @php
-                                    // Seleccionamos la primera imagen de la galería que viene de la API
-                                    $galeria = collect($mueble->galeria ?? []);
-                                    $imagen = $galeria->first();
-                                    $imgUrl = $imagen ? $imagen->url : asset('images/muebles/placeholder.jpg');
+                                 @php
+                                    // La API devuelve ->imagenes como array de URLs
+                                    $imgUrl = !empty($mueble->imagenes)
+                                        ? $mueble->imagenes[0]
+                                        : asset('images/muebles/placeholder.jpg');
                                 @endphp
 
                                 <div style="border: 1px solid #ddd; padding: 10px; text-align: center;">
@@ -170,7 +169,7 @@
                             <div class="card-body">
                                 <h5 class="card-title">{{ $mueble->nombre }}</h5>
                                 <p class="producto-price card-text fw-bold text-success">
-                                    {{ number_format($mueble->precio, 2) }} {{ $moneda }}
+                                    {{ number_format($mueble->precio, 2) }} {{-- {{ $moneda }} --}}
                                 </p>
                             </div>
                         </a>
@@ -178,13 +177,12 @@
                             <form method="POST" action="{{ route('carrito.store') }}" class="add-cart-form">
                                 @csrf
                                 <input type="hidden" name="producto_id" value="{{ $mueble->id }}">
-                                <input type="hidden" name="sesionId" value="{{ $sesionId }}">
                                 <div class="mb-2">
                                     <label for="cantidad_{{ $mueble->id }}" class="form-label d-block text-center small">Cantidad</label>
-                                    <input type="number" id="cantidad_{{ $mueble->id }}" name="cantidad" value="1" min="1" max="{{ $mueble->stock }}" class="form-control form-control-sm text-center">
+                                    <input type="number" id="cantidad_{{ $mueble->id }}" name="cantidad" value="1" min="1" max="{{ $mueble->stock ?? 99 }}" class="form-control form-control-sm text-center">
                                 </div>
-                                <button type="submit" class="btn add-cart-btn w-100 {{ $mueble->stock==0?'btn-outline-danger':'btn-primary' }}" {{ $mueble->stock==0?'disabled':'' }}>
-                                    {{ $mueble->stock==0?'Sin stock':'Añadir al carrito' }}
+                                <button type="submit" class="btn add-cart-btn w-100 {{ ($mueble->stock ?? 1)==0 ? 'btn-outline-danger' : 'btn-primary' }}" {{ ($mueble->stock ?? 1)==0 ? 'disabled' : '' }}>
+                                    {{ ($mueble->stock ?? 1)==0 ? 'Sin stock' : 'Añadir al carrito' }}
                                 </button>
                             </form>
                         </div>

@@ -180,9 +180,6 @@ class AuthController extends Controller
                 'muebles.eliminar'
             ],
             3 => [
-                'web:view',
-                'web:buy',
-                'web:profile:update',
                 'perfil.ver',
                 'muebles.ver',
                 'carrito.gestionar',

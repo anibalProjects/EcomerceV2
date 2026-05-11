@@ -191,7 +191,7 @@
     <div class="content-container">
         <div class="header-actions mb-4 d-flex justify-content-between align-items-center">
             <h1 class="lux-brand mb-0">Mi Carrito</h1>
-            <a href="{{ route('muebles.index', ['sesionId' => $sesionId]) }}" class="btn cart-btn">
+            <a href="{{ route('muebles.index') }}" class="btn cart-btn">
                 <i class="bi bi-arrow-left me-2"></i> Seguir Comprando
             </a>
         </div>
@@ -232,8 +232,7 @@
 
                             <div class="text-end" style="min-width:160px;">
                                 <div class="cantidad-controls mb-2 justify-content-end">
-                                    <form
-                                        action="{{ route('carrito.update', ['carrito' => $item->id, 'sesionId' => $sesionId]) }}"
+                                    <form action="{{ route('carrito.update', ['carrito' => $item->id]) }}"
                                         method="POST" class="d-flex">
                                         @csrf
                                         @method('PUT')
@@ -253,7 +252,7 @@
 
                                 <div class="d-flex justify-content-end gap-2">
                                     <form
-                                        action="{{ route('carrito.destroy', ['carrito' => $item->id, 'sesionId' => $sesionId]) }}"
+                                        action="{{ route('carrito.destroy', ['carrito' => $item->id]) }}"
                                         method="POST" class="m-0">
                                         @csrf
                                         @method('DELETE')
@@ -262,7 +261,7 @@
                                         </button>
                                     </form>
 
-                                    <a href="{{ route('muebles.show', ['mueble' => $item->id, 'sesionId' => $sesionId]) }}"
+                                    <a href="{{ route('muebles.show', ['mueble' => $item->id]) }}"
                                         class="btn btn-sm btn-outline-secondary" title="Ver producto">
                                         <i class="bi bi-eye"></i>
                                     </a>
@@ -289,14 +288,13 @@
                     </div>
 
                     <div class="actions-row">
-                        <form action="{{ route('carrito.empty', ['sesionId' => $sesionId]) }}" method="POST">
+                        <form action="{{ route('carrito.empty') }}" method="POST">
                             @csrf
                             <button type="submit" class="btn btn-outline-danger">Vaciar</button>
                         </form>
 
-                        <form action="{{ route('carrito.buy', ['sesionId' => $sesionId]) }}" method="POST">
+                        <form action="{{ route('carrito.buy') }}" method="POST">
                             @csrf
-                            <input type="hidden" name="sesionId" value="{{ $sesionId }}">
                             <button type="submit" class="btn btn-primary">Procesar Compra</button>
                         </form>
                     </div>
@@ -310,7 +308,7 @@
             <div class="empty-state text-center">
                 <h4 class="mb-2">Tu carrito está vacío</h4>
                 <p class="small-muted mb-3">Añade muebles a tu carrito y los encontrarás aquí.</p>
-                <a href="{{ route('muebles.index', ['sesionId' => $sesionId]) }}" class="btn btn-primary">Ir a la Tienda</a>
+                <a href="{{ route('muebles.index') }}" class="btn btn-primary">Ir a la Tienda</a>
             </div>
         @endif
     </div>

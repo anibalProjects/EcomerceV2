@@ -37,7 +37,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('preferencias.update', ['userId' => $usuario_id, 'sesionId' => $sesionId]) }}" method="POST" class="row g-3">
+                    <form action="{{ route('preferencias.update', ['userId' => $usuario_id]) }}" method="POST" class="row g-3">
                         @csrf
 
                         <div class="col-md-6">
@@ -76,7 +76,7 @@
                         </div>
 
                         <div class="col-12 mt-3 d-flex justify-content-end gap-2">
-                            <a href="{{ route('muebles.index', ['sesionId' => $sesionId]) }}" class="btn cart-btn">Cancelar</a>
+                            <a href="{{ route('muebles.index') }}" class="btn cart-btn">Cancelar</a>
                             <button type="submit" class="btn btn-primary">Actualizar preferencias</button>
                         </div>
                     </form>

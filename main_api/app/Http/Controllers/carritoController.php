@@ -5,20 +5,24 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Mueble;
 use App\Models\Carrito;
+use App\Services\AuthApiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 
 class carritoController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, AuthApiService $authApiService)
     {
-        $sesionId = $request->input('sesionId');
-        $usuario = User::buscarUsuario($sesionId);
+        $token = Session::get('api_token');
+        $usuario = $authApiService->validateToken($token);
+        if ($usuario['estado'] === 200) {
+        $sesionId = Session::get('usuario_logueado');
+        }
 
         if($usuario){
              //Busco el carrito del usuario o si no lo creo
             $carrito = Carrito::firstOrCreate(
-                ['usuario_id' => $usuario->id],
+                ['usuario_id' => $usuario['datos']['usuario']['id']],
                 ['sesionId' => $sesionId]
             );
 
@@ -38,21 +42,20 @@ class carritoController extends Controller
         }
     }
 
-    public function store(Request $request){
+    public function store(Request $request, AuthApiService $authApiService){
 
         $request->validate([
             'cantidad' => 'required|int|min:1|max:10'
         ]);
 
-
-        //Datos del usuario
-        $sesionId = $request->input('sesionId');
-        $usuario = User::buscarUsuario($sesionId);
+        $token = Session::get('api_token');
+        $usuario = $authApiService->validateToken($token);
+        if ($usuario['estado'] === 200) {
+        }
         if($usuario){
                 //Busco el carrito del usuario o si no lo creo
                 $carrito = Carrito::firstOrCreate(
-                    ['usuario_id' => $usuario->id],
-                    ['sesionId' => $sesionId]
+                    ['usuario_id' => $usuario['datos']['usuario']['id']],
                 );
 
                 //buscar el producto
@@ -146,11 +149,11 @@ class carritoController extends Controller
         }
     }
 
-      public function buy(Request $request){
-        $sesionId = $request->input('sesionId');
-        $usuario = User::buscarUsuario($sesionId);
-        $carrito = Carrito::where('usuario_id', $usuario->id)->first();
-        $email = User::where('id', $usuario->id)->first()->email;
+      public function buy(Request $request, AuthApiService $authApiService){
+
+        $usuario = $authApiService->validateToken(Session::get('api_token'));
+        $carrito = Carrito::where('usuario_id', $usuario['datos']['usuario']['id'])->first();
+        $email = ["email"=> $usuario['datos']['usuario']['email']];
         if($usuario){
             foreach ($carrito->muebles as $mueble) {
                 if($mueble->stock >= $mueble->pivot->cantidad){
@@ -162,23 +165,24 @@ class carritoController extends Controller
             }
             $productosDelCarrito = $carrito->muebles;
 
-            $preferencias = CookiePersonalizacion::getPersonalizacion($sesionId);
+            /* $preferencias = CookiePersonalizacion::getPersonalizacion($sesionId);
             $tema = $preferencias['tema'];
-            $moneda = $preferencias['moneda'];
-            return view('carrito.carritoFactura', compact('sesionId', 'usuario','email' ,'productosDelCarrito', 'tema', 'moneda'));
+            $moneda = $preferencias['moneda']; */
+            $tema = "claro";
+            $moneda = "euro";
+            return view('carrito.carritoFactura', compact('usuario','email' ,'productosDelCarrito', 'tema', 'moneda'));
         }else{
             return redirect()->route('login.mostrar')->with('error', 'debes iniciar sesion');
         }
     }
 
-    public function returnFromBuy(Request $request){
-        $sesionId = $request->input('sesionId');
-        $usuario = User::buscarUsuario($sesionId);
+    public function returnFromBuy(Request $request, AuthApiService $authApiService){
+        $usuario = $authApiService->validateToken(Session::get('api_token'));
 
-        $carrito = Carrito::where('usuario_id', $usuario->id)->first();
+        $carrito = Carrito::where('usuario_id', $usuario['datos']['usuario']['id'])->first();
         $carrito->muebles()->detach();
 
-        return redirect()->route('muebles.index', compact('sesionId'));
+        return redirect()->route('muebles.index');
     }
 
     public function show(string $id){}

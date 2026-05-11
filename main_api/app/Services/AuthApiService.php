@@ -75,4 +75,20 @@ class AuthApiService
             'datos' => $response->json(),
         ];
     }
+
+    public function validateToken(string $token, ?string $ability = null): array
+    {
+        $query = $ability ? ['ability' => $ability] : [];
+
+        $response = Http::acceptJson()
+            ->withToken($token)
+            ->timeout(10)
+            ->get($this->baseUrl . '/validate-token', $query);
+
+        return [
+            'estado' => $response->status(),
+            'datos' => $response->json(),
+        ];
+    }
+
 }
