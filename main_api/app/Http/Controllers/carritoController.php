@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Models\Mueble;
 use App\Models\Carrito;
+use App\Models\CarritoProducto;
+use App\Models\Mueble;
+use App\Models\User;
 use App\Services\AuthApiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
@@ -82,15 +83,15 @@ class carritoController extends Controller
         }
     }
 
-    public function destroy(Request $request, $producto)
+    public function destroy($producto_id, AuthApiService $authApiService)
     {
-        $sesionId = $request->input('sesionId');
-        $usuario = User::buscarUsuario($sesionId);
+        $usuario = $authApiService->validateToken(Session::get('api_token'));
 
         if ($usuario) {
-            $carrito = Carrito::where('usuario_id', $usuario->id)->first();
-            if ($carrito) {
-                $carrito->muebles()->detach($producto);
+            $carrito = Carrito::where('usuario_id', $usuario['datos']['usuario']['id'])->first();
+            $carrito_producto = CarritoProducto::where('carrito_id', $carrito->id)->where('mueble_id', $producto_id)->first();
+            if ($carrito && $carrito_producto) {
+                $carrito_producto->delete();
                 return redirect()->back()->with('success', 'Se ha eliminado el producto del carrito ');
             }else{
                 return redirect()->back()->with('error', 'No se ha podido eliminar el producto del carrito');
@@ -111,18 +112,17 @@ class carritoController extends Controller
 
         
         $productoEnCarrito = CarritoProducto::where('mueble_id', $producto_id)->where('carrito_id', $carrito->id)->first();
-        dd($productoEnCarrito);
         if($usuario){
             if( $producto_id ){
                 if($request->increment){
-                    $productoEnCarrito->pivot->cantidad++;
-                    $productoEnCarrito->pivot->save();
+                    $productoEnCarrito->cantidad++;
+                    $productoEnCarrito->save();
                 }
 
                 if ($request->decrement) {
-                    if ($productoEnCarrito->pivot->cantidad > 1) {
-                        $productoEnCarrito->pivot->cantidad--;
-                        $productoEnCarrito->pivot->save();
+                    if ($productoEnCarrito->cantidad > 1) {
+                        $productoEnCarrito->cantidad--;
+                        $productoEnCarrito->save();
                     } else {
                         $carrito->muebles()->detach($producto_id);
                         return redirect()->back()->with('success', 'Se ha eliminado el producto del carrito ' . $producto->nombre);
