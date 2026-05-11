@@ -83,4 +83,9 @@ class User extends Authenticatable
 
         return $preference ? $preference->value : $default;
     }
+
+    public function carrito()
+    {
+        return $this->hasOne(Carrito::class, 'usuario_id');
+    }
 }

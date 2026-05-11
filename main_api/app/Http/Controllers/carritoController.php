@@ -100,16 +100,20 @@ class carritoController extends Controller
         }
     }
 
-    public function update(Request $request, $producto_id){
+    public function update($producto_id, AuthApiService $authApiService, Request $request){
         //Datos del usuario
-        $sesionId = $request->input('sesionId');
-        $usuario = User::buscarUsuario($sesionId);
-        $producto = Mueble::find($producto_id);
-        $carrito = Carrito::where('usuario_id', $usuario->id)->first();
+        $usuario = $authApiService->validateToken(Session::get('api_token'));
+        
+        
 
-        $productoEnCarrito = $carrito->muebles()->where('mueble_id', $producto_id)->first();
+        $carrito = Carrito::where('usuario_id', $usuario['datos']['usuario']['id'])->first();
+
+
+        
+        $productoEnCarrito = CarritoProducto::where('mueble_id', $producto_id)->where('carrito_id', $carrito->id)->first();
+        dd($productoEnCarrito);
         if($usuario){
-            if( $productoEnCarrito ){
+            if( $producto_id ){
                 if($request->increment){
                     $productoEnCarrito->pivot->cantidad++;
                     $productoEnCarrito->pivot->save();

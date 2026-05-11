@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Facades\Auth;
+use App\Models\CarritoProducto;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Carrito extends Model
 {
@@ -17,11 +18,15 @@ class Carrito extends Model
         'precio'
     ];
 
-    public function Usuario() {
-        return $this->belongsTo(Usuario::class);
+    public function usuario() {
+        return $this->belongsTo(User::class, 'usuario_id');
     }
 
     public function muebles() {
         return $this->belongsToMany(Mueble::class, 'carrito_productos')->withPivot('cantidad');
+    }
+
+    public function carritoProductos() {
+        return $this->hasMany(CarritoProducto::class);
     }
 }

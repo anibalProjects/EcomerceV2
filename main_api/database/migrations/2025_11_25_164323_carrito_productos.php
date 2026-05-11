@@ -14,7 +14,9 @@ return new class extends Migration
         Schema::create('carrito_productos', function (Blueprint $table){
             $table->id();
             $table->unsignedBigInteger('carrito_id');
+            $table->foreign('carrito_id')->references('id')->on('carrito')->onDelete('cascade');
             $table->unsignedBigInteger('mueble_id');
+            $table->foreign('mueble_id')->references('id')->on('muebles')->onDelete('cascade');
             $table->integer('cantidad')->default(1);
             $table->timestamps();
         });
