@@ -60,7 +60,7 @@ Route::middleware('check.ability:perfil.ver')->group(function () {
     Route::post('/preferencias/{userId}/update', [CookiePersonalizacion::class, 'update'])->name('preferencias.update');
 });
 
-Route::middleware(['auth.api', 'check.ability:admin.panel', 'check.ability:gestor.panel'])
+Route::middleware(['auth.api', 'check.ability:admin.panel,gestor.panel'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {

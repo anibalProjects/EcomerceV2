@@ -100,29 +100,11 @@
                     </div>
 
                     <div class="row g-3">
-                        <div class="col-md-6 mb-3">
-                            <label for="color_principal" class="form-label">Color Principal</label>
-                            <input type="text" id="color_principal" name="color_principal" value="{{ old('color_principal') }}" required class="form-control form-control-lg py-2">
-                            @error('color_principal') <div class="text-danger">{{ $message }}</div> @enderror
+                        <div class="col-md-12 mb-3">
+                            <label for="color" class="form-label">Color</label>
+                            <input type="text" id="color" name="color" value="{{ old('color') }}" class="form-control form-control-lg py-2">
+                            @error('color') <div class="text-danger">{{ $message }}</div> @enderror
                         </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="materiales" class="form-label">Materiales</label>
-                            <textarea id="materiales" name="materiales" required class="form-control form-control-lg py-2">{{ old('materiales') }}</textarea>
-                            @error('materiales') <div class="text-danger">{{ $message }}</div> @enderror
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="dimensiones" class="form-label">Dimensiones</label>
-                        <textarea id="dimensiones" name="dimensiones" required class="form-control form-control-lg py-2">{{ old('dimensiones') }}</textarea>
-                        @error('dimensiones') <div class="text-danger">{{ $message }}</div> @enderror
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="imagen_principal" class="form-label">Imagen Principal</label>
-                        <input type="file" id="imagen_principal" name="imagen_principal" accept="image/*" class="form-control form-control-lg py-2">
-                        @error('imagen_principal') <div class="text-danger">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="row g-3">

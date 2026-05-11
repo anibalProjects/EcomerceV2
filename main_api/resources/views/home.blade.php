@@ -163,13 +163,13 @@
                                 @endphp
 
                                 <div style="border: 1px solid #ddd; padding: 10px; text-align: center;">
-                                    <img src="{{ $imgUrl }}" alt="{{ $mueble->nombre }}" style="width: 150px; height: 150px; object-fit: cover;">
+                                    <img src="{{ $imgUrl }}" alt="{{ $mueble->nombre_producto }}" style="width: 150px; height: 150px; object-fit: cover;">
                                 </div>
                             </div>
                             <div class="card-body">
-                                <h5 class="card-title">{{ $mueble->nombre }}</h5>
+                                <h5 class="card-title">{{ $mueble->nombre_producto }}</h5>
                                 <p class="producto-price card-text fw-bold text-success">
-                                    {{ number_format($mueble->precio, 2) }} {{-- {{ $moneda }} --}}
+                                    {{ number_format($mueble->precio_venta, 2) }} {{-- {{ $moneda }} --}}
                                 </p>
                             </div>
                         </a>
@@ -179,10 +179,10 @@
                                 <input type="hidden" name="producto_id" value="{{ $mueble->id }}">
                                 <div class="mb-2">
                                     <label for="cantidad_{{ $mueble->id }}" class="form-label d-block text-center small">Cantidad</label>
-                                    <input type="number" id="cantidad_{{ $mueble->id }}" name="cantidad" value="1" min="1" max="{{ $mueble->stock ?? 99 }}" class="form-control form-control-sm text-center">
+                                    <input type="number" id="cantidad_{{ $mueble->id }}" name="cantidad" value="1" min="1" max="{{ $mueble->stock_disponible ?? 99 }}" class="form-control form-control-sm text-center">
                                 </div>
-                                <button type="submit" class="btn add-cart-btn w-100 {{ ($mueble->stock ?? 1)==0 ? 'btn-outline-danger' : 'btn-primary' }}" {{ ($mueble->stock ?? 1)==0 ? 'disabled' : '' }}>
-                                    {{ ($mueble->stock ?? 1)==0 ? 'Sin stock' : 'Añadir al carrito' }}
+                                <button type="submit" class="btn add-cart-btn w-100 {{ ($mueble->stock_disponible ?? 1)==0 ? 'btn-outline-danger' : 'btn-primary' }}" {{ ($mueble->stock_disponible ?? 1)==0 ? 'disabled' : '' }}>
+                                    {{ ($mueble->stock_disponible ?? 1)==0 ? 'Sin stock' : 'Añadir al carrito' }}
                                 </button>
                             </form>
                         </div>

@@ -95,26 +95,26 @@
                     <tbody>
                         @foreach($muebles as $mueble)
                             @php
-                                $imgUrl = $mueble->imagen_principal
-                                    ? asset('storage/muebles/' . $mueble->imagen_principal)
+                                $imgUrl = !empty($mueble->imagenes)
+                                    ? $mueble->imagenes[0]
                                     : asset('images/muebles/placeholder.jpg');
                             @endphp
                             <tr>
                                 <td>
-                                    <img src="{{ $imgUrl }}" alt="{{ $mueble->nombre }}">
+                                    <img src="{{ $imgUrl }}" alt="{{ $mueble->nombre_producto }}">
                                 </td>
                                 <td>
-                                    <div class="fw-bold">{{ $mueble->nombre }}</div>
+                                    <div class="fw-bold">{{ $mueble->nombre_producto }}</div>
                                     <div class="small-muted">{{ Str::limit($mueble->descripcion, 60) }}</div>
                                 </td>
                                 <td>
-                                    <span class="fw-bold text-success">{{ number_format($mueble->precio, 2, ',', '.') }} €</span>
+                                    <span class="fw-bold text-success">{{ number_format($mueble->precio_venta, 2, ',', '.') }} €</span>
                                 </td>
                                 <td>
-                                    <span class="badge bg-info">Stock: {{ $mueble->stock }}</span>
+                                    <span class="badge bg-info">Stock: {{ $mueble->stock_disponible }}</span>
                                 </td>
                                 <td>
-                                    <span class="badge-categoria">{{ $mueble->categoria ? $mueble->categoria->nombre : 'Sin categoría' }}</span>
+                                    <span class="badge-categoria">{{ $mueble->categoria ? $mueble->categoria : 'Sin categoría' }}</span>
                                 </td>
                                 <td>
                                     @if($mueble->novedad)

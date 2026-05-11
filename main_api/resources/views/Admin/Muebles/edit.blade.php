@@ -55,7 +55,7 @@
 
                     <div class="mb-3">
                         <label for="nombre" class="form-label">Nombre</label>
-                        <input type="text" id="nombre" name="nombre" value="{{ old('nombre', $mueble->nombre) }}" required maxlength="255" class="form-control form-control-lg py-2">
+                        <input type="text" id="nombre" name="nombre" value="{{ old('nombre', $mueble->nombre_producto ?? '') }}" required maxlength="255" class="form-control form-control-lg py-2">
                         @error('nombre') <div class="text-danger">{{ $message }}</div> @enderror
                     </div>
 
@@ -74,7 +74,7 @@
 
                     <div class="mb-3">
                         <label for="descripcion" class="form-label">Descripción</label>
-                        <textarea id="descripcion" name="descripcion" required class="form-control form-control-lg py-2">{{ old('descripcion', $mueble->descripcion) }}</textarea>
+                        <textarea id="descripcion" name="descripcion" required class="form-control form-control-lg py-2">{{ old('descripcion', $mueble->descripcion ?? '') }}</textarea>
                         @error('descripcion') <div class="text-danger">{{ $message }}</div> @enderror
                     </div>
 
@@ -83,47 +83,24 @@
                             <label for="precio" class="form-label">Precio</label>
                             <div class="input-group">
                                 <span class="input-group-text">€</span>
-                                <input type="number" id="precio" name="precio" value="{{ old('precio', $mueble->precio) }}" step="0.01" min="0" required class="form-control form-control-lg py-2">
+                                <input type="number" id="precio" name="precio" value="{{ old('precio', $mueble->precio_venta ?? 0) }}" step="0.01" min="0" required class="form-control form-control-lg py-2">
                             </div>
                             @error('precio') <div class="text-danger">{{ $message }}</div> @enderror
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label for="stock" class="form-label">Stock</label>
-                            <input type="number" id="stock" name="stock" value="{{ old('stock', $mueble->stock) }}" min="0" required class="form-control form-control-lg py-2">
+                            <input type="number" id="stock" name="stock" value="{{ old('stock', $mueble->stock_disponible ?? 0) }}" min="0" required class="form-control form-control-lg py-2">
                             @error('stock') <div class="text-danger">{{ $message }}</div> @enderror
                         </div>
                     </div>
 
                     <div class="row g-3">
-                        <div class="col-md-6 mb-3">
-                            <label for="color_principal" class="form-label">Color Principal</label>
-                            <input type="text" id="color_principal" name="color_principal" value="{{ old('color_principal', $mueble->color_principal ?? $mueble->color) }}" required class="form-control form-control-lg py-2">
-                            @error('color_principal') <div class="text-danger">{{ $message }}</div> @enderror
+                        <div class="col-md-12 mb-3">
+                            <label for="color" class="form-label">Color</label>
+                            <input type="text" id="color" name="color" value="{{ old('color', $mueble->color ?? '') }}" required class="form-control form-control-lg py-2">
+                            @error('color') <div class="text-danger">{{ $message }}</div> @enderror
                         </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="materiales" class="form-label">Materiales</label>
-                            <textarea id="materiales" name="materiales" required class="form-control form-control-lg py-2">{{ old('materiales', $mueble->materiales) }}</textarea>
-                            @error('materiales') <div class="text-danger">{{ $message }}</div> @enderror
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="dimensiones" class="form-label">Dimensiones</label>
-                        <textarea id="dimensiones" name="dimensiones" required class="form-control form-control-lg py-2">{{ old('dimensiones', $mueble->dimensiones) }}</textarea>
-                        @error('dimensiones') <div class="text-danger">{{ $message }}</div> @enderror
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="imagen_principal" class="form-label">Imagen Principal</label>
-                        @if($mueble->imagen_principal)
-                            <div class="mb-2">
-                                <img src="{{ asset('storage/muebles/' . $mueble->imagen_principal) }}" alt="Actual" style="max-width: 100px;">
-                            </div>
-                        @endif
-                        <input type="file" id="imagen_principal" name="imagen_principal" accept="image/*" class="form-control form-control-lg py-2">
-                        @error('imagen_principal') <div class="text-danger">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="row g-3">
