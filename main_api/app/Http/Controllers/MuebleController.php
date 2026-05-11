@@ -29,7 +29,6 @@ class MuebleController extends Controller
             $url = env('FORNITURE_API_URL') . '/muebles';
             $response = Http::get($url);
             
-            
             if ($response->successful()) {
                 $mueblesData = json_decode($response->body());
                 $muebles = collect($mueblesData->data);
@@ -124,7 +123,7 @@ class MuebleController extends Controller
             
             if ($response->successful()) {
                 $mueblesData = json_decode($response->body());
-                $muebles = collect($mueblesData);
+                $muebles = collect($mueblesData->data);
             } else {
                 $muebles = collect([]);
             }
@@ -139,7 +138,9 @@ class MuebleController extends Controller
             });
         }
     if (isset($filtro['categoria_id'])) {
-        $muebles = $muebles->where('categoria_id', $filtro['categoria_id']);
+        $muebles = $muebles->filter(function ($mueble) use ($filtro) {
+            return $mueble->categoria == $filtro['categoria_id'];
+        });
     }
     if (isset($filtro['precio_min'])) {
         $muebles = $muebles->where('precio', '>=', $filtro['precio_min']);
@@ -155,7 +156,7 @@ class MuebleController extends Controller
     if (isset($filtro['novedad'])) {
         $muebles = $muebles->where('novedad', 1);
     }
-       
+
 
         //$sesionId = $request->sesionId;
 

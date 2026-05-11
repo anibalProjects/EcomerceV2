@@ -12,20 +12,9 @@ class MueblesAdministracionController extends Controller
 {
     protected $carpetaPrivada = 'muebles';
 
-    private function validarAcceso(): void
-    {
-        if (!auth()->check()) {
-            abort(403, 'Debes iniciar sesión.');
-        }
-
-        if (auth()->user()->rol_id !== 1) {
-            abort(403, 'Acceso no autorizado. Se requiere rol de Administrador.');
-        }
-    }
 
     public function index(Request $request)
     {
-        $this->validarAcceso();
         $sesionId = $request->get('sesionId');
 
         $muebles = Mueble::with('categoria')->get();
@@ -43,7 +32,6 @@ class MueblesAdministracionController extends Controller
 
     public function create(Request $request)
     {
-        $this->validarAcceso();
         $sesionId = $request->get('sesionId');
         $categorias = Categoria::all();
         return view('Admin.Muebles.create', compact('categorias', 'sesionId'));
@@ -51,7 +39,6 @@ class MueblesAdministracionController extends Controller
 
     public function store(Request $request)
     {
-        $this->validarAcceso();
         $sesionId = $request->get('sesionId');
         $request->validate([
             'nombre' => 'required|string|max:255',
@@ -83,7 +70,6 @@ class MueblesAdministracionController extends Controller
 
     public function edit(Request $request, $id)
     {
-        $this->validarAcceso();
         $sesionId = $request->get('sesionId');
         $mueble = Mueble::findOrFail($id);
         $categorias = Categoria::all();
@@ -92,7 +78,6 @@ class MueblesAdministracionController extends Controller
 
     public function update(Request $request, $id)
     {
-        $this->validarAcceso();
         $sesionId = $request->get('sesionId');
         $mueble = Mueble::findOrFail($id);
 
@@ -125,7 +110,6 @@ class MueblesAdministracionController extends Controller
 
     public function destroy(Request $request, $id)
     {
-        $this->validarAcceso();
         $sesionId = $request->get('sesionId');
         $mueble = Mueble::findOrFail($id);
         // Elimina imagen principal
@@ -145,7 +129,6 @@ class MueblesAdministracionController extends Controller
     // GALERÍA
     public function galeria(Request $request, $id)
     {
-        $this->validarAcceso();
         $sesionId = $request->get('sesionId');
         $mueble = Mueble::with('galeria')->findOrFail($id);
         return view('Admin.Muebles.galeria', compact('mueble', 'sesionId'));
@@ -153,7 +136,6 @@ class MueblesAdministracionController extends Controller
 
     public function uploadGaleria(Request $request, $id)
     {
-        $this->validarAcceso();
         $request->validate([
             'imagenes.*' => 'required|image|max:4096'
         ]);
@@ -175,7 +157,6 @@ class MueblesAdministracionController extends Controller
 
     public function deleteImagenGaleria($id)
     {
-        $this->validarAcceso();
         $imagen = Galeria::findOrFail($id);
         if (Storage::disk('public')->exists($this->carpetaPrivada . '/' . $imagen->ruta)) {
             Storage::disk('public')->delete($this->carpetaPrivada . '/' . $imagen->ruta);
@@ -185,7 +166,6 @@ class MueblesAdministracionController extends Controller
     }
 
     public function setPrincipalGaleria($id) {
-        $this->validarAcceso();
         $imagen = Galeria::findOrFail($id);
         $mueble = $imagen->mueble;
 

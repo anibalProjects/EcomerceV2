@@ -156,6 +156,7 @@ class AuthController extends Controller
     private function abilitiesForRole(int $rolId): array
     {
         return match ($rolId) {
+            //admin
             1 => [
                 'admin:read',
                 'admin:create',
@@ -172,13 +173,17 @@ class AuthController extends Controller
                 'muebles.eliminar',
                 'admin.panel'
             ],
+            //gestor
             2 => [
                 'perfil.ver',
                 'muebles.ver',
-                'muebles.crear',
-                'muebles.editar',
-                'muebles.eliminar'
+                'gestor.muebles.ver',
+                'gestor.muebles.crear',
+                'gestor.muebles.editar',
+                'gestor.muebles.eliminar',
+                'gestor.panel'
             ],
+            //cliente
             3 => [
                 'perfil.ver',
                 'muebles.ver',

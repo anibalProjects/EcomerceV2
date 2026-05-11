@@ -46,21 +46,11 @@ class LoginController extends Controller
             $authService->logout($token);
         }
 
-        $sesionId = $request->query('sesionId');
-        $usuarios = Session::get('usuarios_sesion', []);
-
-        if (isset($usuarios[$sesionId])) {
-            unset($usuarios[$sesionId]);
-            Session::put('usuarios_sesion', $usuarios);
-        }
-
-        // Limpiamos los datos que guardamos durante el login
+        $authService->logout($token);
         Session::forget('api_token');
         Session::forget('usuario_logueado');
 
         Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
 
         return redirect()->route('muebles.index')->with('mensaje', 'Sesión cerrada correctamente.');
     }
