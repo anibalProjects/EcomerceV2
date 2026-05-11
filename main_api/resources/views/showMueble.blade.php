@@ -7,8 +7,7 @@
 @extends($layout)
 
 
-@section('title', $mueble->nombre)
-
+@section('title', $mueble->nombre_producto)
 @section('content')
 
 <div class="content-container">
@@ -37,7 +36,7 @@
                 @endphp
 
                 <div class="detalle-img-wrapper">
-                    <img src="{{ $imgUrl }}" alt="{{ $mueble->nombre }}" class="detalle-img">
+                    <img src="{{ $imgUrl }}" alt="{{ $mueble->nombre_producto }}" class="detalle-img">
                 </div>
             </div>
         </div>
@@ -48,21 +47,21 @@
                 <span class="badge bg-info">{{ $mueble->categoria ?? 'Sin categoría' }}</span>
             </div>
 
-            <h1 class="lux-brand mb-3">{{ $mueble->nombre }}</h1>
+            <h1 class="lux-brand mb-3">{{ $mueble->nombre_producto }}</h1>
 
             <p class="lead text-muted mb-4">{{ $mueble->descripcion }}</p>
 
             <div class="precio-section mb-4 p-3 rounded" style="background: rgba(201, 168, 75, 0.1); border-left: 4px solid #c9a84b;">
                 <span class="text-muted d-block small mb-2">Precio</span>
-                <h2 class="text-success fw-bold">{{ number_format($mueble->precio, 2, ',', '.')}} {{ $moneda }}</h2>
+                <h2 class="text-success fw-bold">{{ number_format($mueble->precio_venta, 2, ',', '.')}} {{ $moneda }}</h2>
             </div>
 
             <div class="stock-section mb-4">
                 <span class="text-muted d-block mb-2">Disponibilidad:</span>
-                @if($mueble->stock > 0)
+                @if($mueble->stock_disponible > 0)
                     <div class="d-flex align-items-center">
                         <i class="bi bi-check-circle-fill text-success me-2"></i>
-                        <span class="fw-bold text-success">{{ $mueble->stock }} unidades disponibles</span>
+                        <span class="fw-bold text-success">{{ $mueble->stock_disponible }} unidades disponibles</span>
                     </div>
                 @else
                     <div class="d-flex align-items-center">
@@ -109,10 +108,10 @@
                     <input type="hidden" name="producto_id" value="{{ $mueble->id }}">
                     <div class="mb-2">
                         <label for="cantidad_{{ $mueble->id }}" class="form-label d-block text-center small">Cantidad</label>
-                        <input type="number" id="cantidad_{{ $mueble->id }}" name="cantidad" value="1" min="1" max="{{ $mueble->stock ?? 99 }}" class="form-control form-control-sm text-center">
+                        <input type="number" id="cantidad_{{ $mueble->id }}" name="cantidad" value="1" min="1" max="{{ $mueble->stock_disponible ?? 99 }}" class="form-control form-control-sm text-center">
                     </div>
-                    <button type="submit" class="btn add-cart-btn w-100 {{ ($mueble->stock ?? 1)==0 ? 'btn-outline-danger' : 'btn-primary' }}" {{ ($mueble->stock ?? 1)==0 ? 'disabled' : '' }}>
-                        {{ ($mueble->stock ?? 1)==0 ? 'Sin stock' : 'Añadir al carrito' }}
+                    <button type="submit" class="btn add-cart-btn w-100 {{ ($mueble->stock_disponible ?? 1)==0 ? 'btn-outline-danger' : 'btn-primary' }}" {{ ($mueble->stock_disponible ?? 1)==0 ? 'disabled' : '' }}>
+                        {{ ($mueble->stock_disponible ?? 1)==0 ? 'Sin stock' : 'Añadir al carrito' }}
                     </button>
                 </form>
             </div>

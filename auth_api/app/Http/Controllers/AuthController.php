@@ -171,7 +171,8 @@ class AuthController extends Controller
                 'muebles.crear',
                 'muebles.editar',
                 'muebles.eliminar',
-                'admin.panel'
+                'admin.panel',
+                'carrito.gestionar',
             ],
             //gestor
             2 => [
@@ -181,7 +182,8 @@ class AuthController extends Controller
                 'gestor.muebles.crear',
                 'gestor.muebles.editar',
                 'gestor.muebles.eliminar',
-                'gestor.panel'
+                'gestor.panel',
+                'carrito.gestionar',
             ],
             //cliente
             3 => [

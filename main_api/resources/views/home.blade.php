@@ -53,6 +53,11 @@
             </a>
         </li>
         <li>
+            <a class="dropdown-item" href="{{ route('admin.muebles.index') }}">
+                <i class="bi bi-gear-fill me-2"></i> Ir a administración
+            </a>
+        </li>
+        <li>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit" class="dropdown-item text-danger">
