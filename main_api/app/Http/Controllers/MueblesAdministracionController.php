@@ -3,25 +3,36 @@
 namespace App\Http\Controllers;
 
 use App\Models\Categoria;
-use App\Models\Mueble;
 use App\Models\Galeria;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Session;
 
 class MueblesAdministracionController extends Controller
 {
     protected $carpetaPrivada = 'muebles';
 
-
     public function index(Request $request)
     {
-        $muebles = Mueble::with('categoria')->get();
+        $token = Session::get('api_token');
+        $url = env('FORNITURE_API_URL') . '/muebles';
+        
+        $response = Http::withToken($token)->get($url);
+        
+        $muebles = collect([]);
+        if ($response->successful()) {
+            $mueblesData = json_decode($response->body());
+            $muebles = collect($mueblesData->data);
+        }
 
-        // Filtrado
+        // Filtrado en memoria
         if ($request->has('texto') && $request->texto) {
-            $muebles = $muebles->filter(function($mueble) use ($request) {
-                return str_contains(strtolower($mueble->nombre), strtolower($request->texto)) ||
-                       str_contains(strtolower($mueble->descripcion), strtolower($request->texto));
+            $texto = strtolower($request->texto);
+            $muebles = $muebles->filter(function($mueble) use ($texto) {
+                $nombre = strtolower($mueble->nombre_producto ?? '');
+                $desc = strtolower($mueble->descripcion ?? '');
+                return str_contains($nombre, $texto) || str_contains($desc, $texto);
             });
         }
 
@@ -30,6 +41,7 @@ class MueblesAdministracionController extends Controller
 
     public function create(Request $request)
     {
+        // Hay que coger las categorias de mueblesapi
         $categorias = Categoria::all();
         return view('Admin.Muebles.create', compact('categorias'));
     }
@@ -38,91 +50,170 @@ class MueblesAdministracionController extends Controller
     {
         $request->validate([
             'nombre' => 'required|string|max:255',
-            'categoria_id' => 'required|exists:categorias,id',
+            'categoria_id' => 'required|numeric',
             'precio' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
-            'color_principal' => 'required|string',
-            'materiales' => 'required|string',
-            'dimensiones' => 'required|string',
+            'color_principal' => 'nullable|string',
             'descripcion' => 'nullable|string',
             'imagen_principal' => 'nullable|image|max:4096'
         ]);
+        
+        $dataToSend = [
+            'nombre' => $request->nombre,
+            'descripcion' => $request->descripcion,
+            'precio' => $request->precio,
+            'categoria_id' => $request->categoria_id,
+            'stock' => $request->stock,
+            'color' => $request->color_principal,
+            'novedad' => $request->has('novedad'),
+            'activo' => $request->has('activo'),
+        ];
 
-        $data = $request->all();
-        $data['novedad'] = $request->has('novedad');
-        $data['activo'] = $request->has('activo');
+        $token = Session::get('api_token');
+        $url = env('FORNITURE_API_URL') . '/muebles';
 
-        if ($request->hasFile('imagen_principal')) {
-            $file = $request->file('imagen_principal');
-            $nombre = 'principal_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->storeAs($this->carpetaPrivada, $nombre, 'public');
-            $data['imagen_principal'] = $nombre;
+        $response = Http::withToken($token)->post($url, $dataToSend);
+
+        if ($response->successful()) {
+            $muebleApi = $response->json();
+            $newId = $muebleApi['data']['id'] ?? null;
+
+            if ($newId && $request->hasFile('imagen_principal')) {
+                $ruta = $request->file('imagen_principal')->store('imagenes/pagprincipal', 'public');
+                Galeria::create([
+                    'mueble_id' => $newId,
+                    'ruta' => $ruta,
+                    'es_principal' => true,
+                    'orden' => 0
+                ]);
+            }
+
+            return redirect()->route('admin.muebles.index')->with('success', 'Mueble creado correctamente en la API');
         }
 
-        $mueble = Mueble::create($data);
-
-        return redirect()->route('admin.muebles.index')->with('success', 'Mueble creado correctamente');
+        return back()->with('error', 'Error al crear : ' . $response->body());
+        return back()->with('error', 'Error al crear en la API: ' . $response->body());
     }
 
     public function edit(Request $request, $id)
     {
-        $mueble = Mueble::findOrFail($id);
-        $categorias = Categoria::all();
+        $token = Session::get('api_token');
+        $url = env('FORNITURE_API_URL') . '/muebles/' . $id;
+        $response = Http::withToken($token)->get($url);
+
+        if ($response->failed()) {
+            return redirect()->route('admin.muebles.index')->with('error', 'Mueble no encontrado en la API');
+        }
+
+        $muebleData = json_decode($response->body())->data;
+        
+        // Mapear para la vista de edición local
+        $mueble = new \stdClass();
+        $mueble->id = $muebleData->id;
+        $mueble->nombre = $muebleData->nombre_producto;
+        $mueble->descripcion = $muebleData->descripcion;
+        $mueble->precio = $muebleData->precio_venta;
+        $mueble->stock = $muebleData->stock_disponible;
+        $mueble->color_principal = $muebleData->color;
+        $mueble->materiales = '';
+        $mueble->dimensiones = '';
+        $mueble->novedad = $muebleData->novedad;
+        $mueble->activo = $muebleData->activo;
+        
+        //No hay categorias hay que recogerlas de MublesApi
+        //$cat = Categoria::where('nombre', $muebleData->categoria)->first();
+        $mueble->categoria_id = $cat ? $cat->id : null;
         return view('Admin.Muebles.edit', compact('mueble', 'categorias'));
     }
 
     public function update(Request $request, $id)
     {
-        $mueble = Mueble::findOrFail($id);
-
         $request->validate([
             'nombre' => 'required|string|max:255',
-            'categoria_id' => 'required|exists:categorias,id',
+            'categoria_id' => 'required|numeric',
             'precio' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
-            'color_principal' => 'required|string',
-            'materiales' => 'required|string',
-            'dimensiones' => 'required|string',
+            'color_principal' => 'nullable|string',
             'descripcion' => 'nullable|string',
             'imagen_principal' => 'nullable|image|max:4096'
         ]);
 
-        $data = $request->all();
-        $data['novedad'] = $request->has('novedad');
-        $data['activo'] = $request->has('activo');
+        $dataToSend = [
+            'nombre' => $request->nombre,
+            'descripcion' => $request->descripcion,
+            'precio' => $request->precio,
+            'categoria_id' => $request->categoria_id,
+            'stock' => $request->stock,
+            'color' => $request->color_principal,
+            'novedad' => $request->has('novedad'),
+            'activo' => $request->has('activo'),
+        ];
 
-        // Solo guardar imagen si se subió una nueva
-        if ($request->hasFile('imagen_principal')) {
-            $ruta = $request->file('imagen_principal')->store('imagenes/pagprincipal');
-            $data['imagen_principal'] = $ruta;
+        $token = Session::get('api_token');
+        $url = env('FORNITURE_API_URL') . '/muebles/' . $id;
+
+        $response = Http::withToken($token)->put($url, $dataToSend);
+
+        if ($response->successful()) {
+            if ($request->hasFile('imagen_principal')) {
+                $ruta = $request->file('imagen_principal')->store('imagenes/pagprincipal', 'public');
+                
+                Galeria::where('mueble_id', $id)->update(['es_principal' => false]);
+                Galeria::create([
+                    'mueble_id' => $id,
+                    'ruta' => $ruta,
+                    'es_principal' => true,
+                    'orden' => 0
+                ]);
+            }
+
+            return redirect()->route('admin.muebles.index')->with('success', 'Mueble actualizado correctamente en la API');
         }
 
-        $mueble->update($data);
-
-        return redirect()->route('admin.muebles.index')->with('success', 'Mueble actualizado correctamente');
+        return back()->with('error', 'Error al actualizar: ' . $response->body());
     }
 
     public function destroy(Request $request, $id)
     {
-        $mueble = Mueble::findOrFail($id);
-        // Elimina imagen principal
-        if ($mueble->imagen_principal) {
-             Storage::disk('public')->delete($this->carpetaPrivada . '/' . $mueble->imagen_principal);
-        }
-        // Elimina imagenes de la galeria
-        foreach($mueble->galeria as $img) {
-            Storage::disk('public')->delete($this->carpetaPrivada . '/' . $img->ruta);
-            $img->delete();
+        $token = Session::get('api_token');
+        $url = env('FORNITURE_API_URL') . '/muebles/' . $id;
+
+        $response = Http::withToken($token)->delete($url);
+
+        if ($response->successful()) {
+            // Eliminar imágenes locales de la galería
+            $galeria = Galeria::where('mueble_id', $id)->get();
+            foreach($galeria as $img) {
+                if (Storage::disk('public')->exists($img->ruta)) {
+                    Storage::disk('public')->delete($img->ruta);
+                }
+                $img->delete();
+            }
+
+            return redirect()->route('admin.muebles.index')->with('success', 'Mueble eliminado correctamente en la API');
         }
 
-        $mueble->delete();
-        return redirect()->route('admin.muebles.index')->with('success', 'Mueble eliminado correctamente');
+        return back()->with('error', 'Error al eliminar: ' . $response->body());
     }
 
-    // GALERÍA
+    // GALERÍA (Mantenemos gestión local temporalmente)
     public function galeria(Request $request, $id)
     {
-        $mueble = Mueble::with('galeria')->findOrFail($id);
+        $token = Session::get('api_token');
+        $url = env('FORNITURE_API_URL') . '/muebles/' . $id;
+        $response = Http::withToken($token)->get($url);
+
+        if ($response->failed()) {
+            return redirect()->route('admin.muebles.index')->with('error', 'Mueble no encontrado en la API');
+        }
+
+        $muebleData = json_decode($response->body())->data;
+        $mueble = new \stdClass();
+        $mueble->id = $muebleData->id;
+        $mueble->nombre = $muebleData->nombre_producto;
+        
+        $mueble->galeria = Galeria::where('mueble_id', $id)->get();
+
         return view('Admin.Muebles.galeria', compact('mueble'));
     }
 
@@ -132,16 +223,15 @@ class MueblesAdministracionController extends Controller
             'imagenes.*' => 'required|image|max:4096'
         ]);
 
-        $mueble = Mueble::findOrFail($id);
         foreach($request->file('imagenes') as $file) {
-            $ruta = $file->store('imagenes/secundarias');
+            $ruta = $file->store('imagenes/secundarias', 'public');
 
-                Galeria::create([
-                    'mueble_id' => $mueble->id,
-                    'ruta' => $ruta,
-                    'es_principal' => false,
-                    'orden' => 0
-                ]);
+            Galeria::create([
+                'mueble_id' => $id,
+                'ruta' => $ruta,
+                'es_principal' => false,
+                'orden' => 0
+            ]);
         }
 
         return back()->with('success', 'Imágenes subidas correctamente');
@@ -150,8 +240,8 @@ class MueblesAdministracionController extends Controller
     public function deleteImagenGaleria($id)
     {
         $imagen = Galeria::findOrFail($id);
-        if (Storage::disk('public')->exists($this->carpetaPrivada . '/' . $imagen->ruta)) {
-            Storage::disk('public')->delete($this->carpetaPrivada . '/' . $imagen->ruta);
+        if (Storage::disk('public')->exists($imagen->ruta)) {
+            Storage::disk('public')->delete($imagen->ruta);
         }
         $imagen->delete();
         return back()->with('success', 'Imagen eliminada');
@@ -159,12 +249,8 @@ class MueblesAdministracionController extends Controller
 
     public function setPrincipalGaleria($id) {
         $imagen = Galeria::findOrFail($id);
-        $mueble = $imagen->mueble;
-
-        // Quita la principal anterior
-        $mueble->galeria()->update(['es_principal' => false]);
-
-        // Y pone la nueva como principal
+        
+        Galeria::where('mueble_id', $imagen->mueble_id)->update(['es_principal' => false]);
         $imagen->update(['es_principal' => true]);
 
         return back()->with('success', 'Imagen principal actualizada');
