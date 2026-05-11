@@ -12,7 +12,7 @@ class UpdateMuebleRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,8 +22,15 @@ class UpdateMuebleRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            //
-        ];
+       return [
+        'nombre' => 'sometimes|required|string|max:255',
+        'descripcion' => 'nullable|string',
+        'precio' => 'sometimes|required|numeric|min:0',
+        'categoria_id' => 'sometimes|required|exists:categories,id',
+        'stock' => 'sometimes|required|integer|min:0',
+        'color' => 'nullable|string|max:50',
+        'novedad' => 'boolean',
+        'activo' => 'boolean',
+    ];
     }
 }

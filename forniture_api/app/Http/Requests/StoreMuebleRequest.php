@@ -23,10 +23,14 @@ class StoreMuebleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nombre' => 'required|string|max:255',
-            'precio' => 'required|numeric|min:0',
-            'categoria_id' => 'required|exists:categories,id',
-            'stock' => 'required|integer|min:0',
-        ];
+        'nombre' => 'required|string|max:255',
+        'descripcion' => 'nullable|string',
+        'precio' => 'required|numeric|min:0',
+        'categoria_id' => 'required|exists:categories,id',
+        'stock' => 'required|integer|min:0',
+        'color' => 'nullable|string|max:50',
+        'novedad' => 'boolean',
+        'activo' => 'boolean',
+    ];
     }
 }

@@ -14,12 +14,17 @@ class MuebleResource extends JsonResource
      */
     public function toArray($request)
     {
-        return [
-            'id' => $this->id,
-            'nombre_producto' => $this->nombre,
-            'precio_venta' => $this->precio,
-            'categoria' => $this->category?->nombre,
-            'imagenes' => $this->galeria->pluck('url'),
-        ];
+       return [
+        'id' => $this->id,
+        'nombre_producto' => $this->nombre,
+        'descripcion' => $this->descripcion,
+        'precio_venta' => $this->precio,
+        'stock_disponible' => $this->stock,
+        'color' => $this->color,
+        'novedad' => $this->novedad,
+        'activo' => $this->activo,
+        'categoria' => $this->category?->nombre,
+        'imagenes' => $this->galeria->pluck('url'),
+    ];
     }
 }

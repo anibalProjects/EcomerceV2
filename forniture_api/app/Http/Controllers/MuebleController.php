@@ -6,6 +6,7 @@ use App\Models\Mueble;
 use Illuminate\Http\Request;
 use App\Http\Resources\MuebleResource;
 use App\Http\Requests\StoreMuebleRequest;
+use App\Http\Requests\UpdateMuebleRequest;
 
 class MuebleController extends Controller
 {
@@ -19,6 +20,23 @@ class MuebleController extends Controller
             ->deCategoria($request->query('categoria_id')) 
             ->ordenarPrecio($request->query('orden', 'asc')) 
             ->get();
+
+        return MuebleResource::collection($muebles);
+    }
+
+    /**
+     * Display a listing of specific resources (for cart).
+     */
+    public function showByIds(Request $request)
+    {
+        $ids = $request->query('ids');
+
+        if (!$ids) {
+            return response()->json(['mensaje' => 'No se proporcionaron IDs'], 400);
+        }
+
+        $arrayIds = explode(',', $ids);
+        $muebles = Mueble::with(['category', 'galeria'])->whereIn('id', $arrayIds)->get();
 
         return MuebleResource::collection($muebles);
     }
@@ -53,16 +71,32 @@ class MuebleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        //
+    public function update(UpdateMuebleRequest $request, string $id) // Usa el Request específico aquí
+{
+    $mueble = Mueble::findOrFail($id);
+
+    if (!$request->user()->tokenCan('muebles.editar')) {
+        return response()->json(['mensaje' => 'No tienes permiso para editar muebles'], 403);
     }
+
+    $mueble->update($request->validated());
+
+    return new MuebleResource($mueble);
+}
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id, Request $request)
     {
-        //
+
+        $mueble = Mueble::findOrFail($id);
+
+        if (!$request->user()->tokenCan('muebles.eliminar')) {
+            return response()->json(['mensaje' => 'No tienes permiso para eliminar muebles'], 403);
+        }
+        $mueble->delete();
+
+        return response()->json(['mensaje' => 'Mueble eliminado correctamente'], 200);
     }
 }
