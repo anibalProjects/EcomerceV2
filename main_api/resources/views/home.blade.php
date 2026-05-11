@@ -52,11 +52,13 @@
                 <i class="bi bi-gear-fill me-2"></i> Preferencias
             </a>
         </li>
+        @if($usuario->rol === 1)
         <li>
             <a class="dropdown-item" href="{{ route('admin.muebles.index') }}">
                 <i class="bi bi-gear-fill me-2"></i> Ir a administración
             </a>
         </li>
+        @endif
         <li>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
