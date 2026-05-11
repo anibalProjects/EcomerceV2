@@ -10,15 +10,13 @@
 <body>
 
 @php
-    $sessionId = request()->query('sesionId');
     $usuarios = Session::get('usuarios_sesion', []);
-    $usuario = isset($usuarios[$sessionId]) ? json_decode($usuarios[$sessionId]) : null;
     //dd(session()->all());
 @endphp
 @if ($usuario)
     <h1>Pagina Prueba</h1>
     <p>Usuario: {{ $usuario->nombre }}</p>
-    <form method="POST" action="{{ route('logout') }}?sesionId={{ $sessionId }}">
+    <form method="POST" action="{{ route('logout') }}">
         @csrf
         <button type="submit">Cerrar sesión</button>
     </form>

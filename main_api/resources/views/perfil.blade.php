@@ -31,9 +31,9 @@
                         <div class="form-control">{{ $usuario->email ?? '-' }}</div>
                     </div>
                     <div class="d-flex justify-content-end gap-2 mt-4">
-                        <a href="{{ route('muebles.index', ['sesionId' => $sesionId]) }}" class="btn btn-secondary">Volver</a>
+                        <a href="{{ route('muebles.index') }}" class="btn btn-secondary">Volver</a>
                         @if(!empty($usuario->id))
-                            <a href="{{ route('preferencias.index', ['userId' => $usuario->id, 'sesionId' => $sesionId]) }}" class="btn btn-primary">
+                            <a href="{{ route('preferencias.index', ['userId' => $usuario->id]) }}" class="btn btn-primary">
                                 Preferencias
                             </a>
                         @endif

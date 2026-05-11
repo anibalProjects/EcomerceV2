@@ -84,7 +84,6 @@ class LoginController extends Controller
         }
 
         $sesionId = $request->query('sesionId', session()->getId());
-
         return view('perfil', compact('usuario', 'sesionId'));
     }
 

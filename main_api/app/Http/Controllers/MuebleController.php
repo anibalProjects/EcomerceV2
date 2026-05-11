@@ -22,27 +22,25 @@ class MuebleController extends Controller
      */
     public function index(Request $request)
     {
-        $sesionId = $request->sesionId ?? session()->getId();
-        
-
+        //$sesionId = $request->sesionId ?? session()->getId();
         
         // Consumimos la API de Muebles
         try {
             $url = env('FORNITURE_API_URL') . '/muebles';
             $response = Http::get($url);
             
+            
             if ($response->successful()) {
                 $mueblesData = json_decode($response->body());
-                $muebles = collect($mueblesData);
+                $muebles = collect($mueblesData->data);
             } else {
                 $muebles = collect([]);
             }
         } catch (\Exception $e) {
             $muebles = collect([]);
         }
-
         // Otros datos necesarios
-        $preferencias = CookiePersonalizacion::getPersonalizacion($sesionId);
+        //$preferencias = CookiePersonalizacion::getPersonalizacion($sesionId);
         $tema = $preferencias['tema'] ?? 'light';
         $moneda = $preferencias['moneda'] ?? 'EUR';
         $usuario = Session::get('usuario_logueado');
@@ -51,8 +49,8 @@ class MuebleController extends Controller
         
         // De momento, categorías vacías hasta que hagamos el endpoint en la API
         $categorias = collect([]); 
-
-        return view('home', compact('muebles', 'categorias', 'sesionId', 'usuario', 'tema', 'moneda'));
+        
+        return view('home', compact('muebles', 'categorias', 'usuario', 'tema', 'moneda'));
     }
 
     public function getGaleria($sesionId)
@@ -75,7 +73,7 @@ class MuebleController extends Controller
      */
     public function show(string $id, Request $request)
     {
-        $sesionId = $request->input('sesionId') ?? session()->getId();
+        //$sesionId = $request->input('sesionId') ?? session()->getId();
         
         // Pedimos el mueble a la API
         $url = env('FORNITURE_API_URL') . '/muebles/' . $id;
@@ -84,13 +82,13 @@ class MuebleController extends Controller
         if ($response->failed()) {
             abort(404, 'Mueble no encontrado en la API');
         }
-        $mueble = json_decode($response->body());
+        $mueble = json_decode($response->body())->data;
 
-        $preferencias = CookiePersonalizacion::getPersonalizacion($sesionId);
+        //$preferencias = CookiePersonalizacion::getPersonalizacion($sesionId);
         $tema = $preferencias['tema'] ?? 'light';
         $moneda = $preferencias['moneda'] ?? 'EUR';
 
-        return view('showMueble', compact('mueble', 'productosRelacionados', 'sesionId', 'moneda', 'tema'));
+        return view('showMueble', compact('mueble', /* 'productosRelacionados' */'moneda', 'tema'));
     }
 
     public function edit(string $id)
@@ -120,67 +118,87 @@ class MuebleController extends Controller
             }
         }
 
-        $query = Mueble::query()
-                        ->with('categoria')
-                        ->where('activo', 1);
+        try {
+            $url = env('FORNITURE_API_URL') . '/muebles';
+            $response = Http::get($url);
+            
+            if ($response->successful()) {
+                $mueblesData = json_decode($response->body());
+                $muebles = collect($mueblesData);
+            } else {
+                $muebles = collect([]);
+            }
+        } catch (\Exception $e) {
+            $muebles = collect([]);
+        }
 
         if (isset($filtro['nombre'])) {
-            $query->where('nombre', 'like', '%' . $filtro['nombre'] . '%');
+            $termino = strtolower($filtro['nombre']);
+            $muebles = $muebles->filter(function ($mueble) use ($termino) {
+                return str_contains(strtolower($mueble->nombre), $termino);
+            });
         }
-        if (isset($filtro['categoria_id'])) {
-            $query->where('categoria_id', $filtro['categoria_id']);
-        }
-        if (isset($filtro['precio_min']) && isset($filtro['precio_max'])) {
-            $query->whereBetween('precio', [$filtro['precio_min'], $filtro['precio_max']]);
-        }
-        if (isset($filtro['color'])) {
-            $query->where('color', 'like', '%' . $filtro['color'] . '%');
-        }
-        if (isset($filtro['novedad'])) {
-            $query->where('novedad', 1);
-        }
+    if (isset($filtro['categoria_id'])) {
+        $muebles = $muebles->where('categoria_id', $filtro['categoria_id']);
+    }
+    if (isset($filtro['precio_min'])) {
+        $muebles = $muebles->where('precio', '>=', $filtro['precio_min']);
+    }
+    if (isset($filtro['precio_max'])) {
+        $muebles = $muebles->where('precio', '<=', $filtro['precio_max']);
+    }
+    if (isset($filtro['color'])) {
+        $muebles = $muebles->filter(function ($mueble) use ($filtro) {
+            return str_contains(strtolower($mueble->color), strtolower($filtro['color']));
+        });
+    }
+    if (isset($filtro['novedad'])) {
+        $muebles = $muebles->where('novedad', 1);
+    }
+       
 
-        $sesionId = $request->sesionId;
+        //$sesionId = $request->sesionId;
 
-        return $this->ordenar($query, $request->orden ?? '', $filtro, $sesionId);
+        return $this->ordenar($muebles, $request->orden ?? '', $filtro);
     }
 
-    public function ordenar($query, $orden, $filtro, $sesionId)
+    public function ordenar($muebles, $orden, $filtro)
     {
         switch ($orden) {
-            case 'precio_asc':
-                $query->orderBy('precio', 'asc');
-                break;
-            case 'precio_desc':
-                $query->orderBy('precio', 'desc');
-                break;
-            case 'nombre_asc':
-                $query->orderBy('nombre', 'asc');
-                break;
-            case 'nombre_desc':
-                $query->orderBy('nombre', 'desc');
-                break;
-            default:
-                $query->orderBy('created_at', 'desc');
-        }
+        case 'precio_asc':
+            $muebles = $muebles->sortBy('precio');
+            break;
+        case 'precio_desc':
+            $muebles = $muebles->sortByDesc('precio');
+            break;
+        case 'nombre_asc':
+            $muebles = $muebles->sortBy('nombre');
+            break;
+        case 'nombre_desc':
+            $muebles = $muebles->sortByDesc('nombre');
+            break;
+        default:
+            $muebles = $muebles->sortByDesc('created_at');
+    }
+
 
         $categorias = Categoria::all();
 
-        $preferencias = CookiePersonalizacion::getPersonalizacion($sesionId);
-        $tema = $preferencias['tema'];
-        $moneda = $preferencias['moneda'];
+        //$preferencias = CookiePersonalizacion::getPersonalizacion($sesionId);
+        //$tema = $preferencias['tema'];
+        //$moneda = $preferencias['moneda'];
         $usuario = Session::get('usuario_logueado');
         $usuario = $usuario ? (object) $usuario : null;
-        $muebles = $query->paginate($preferencias['paginacion'])->withQueryString();
+        //$muebles = $muebles->paginate(12)->withQueryString();
 
         return view('home', [
             'muebles' => $muebles,
             'categorias' => $categorias,
             'filtro' => $filtro,
             'orden' => $orden,
-            'sesionId' => $sesionId,
-            'tema' => $tema,
-            'moneda' => $moneda,
+            //'sesionId' => $sesionId,
+            //'tema' => $tema,
+            //'moneda' => $moneda,
             'usuario' => $usuario,
         ]);
     }
