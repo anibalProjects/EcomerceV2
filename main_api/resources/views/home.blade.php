@@ -176,7 +176,7 @@
                             <div class="card-body">
                                 <h5 class="card-title">{{ $mueble->nombre_producto }}</h5>
                                 <p class="producto-price card-text fw-bold text-success">
-                                    {{ number_format($mueble->precio_venta, 2) }} {{-- {{ $moneda }} --}}
+                                    {{ number_format($mueble->precio_venta, 2) }} {{ $moneda }}
                                 </p>
                             </div>
                         </a>

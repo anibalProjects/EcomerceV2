@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\CookiePersonalizacion;
 use App\Models\Carrito;
 use App\Models\CarritoProducto;
 use App\Models\Mueble;
@@ -42,8 +43,9 @@ class carritoController extends Controller
 
             $total = $productosDelCarrito->sum('subtotal');
 
-            $tema  = 'light';
-            $moneda = 'EUR';
+            $preferencias = CookiePersonalizacion::getPersonalizacion(null, $usuario['datos']['usuario']['id']);
+            $tema = $preferencias['tema'];
+            $moneda = $preferencias['moneda'];
 
             return view('carrito.carritoView', compact('usuario', 'productosDelCarrito', 'tema', 'moneda', 'total'));
         }else{
@@ -112,8 +114,8 @@ class carritoController extends Controller
     public function update($producto_id, AuthApiService $authApiService, Request $request){
         //Datos del usuario
         $usuario = $authApiService->validateToken(Session::get('api_token'));
-        
-        
+
+
 
         $carrito = Carrito::where('usuario_id', $usuario['datos']['usuario']['id'])->first();
 
@@ -178,11 +180,9 @@ class carritoController extends Controller
             }
             $productosDelCarrito = $carrito->muebles;
 
-            /* $preferencias = CookiePersonalizacion::getPersonalizacion($sesionId);
+            $preferencias = CookiePersonalizacion::getPersonalizacion(null, $usuario['datos']['usuario']['id']);
             $tema = $preferencias['tema'];
-            $moneda = $preferencias['moneda']; */
-            $tema = "claro";
-            $moneda = "euro";
+            $moneda = $preferencias['moneda'];
             return view('carrito.carritoFactura', compact('usuario','email' ,'productosDelCarrito', 'tema', 'moneda'));
         }else{
             return redirect()->route('login.mostrar')->with('error', 'debes iniciar sesion');
