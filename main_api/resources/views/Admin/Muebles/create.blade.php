@@ -102,7 +102,12 @@
                     <div class="row g-3">
                         <div class="col-md-12 mb-3">
                             <label for="color" class="form-label">Color</label>
-                            <input type="text" id="color" name="color" value="{{ old('color') }}" class="form-control form-control-lg py-2">
+                            <select id="color" name="color" class="form-select form-select-lg py-2">
+                                <option value="">Seleccione un color</option>
+                                @foreach(['black','white','red','blue','green','grey','brown','oak','walnut','cherry'] as $c)
+                                    <option value="{{ $c }}" {{ old('color') === $c ? 'selected' : '' }}>{{ ucfirst($c) }}</option>
+                                @endforeach
+                            </select>
                             @error('color') <div class="text-danger">{{ $message }}</div> @enderror
                         </div>
                     </div>

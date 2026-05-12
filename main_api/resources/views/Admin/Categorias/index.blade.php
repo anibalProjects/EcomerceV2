@@ -73,7 +73,6 @@
                     <tr>
                         <th>ID</th>
                         <th>Nombre</th>
-                        <th>Descripción</th>
                         <th>Productos</th>
                         <th class="text-center">Acciones</th>
                     </tr>
@@ -83,9 +82,8 @@
                     <tr class="categoria-row">
                         <td class="text-muted">#{{ str_pad($categoria->id, 4, '0', STR_PAD_LEFT) }}</td>
                         <td class="categoria-nombre">{{ $categoria->nombre }}</td>
-                        <td class="categoria-desc">{{ Str::limit($categoria->descripcion, 60) }}</td>
                         <td>
-                            <span class="badge bg-info">{{ $categoria->muebles->count() }}</span>
+                            <span class="badge bg-info">{{ $categoria->muebles_count ?? 0 }}</span>
                         </td>
                         <td class="d-flex gap-1 justify-content-center">
                             <a href="{{ route('admin.categorias.edit', [$categoria->id]) }}" class="btn btn-warning btn-sm">

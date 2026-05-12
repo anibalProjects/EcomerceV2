@@ -215,7 +215,7 @@ class carritoController extends Controller
             ]);
         });
 
-        $preferencias = CookiePersonalizacion::getPersonalizacion(null, $usuario->id);
+        $preferencias = CookiePersonalizacion::getPersonalizacion(null, $usuario['datos']['usuario']['id']);
         $tema = $preferencias['tema'];
         $moneda = $preferencias['moneda'];
 

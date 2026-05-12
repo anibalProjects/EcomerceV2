@@ -109,7 +109,7 @@
                 <label for="color">Color:</label>
                 <select name="filtro[color]" id="color" class="form-select">
                     <option value="">-- Selecciona --</option>
-                    @foreach(['black','white','red','blue','green','grey','brown'] as $c)
+                    @foreach(['black','white','red','blue','green','grey','brown','oak','walnut','cherry'] as $c)
                         <option value="{{ $c }}" {{ ($filtro['color'] ?? '') === $c ? 'selected' : '' }}>{{ ucfirst($c) }}</option>
                     @endforeach
                 </select>

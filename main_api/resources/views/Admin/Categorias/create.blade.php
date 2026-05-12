@@ -61,11 +61,6 @@
                         @error('nombre') <div class="text-danger">{{ $message }}</div> @enderror
                     </div>
 
-                    <div class="mb-3">
-                        <label for="descripcion" class="form-label">Descripción</label>
-                        <textarea id="descripcion" name="descripcion" required class="form-control form-control-lg py-2">{{ old('descripcion') }}</textarea>
-                        @error('descripcion') <div class="text-danger">{{ $message }}</div> @enderror
-                    </div>
 
                     <div class="btn-group-cat">
                         <button type="submit" class="btn btn-primary">
