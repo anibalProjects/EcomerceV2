@@ -130,7 +130,7 @@ class MuebleController extends Controller
         if (isset($filtro['nombre'])) {
             $termino = strtolower($filtro['nombre']);
             $muebles = $muebles->filter(function ($mueble) use ($termino) {
-                return str_contains(strtolower($mueble->nombre), $termino);
+                return str_contains(strtolower($mueble->nombre_producto), $termino);
             });
         }
     if (isset($filtro['categoria_id'])) {
@@ -139,10 +139,10 @@ class MuebleController extends Controller
         });
     }
     if (isset($filtro['precio_min'])) {
-        $muebles = $muebles->where('precio', '>=', $filtro['precio_min']);
+        $muebles = $muebles->where('precio_venta', '>=', $filtro['precio_min']);
     }
     if (isset($filtro['precio_max'])) {
-        $muebles = $muebles->where('precio', '<=', $filtro['precio_max']);
+        $muebles = $muebles->where('precio_venta', '<=', $filtro['precio_max']);
     }
     if (isset($filtro['color'])) {
         $muebles = $muebles->filter(function ($mueble) use ($filtro) {
@@ -161,16 +161,16 @@ class MuebleController extends Controller
     {
         switch ($orden) {
         case 'precio_asc':
-            $muebles = $muebles->sortBy('precio');
+            $muebles = $muebles->sortBy('precio_venta');
             break;
         case 'precio_desc':
-            $muebles = $muebles->sortByDesc('precio');
+            $muebles = $muebles->sortByDesc('precio_venta');
             break;
         case 'nombre_asc':
-            $muebles = $muebles->sortBy('nombre');
+            $muebles = $muebles->sortBy('nombre_producto');
             break;
         case 'nombre_desc':
-            $muebles = $muebles->sortByDesc('nombre');
+            $muebles = $muebles->sortByDesc('nombre_producto');
             break;
         default:
             $muebles = $muebles->sortByDesc('created_at');

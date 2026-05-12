@@ -6,6 +6,7 @@ use App\Http\Controllers\MuebleController;
     Route::get('/muebles',      [MuebleController::class, 'index']);
     Route::get('/muebles/{id}', [MuebleController::class, 'show']);
     Route::get('/muebles-lista', [MuebleController::class, 'showByIds']);
+    Route::post('/muebles/{id}/reduce-stock', [MuebleController::class, 'reduceStock']);
 // ─── muebles.crear ───────────────────────────────────────────────────────────
 Route::middleware('check.abilities:muebles.crear')->group(function () {
     Route::post('/muebles', [MuebleController::class, 'store']);

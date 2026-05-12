@@ -173,12 +173,23 @@
                                     <img src="{{ $imgUrl }}" alt="{{ $mueble->nombre_producto }}" style="width: 150px; height: 150px; object-fit: cover;">
                                 </div>
                             </div>
-                            <div class="card-body">
-                                <h5 class="card-title">{{ $mueble->nombre_producto }}</h5>
-                                <p class="producto-price card-text fw-bold text-success">
-                                    {{ number_format($mueble->precio_venta, 2) }} {{-- {{ $moneda }} --}}
-                                </p>
-                            </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ $mueble->nombre_producto }}</h5>
+                                    
+                                    @if (($mueble->stock_disponible ?? 0) == 0)
+                                        <div class="text-danger small fw-bold mb-1">
+                                            <i class="bi bi-x-circle-fill me-1"></i> Sin stock
+                                        </div>
+                                    @elseif ($mueble->stock_disponible < 5)
+                                        <div class="text-warning small fw-bold mb-1">
+                                            <i class="bi bi-exclamation-circle-fill me-1"></i> ¡Últimas {{ $mueble->stock_disponible }} unidades!
+                                        </div>
+                                    @endif
+
+                                    <p class="producto-price card-text fw-bold text-success">
+                                        {{ number_format($mueble->precio_venta, 2) }} {{ $moneda ?? 'EUR' }}
+                                    </p>
+                                </div>
                         </a>
                         <div class="card-footer bg-white border-0">
                             <form method="POST" action="{{ route('carrito.store') }}" class="add-cart-form">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Categoria;
+use App\Services\CategoryService;
 use Illuminate\Http\Request;
 
 class CategoriaController extends Controller
@@ -10,9 +11,10 @@ class CategoriaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(CategoryService $categoriaService)
     {
-        $categorias = Categoria::all();
+        
+        $categorias = $categoriaService->getCategories();
         return view('welcome', [$categorias]);
     }
 

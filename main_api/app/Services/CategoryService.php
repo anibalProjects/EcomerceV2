@@ -4,7 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 
-class FurnitureServices
+class CategoryService
 {
     protected string $baseUrl;
 
@@ -15,13 +15,11 @@ class FurnitureServices
     }
 
     // Definimos el servicio de Login para acceder a la otra API
-    public function getMueblesByIds(array $ids): array
+    public function getCategories(): array
     {
         $response = Http::acceptJson()
             ->timeout(10)
-            ->get($this->baseUrl . '/muebles-lista', [
-                'ids' => $ids,
-            ]);
+            ->get($this->baseUrl . '/categorias');
 
         return [
             'estado' => $response->status(),
@@ -29,17 +27,16 @@ class FurnitureServices
         ];
     }
 
-    public function reduceStock(int $id, int $cantidad): array
+    public function getCategoryById(int $id): array
     {
         $response = Http::acceptJson()
             ->timeout(10)
-            ->post($this->baseUrl . '/muebles/' . $id . '/reduce-stock', [
-                'cantidad' => $cantidad,
-            ]);
+            ->get($this->baseUrl . '/categorias/' . $id);
 
         return [
             'estado' => $response->status(),
             'datos' => $response->json(),
         ];
     }
+
 }

@@ -193,28 +193,27 @@
                                 @php $total = 0; @endphp
                                 @foreach($productosDelCarrito as $item)
                                     @php
-                                        $cantidad = $item->pivot->cantidad;
-                                        $subtotal = $item->precio * $cantidad;
+                                        $cantidad = $item['cantidad'];
+                                        $subtotal = $item['precio_venta'] * $cantidad;
                                         $total += $subtotal;
-                                        $imagen = $item->galeria()->where('es_principal', true)->first() ?? $item->galeria()->first();
-                                        $imgUrl = $imagen
-                                            ? route('imagen.mueble', ['path' => rawurlencode($imagen->ruta)])
+                                        $imgUrl = !empty($item['imagenes'])
+                                            ? $item['imagenes'][0]
                                             : asset('images/muebles/placeholder.jpg');
                                     @endphp
 
                                     <tr>
                                         <td>
                                             <div class="d-flex align-items-center">
-                                                <img src="{{ $imgUrl }}" alt="{{ $item->nombre }}" style="width:70px;height:60px;object-fit:cover;border-radius:6px;border:1px solid rgba(255,255,255,0.08);">
+                                                <img src="{{ $imgUrl }}" alt="{{ $item['nombre_producto'] }}" style="width:70px;height:60px;object-fit:cover;border-radius:6px;border:1px solid rgba(255,255,255,0.08);">
                                                 <div class="ms-3">
-                                                    <div class="fw-bold">{{ $item->nombre }}</div>
-                                                    <small class="text-muted">ID #{{ str_pad($item->id,5,'0',STR_PAD_LEFT) }}</small>
+                                                    <div class="fw-bold">{{ $item['nombre_producto'] }}</div>
+                                                    <small class="text-muted">ID #{{ str_pad($item['id'], 5, '0', STR_PAD_LEFT) }}</small>
                                                 </div>
                                             </div>
                                         </td>
 
                                         <td class="text-center">{{ $cantidad }}</td>
-                                        <td class="text-end">{{ number_format($item->precio, 2, ',', '.') }} {{ $moneda }}</td>
+                                        <td class="text-end">{{ number_format($item['precio_venta'], 2, ',', '.') }} {{ $moneda }}</td>
                                         <td class="text-end fw-bold text-success">{{ number_format($subtotal, 2, ',', '.') }} {{ $moneda }}</td>
                                     </tr>
                                 @endforeach
@@ -257,15 +256,12 @@
                 <div class="card-footer d-flex justify-content-between align-items-center">
                     <small class="text-muted">Gracias por comprar en <strong>LECTONIC</strong></small>
 
-                    <div class="d-flex gap-2">
-                        <form action="{{ route('carrito.returnFromBuy', ['sesionId' => $sesionId]) }}" method="GET">
-                            <button type="submit" class="btn btn-primary">
-                                <input type="hidden" name="sesionId" value="{{ $sesionId }}">
+                        <div class="d-flex gap-2">
+                            <a href="{{ route('muebles.index') }}" class="btn btn-primary">
                                 <i class="bi bi-shop me-1"></i> Seguir Comprando
-                            </button>
-                        </form>
+                            </a>
 
-                        <button onclick="window.print()" class="btn btn-outline-secondary">
+                            <button onclick="window.print()" class="btn btn-outline-secondary">
                             <i class="bi bi-printer me-1"></i> Imprimir
                         </button>
                     </div>

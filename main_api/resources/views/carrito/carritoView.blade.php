@@ -229,6 +229,12 @@
                                     <span class="mx-2">·</span>
                                     <span>ID: #{{ str_pad($item['id'], 5, '0', STR_PAD_LEFT) }}</span>
                                     <div class="small-muted mt-1">{{ Str::limit($item['descripcion'] ?? '', 80) }}</div>
+                                    @if ($item['cantidad'] > $item['stock_disponible'])
+                                        <div class="text-danger mt-2 small fw-bold">
+                                            <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                                            Stock insuficiente (Disponibles: {{ $item['stock_disponible'] }})
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
 
@@ -289,6 +295,12 @@
                         <span class="total-strong">{{ number_format($total + $iva, 2, ',', '.') }} {{ $moneda }}</span>
                     </div>
 
+                    @php
+                        $hayStockInsuficiente = $productosDelCarrito->contains(function ($item) {
+                            return $item['cantidad'] > $item['stock_disponible'];
+                        });
+                    @endphp
+
                     <div class="actions-row">
                         <form action="{{ route('carrito.empty') }}" method="POST">
                             @csrf
@@ -297,9 +309,18 @@
 
                         <form action="{{ route('carrito.buy') }}" method="POST">
                             @csrf
-                            <button type="submit" class="btn btn-primary">Procesar Compra</button>
+                            <button type="submit" class="btn btn-primary" {{ $hayStockInsuficiente ? 'disabled' : '' }}>
+                                Procesar Compra
+                            </button>
                         </form>
                     </div>
+
+                    @if ($hayStockInsuficiente)
+                        <div class="text-danger small mt-2 text-center">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Ajusta las cantidades para continuar con la compra.
+                        </div>
+                    @endif
 
                     <div class="mt-3 small-muted text-center">
                         Envío y métodos de pago se configuran en el siguiente paso.

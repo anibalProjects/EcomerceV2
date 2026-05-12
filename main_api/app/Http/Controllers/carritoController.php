@@ -51,43 +51,49 @@ class carritoController extends Controller
         }
     }
 
-    public function store(Request $request, AuthApiService $authApiService){
-
+    public function store(Request $request, AuthApiService $authApiService, FurnitureServices $furnitureServices)
+    {
         $request->validate([
             'cantidad' => 'required|int|min:1|max:10'
         ]);
 
         $token = Session::get('api_token');
         $usuario = $authApiService->validateToken($token);
-        if($usuario){
-                //Busco el carrito del usuario o si no lo creo
-                $carrito = Carrito::firstOrCreate(
-                    ['usuario_id' => $usuario['datos']['usuario']['id']],
-                );
 
-                //buscar el producto
-                $producto_id = $request->producto_id;
-                $producto = Mueble::find($producto_id);
-                $cantidad = (int) $request->cantidad;
+        if ($usuario && $usuario['estado'] === 200) {
+            // Busco el carrito del usuario o si no lo creo
+            $carrito = Carrito::firstOrCreate(
+                ['usuario_id' => $usuario['datos']['usuario']['id']],
+            );
 
-                // Comprobar que hay stock
-                if ($producto->stock >= $cantidad) {
-                    //compruebo si el producto esta en el carrito
-                    $productoEnCarrito = $carrito->muebles()->where('mueble_id', $producto_id)->first();
-                    //Si existe edito cantidad  de ese producto que esta asociada a ese carrito si no la inserto al carrito
-                    if ($productoEnCarrito) {
-                        $nuevaCantidad = $productoEnCarrito->pivot->cantidad + $cantidad;
-                        $carrito->muebles()->updateExistingPivot($producto_id, ['cantidad' => $nuevaCantidad]);
-                    } else {
+            // Buscar el producto en la API
+            $producto_id = $request->producto_id;
+            $response = $furnitureServices->getMueblesByIds([$producto_id]);
+            $muebleData = $response['datos']['data'][0] ?? null;
+            $cantidad = (int) $request->cantidad;
 
-                        $carrito->muebles()->attach($producto_id, ['cantidad' => $cantidad]);
-                    }
-                    return redirect()->back()->with('success', 'Producto' . $producto->nombre . 'añadido al carrito.');
+            if (!$muebleData) {
+                return redirect()->back()->with('error', 'Producto no encontrado en el catálogo.');
+            }
+
+            // Comprobar que hay stock en la API
+            if ($muebleData['stock_disponible'] >= $cantidad) {
+                // Compruebo si el producto ya está en el carrito
+                $productoEnCarrito = $carrito->muebles()->where('mueble_id', $producto_id)->first();
+
+                if ($productoEnCarrito) {
+                    $nuevaCantidad = $productoEnCarrito->pivot->cantidad + $cantidad;
+                    $carrito->muebles()->updateExistingPivot($producto_id, ['cantidad' => $nuevaCantidad]);
                 } else {
-                    return redirect()->back()->with('error', 'No hay stock suficiente del producto' . $producto->nombre);
+                    $carrito->muebles()->attach($producto_id, ['cantidad' => $cantidad]);
                 }
-        }else{
-            return redirect()->route('login.mostrar')->with('error', 'debes iniciar sesion para añadir productos al carrito');
+
+                return redirect()->back()->with('success', 'Producto ' . $muebleData['nombre_producto'] . ' añadido al carrito.');
+            } else {
+                return redirect()->back()->with('error', 'No hay stock suficiente del producto ' . $muebleData['nombre_producto']);
+            }
+        } else {
+            return redirect()->route('login.mostrar')->with('error', 'Debes iniciar sesión para añadir productos al carrito');
         }
     }
 
@@ -162,41 +168,60 @@ class carritoController extends Controller
         }
     }
 
-      public function buy(Request $request, AuthApiService $authApiService){
+    public function buy(Request $request, AuthApiService $authApiService, FurnitureServices $furnitureService)
+    {
+        $token = Session::get('api_token');
+        $usuario = $authApiService->validateToken($token);
 
-        $usuario = $authApiService->validateToken(Session::get('api_token'));
-        $carrito = Carrito::where('usuario_id', $usuario['datos']['usuario']['id'])->first();
-        $email = ["email"=> $usuario['datos']['usuario']['email']];
-        if($usuario){
-            foreach ($carrito->muebles as $mueble) {
-                if($mueble->stock >= $mueble->pivot->cantidad){
-                    $mueble->stock -= $mueble->pivot->cantidad;
-                    $mueble->save();
-                }else{
-                    return redirect()->back()->with('error', 'No hay stock suficiente para completar la compra del producto: ' . $mueble->nombre);
-                }
-            }
-            $productosDelCarrito = $carrito->muebles;
-
-            /* $preferencias = CookiePersonalizacion::getPersonalizacion($sesionId);
-            $tema = $preferencias['tema'];
-            $moneda = $preferencias['moneda']; */
-            $tema = "claro";
-            $moneda = "euro";
-            return view('carrito.carritoFactura', compact('usuario','email' ,'productosDelCarrito', 'tema', 'moneda'));
-        }else{
-            return redirect()->route('login.mostrar')->with('error', 'debes iniciar sesion');
+        if (!$usuario || $usuario['estado'] !== 200) {
+            return redirect()->route('login.mostrar')->with('error', 'Debes iniciar sesión para comprar.');
         }
+
+        $carrito = Carrito::where('usuario_id', $usuario['datos']['usuario']['id'])->first();
+        
+        if (!$carrito || $carrito->muebles()->count() === 0) {
+            return redirect()->back()->with('error', 'Tu carrito está vacío.');
+        }
+
+        $email = $usuario['datos']['usuario']['email'];
+        $carritoProductos = CarritoProducto::where('carrito_id', $carrito->id)->get();
+        
+        $response = $furnitureService->getMueblesByIds($carritoProductos->pluck('mueble_id')->toArray());
+        $mueblesApi = collect($response['datos']['data'] ?? []);
+
+        //valido el stock desde la api
+        foreach ($mueblesApi as $muebleData) {
+            $itemCarrito = $carritoProductos->where('mueble_id', $muebleData['id'])->first();
+            if (!$itemCarrito) continue;
+
+            if ($muebleData['stock_disponible'] < $itemCarrito->cantidad) {
+                return redirect()->back()->with('error', 'No hay stock suficiente para el producto: ' . $muebleData['nombre_producto']);
+            }
+
+            // Reducir stock en la API de muebles
+            $furnitureService->reduceStock($muebleData['id'], $itemCarrito->cantidad);
+        }
+
+        $productosDelCarrito = $mueblesApi->map(function ($mueble) use ($carritoProductos) {
+            $product = $carritoProductos->where('mueble_id', $mueble['id'])->first();
+            $cantidad = $product ? $product->cantidad : 1;
+            return array_merge($mueble, [
+                'cantidad' => $cantidad,
+                'subtotal' => $mueble['precio_venta'] * $cantidad
+            ]);
+        });
+
+        $tema = "claro";
+        $moneda = "EUR";
+
+        // Vaciar el carrito después de la compra exitosa
+        CarritoProducto::where('carrito_id', $carrito->id)->delete();
+
+        return view('carrito.carritoFactura', compact('usuario', 'email', 'productosDelCarrito', 'tema', 'moneda'));
     }
 
-    public function returnFromBuy(Request $request, AuthApiService $authApiService){
-        $usuario = $authApiService->validateToken(Session::get('api_token'));
-
-        $carrito = Carrito::where('usuario_id', $usuario['datos']['usuario']['id'])->first();
-        $carrito->muebles()->detach();
-
+    public function show(string $id)
+    {
         return redirect()->route('muebles.index');
     }
-
-    public function show(string $id){}
 }
