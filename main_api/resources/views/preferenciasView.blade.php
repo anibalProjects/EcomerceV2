@@ -42,34 +42,31 @@
 
                         <div class="col-md-6">
                             <label for="moneda" class="form-label small text-muted">Moneda</label>
-                            @php $monedaCookie = Cookie::get('moneda') ?? 'EUR'; @endphp
                             <select id="moneda" name="moneda" class="form-select form-select-sm">
-                                <option value="EUR" {{ $monedaCookie == 'EUR' ? 'selected' : '' }}>Euro (€)</option>
-                                <option value="USD" {{ $monedaCookie == 'USD' ? 'selected' : '' }}>Dólar ($)</option>
-                                <option value="GBP" {{ $monedaCookie == 'GBP' ? 'selected' : '' }}>Libra (£)</option>
+                                <option value="EUR" {{ old('moneda', $moneda) == 'EUR' ? 'selected' : '' }}>Euro (€)</option>
+                                <option value="USD" {{ old('moneda', $moneda) == 'USD' ? 'selected' : '' }}>Dólar ($)</option>
+                                <option value="GBP" {{ old('moneda', $moneda) == 'GBP' ? 'selected' : '' }}>Libra (£)</option>
                             </select>
                         </div>
 
                         <div class="col-md-6">
                             <label for="paginacion" class="form-label small text-muted">Productos por página</label>
-                            @php $paginacion = Cookie::get('paginacion') ?? '12'; @endphp
                             <select id="paginacion" name="paginacion" class="form-select form-select-sm">
-                                <option value="6"  {{ $paginacion == '6'  ? 'selected' : '' }}>6</option>
-                                <option value="12" {{ $paginacion == '12' ? 'selected' : '' }}>12</option>
-                                <option value="24" {{ $paginacion == '24' ? 'selected' : '' }}>24</option>
+                                <option value="6"  {{ (string) old('paginacion', $paginacion) === '6' ? 'selected' : '' }}>6</option>
+                                <option value="12" {{ (string) old('paginacion', $paginacion) === '12' ? 'selected' : '' }}>12</option>
+                                <option value="24" {{ (string) old('paginacion', $paginacion) === '24' ? 'selected' : '' }}>24</option>
                             </select>
                         </div>
 
                         <div class="col-12 mt-2">
                             <label class="form-label small text-muted d-block mb-2">Tema visual</label>
-                            @php $temaCookie = Cookie::get('tema_visual') ?? 'claro'; @endphp
                             <div class="d-flex gap-3 align-items-center">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="tema" id="tema-claro" value="claro" {{ $temaCookie == 'claro' ? 'checked' : '' }}>
+                                    <input class="form-check-input" type="radio" name="tema" id="tema-claro" value="claro" {{ old('tema', $tema) == 'claro' ? 'checked' : '' }}>
                                     <label class="form-check-label small" for="tema-claro">Claro</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="tema" id="tema-oscuro" value="oscuro" {{ $temaCookie == 'oscuro' ? 'checked' : '' }}>
+                                    <input class="form-check-input" type="radio" name="tema" id="tema-oscuro" value="oscuro" {{ old('tema', $tema) == 'oscuro' ? 'checked' : '' }}>
                                     <label class="form-check-label small" for="tema-oscuro">Oscuro</label>
                                 </div>
                             </div>

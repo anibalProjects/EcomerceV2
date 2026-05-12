@@ -4,14 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Categoria;
 use App\Models\Mueble;
-use App\Models\UserPreference;
+use App\Http\Controllers\CookiePersonalizacion;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 
 use Illuminate\Support\Facades\Http;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class MuebleController extends Controller
 {
@@ -22,12 +20,12 @@ class MuebleController extends Controller
      */
     public function index(Request $request)
     {
-        
+
         // Consumimos la API de Muebles
         try {
             $url = env('FORNITURE_API_URL') . '/muebles';
             $response = Http::get($url);
-            
+
             if ($response->successful()) {
                 $mueblesData = json_decode($response->body());
                 $muebles = collect($mueblesData->data);
@@ -37,16 +35,19 @@ class MuebleController extends Controller
         } catch (\Exception $e) {
             $muebles = collect([]);
         }
-        // Otros datos necesarios
-        $tema = 'light';
-        $moneda = $preferencias['moneda'] ?? 'EUR';
+
         $usuario = Session::get('usuario_logueado');
         // Convertimos el array de sesión en objeto para que la vista pueda usar $usuario->nombre etc.
         $usuario = $usuario ? (object) $usuario : null;
-        
+        $preferencias = CookiePersonalizacion::getPersonalizacion(null, $usuario->id ?? null);
+        $tema = $preferencias['tema'];
+        $moneda = $preferencias['moneda'];
+
+        $usuario = $usuario ? (object) $usuario : null;
+
         // De momento, categorías vacías hasta que hagamos el endpoint en la API
-        $categorias = collect([]); 
-        
+        $categorias = collect([]);
+
         return view('home', compact('muebles', 'categorias', 'usuario', 'tema', 'moneda'));
     }
 
@@ -70,7 +71,7 @@ class MuebleController extends Controller
      */
     public function show(string $id, Request $request)
     {
-        
+
         // Pedimos el mueble a la API
         $url = env('FORNITURE_API_URL') . '/muebles/' . $id;
         $response = Http::get($url);
@@ -80,8 +81,11 @@ class MuebleController extends Controller
         }
         $mueble = json_decode($response->body())->data;
 
-        $tema = 'light';
-        $moneda = 'EUR';
+        $usuario = Session::get('usuario_logueado');
+        $usuario = $usuario ? (object) $usuario : null;
+        $preferencias = CookiePersonalizacion::getPersonalizacion(null, $usuario->id ?? null);
+        $tema = $preferencias['tema'];
+        $moneda = $preferencias['moneda'];
 
         return view('showMueble', compact('mueble', /* 'productosRelacionados' */'moneda', 'tema'));
     }
@@ -116,7 +120,7 @@ class MuebleController extends Controller
         try {
             $url = env('FORNITURE_API_URL') . '/muebles';
             $response = Http::get($url);
-            
+
             if ($response->successful()) {
                 $mueblesData = json_decode($response->body());
                 $muebles = collect($mueblesData->data);
@@ -181,6 +185,10 @@ class MuebleController extends Controller
 
         $usuario = Session::get('usuario_logueado');
         $usuario = $usuario ? (object) $usuario : null;
+        $preferencias = CookiePersonalizacion::getPersonalizacion(null, $usuario->id ?? null);
+        $tema = $preferencias['tema'];
+        $moneda = $preferencias['moneda'];
+
 
         return view('home', [
             'muebles' => $muebles,
@@ -188,6 +196,8 @@ class MuebleController extends Controller
             'filtro' => $filtro,
             'orden' => $orden,
             'usuario' => $usuario,
+            'tema' => $tema,
+            'moneda' => $moneda,
         ]);
     }
 

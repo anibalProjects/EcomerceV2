@@ -175,7 +175,7 @@
                             </div>
                                 <div class="card-body">
                                     <h5 class="card-title">{{ $mueble->nombre_producto }}</h5>
-                                    
+
                                     @if (($mueble->stock_disponible ?? 0) == 0)
                                         <div class="text-danger small fw-bold mb-1">
                                             <i class="bi bi-x-circle-fill me-1"></i> Sin stock
@@ -187,7 +187,7 @@
                                     @endif
 
                                     <p class="producto-price card-text fw-bold text-success">
-                                        {{ number_format($mueble->precio_venta, 2) }} {{ $moneda ?? 'EUR' }}
+                                        {{ number_format($mueble->precio_venta, 2) }} {{ $moneda }}
                                     </p>
                                 </div>
                         </a>

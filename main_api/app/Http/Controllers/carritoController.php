@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\CookiePersonalizacion;
 use App\Models\Carrito;
 use App\Models\CarritoProducto;
 use App\Models\Mueble;
@@ -42,8 +43,9 @@ class carritoController extends Controller
 
             $total = $productosDelCarrito->sum('subtotal');
 
-            $tema  = 'light';
-            $moneda = 'EUR';
+            $preferencias = CookiePersonalizacion::getPersonalizacion(null, $usuario['datos']['usuario']['id']);
+            $tema = $preferencias['tema'];
+            $moneda = $preferencias['moneda'];
 
             return view('carrito.carritoView', compact('usuario', 'productosDelCarrito', 'tema', 'moneda', 'total'));
         }else{
@@ -118,8 +120,8 @@ class carritoController extends Controller
     public function update($producto_id, AuthApiService $authApiService, Request $request){
         //Datos del usuario
         $usuario = $authApiService->validateToken(Session::get('api_token'));
-        
-        
+
+
 
         $carrito = Carrito::where('usuario_id', $usuario['datos']['usuario']['id'])->first();
 
@@ -180,14 +182,14 @@ class carritoController extends Controller
         }
 
         $carrito = Carrito::where('usuario_id', $usuario['datos']['usuario']['id'])->first();
-        
+
         if (!$carrito || $carrito->muebles()->count() === 0) {
             return redirect()->back()->with('error', 'Tu carrito está vacío.');
         }
 
         $email = $usuario['datos']['usuario']['email'];
         $carritoProductos = CarritoProducto::where('carrito_id', $carrito->id)->get();
-        
+
         $response = $furnitureService->getMueblesByIds($carritoProductos->pluck('mueble_id')->toArray());
         $mueblesApi = collect($response['datos']['data'] ?? []);
 
@@ -213,8 +215,9 @@ class carritoController extends Controller
             ]);
         });
 
-        $tema = "claro";
-        $moneda = "EUR";
+        $preferencias = CookiePersonalizacion::getPersonalizacion(null, $usuario->id);
+        $tema = $preferencias['tema'];
+        $moneda = $preferencias['moneda'];
 
         // Vaciar el carrito después de la compra exitosa
         CarritoProducto::where('carrito_id', $carrito->id)->delete();

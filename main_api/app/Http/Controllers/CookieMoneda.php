@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\UserPreference;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 
 class CookieMoneda extends Controller
@@ -17,19 +17,15 @@ class CookieMoneda extends Controller
     * @param Request $request
     * @return JsonResponse
     */
-    public static function guardarMoneda(Request $request): JsonResponse
+    public static function guardarMoneda(Request $request, $userId = null): JsonResponse
     {
-        $PREFERENCIA_MONEDA = 'moneda_'. Auth::user()->id;
+        $user = User::find($userId);
+
+        $PREFERENCIA_MONEDA = 'moneda_'. $user->id;
         $DURACION_COOKIE = 60 * 24 * 365;
         $datos = $request->validate([
             'moneda' => ['required', 'string', 'in:EUR,USD,GBP'],
         ]);
-
-        $user = Auth::user();
-
-        if (!$user) {
-            return response()->json(['mensaje' => 'Usuario no autenticado.'], 401);
-        }
 
         $user->preferences()->updateOrCreate(
             ['key' => $PREFERENCIA_MONEDA],
