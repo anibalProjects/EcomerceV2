@@ -152,17 +152,19 @@ class carritoController extends Controller
         }
     }
 
-    public function empty(Request $request)
+    public function empty(Request $request, AuthApiService $authApiService)
     {
 
-        $sesionId = $request->input('sesionId');
-        $usuario = User::buscarUsuario($sesionId);
+        $usuario = $authApiService->validateToken(Session::get('api_token'));
 
-        if ($usuario) {
-            $carrito = Carrito::where('usuario_id', $usuario->id)->first();
-            $carrito->muebles()->detach();
+        if ($usuario && $usuario['estado'] === 200) {
+            $carrito = Carrito::where('usuario_id', $usuario['datos']['usuario']['id'])->first();
+            if (!$carrito) {
+                return redirect()->route('carrito.index')->with('error', 'No hay carrito para vaciar.');
+            }
+            CarritoProducto::where('carrito_id', $carrito->id)->delete();
 
-            return redirect()->route('carrito.index', ['sesionId' => $sesionId]);
+            return redirect()->route('carrito.index')->with('success', 'Carrito vaciado correctamente');
         }else{
             return redirect()->route('login.mostrar')->with('error', 'debes iniciar sesion');
         }
