@@ -16,9 +16,9 @@ class MuebleController extends Controller
     public function index(Request $request)
     {
         $muebles = Mueble::with(['category', 'galeria'])
-            ->activos() 
-            ->deCategoria($request->query('categoria_id')) 
-            ->ordenarPrecio($request->query('orden', 'asc')) 
+            ->activos()
+            ->deCategoria($request->query('categoria_id'))
+            ->ordenarPrecio($request->query('orden', 'asc'))
             ->get();
 
         return MuebleResource::collection($muebles);
@@ -43,15 +43,12 @@ class MuebleController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     * (El middleware check.abilities ya garantiza el permiso.)
      */
     public function store(StoreMuebleRequest $request)
     {
-        if (!$request->user()->tokenCan('muebles.crear')) {
-            return response()->json(['mensaje' => 'No tienes permiso para crear muebles'], 403);
-        }
-
         $mueble = Mueble::create($request->validated());
-        return new MuebleResource($mueble);
+        return (new MuebleResource($mueble))->response()->setStatusCode(201);
     }
 
     /**
@@ -70,38 +67,28 @@ class MuebleController extends Controller
 
     /**
      * Update the specified resource in storage.
+     * (El middleware check.abilities ya garantiza el permiso.)
      */
-    public function update(UpdateMuebleRequest $request, string $id) // Usa el Request específico aquí
-{
-    $mueble = Mueble::findOrFail($id);
-
-    if (!$request->user()->tokenCan('muebles.editar')) {
-        return response()->json(['mensaje' => 'No tienes permiso para editar muebles'], 403);
+    public function update(UpdateMuebleRequest $request, string $id)
+    {
+        $mueble = Mueble::findOrFail($id);
+        $mueble->update($request->validated());
+        return new MuebleResource($mueble->fresh(['category', 'galeria']));
     }
-
-    $mueble->update($request->validated());
-
-    return new MuebleResource($mueble);
-}
 
     /**
      * Remove the specified resource from storage.
+     * (El middleware check.abilities ya garantiza el permiso.)
      */
-    public function destroy(string $id, Request $request)
+    public function destroy(string $id)
     {
-
         $mueble = Mueble::findOrFail($id);
-
-        if (!$request->user()->tokenCan('muebles.eliminar')) {
-            return response()->json(['mensaje' => 'No tienes permiso para eliminar muebles'], 403);
-        }
         $mueble->delete();
-
         return response()->json(['mensaje' => 'Mueble eliminado correctamente'], 200);
     }
 
     /**
-     * Reduce stock of a specific furniture.
+     * Reduce stock of a specific furniture (llamado internamente desde main_api al comprar).
      */
     public function reduceStock(Request $request, string $id)
     {
@@ -111,19 +98,26 @@ class MuebleController extends Controller
             return response()->json(['mensaje' => 'Mueble no encontrado'], 404);
         }
 
-        $cantidad = $request->input('cantidad', 1);
+        $request->validate([
+            'cantidad' => 'required|integer|min:1',
+        ]);
+
+        $cantidad = (int) $request->input('cantidad', 1);
 
         if ($mueble->stock < $cantidad) {
-            return response()->json(['mensaje' => 'Stock insuficiente para el producto: ' . $mueble->nombre], 400);
+            return response()->json([
+                'mensaje' => 'Stock insuficiente para el producto: ' . $mueble->nombre,
+                'stock_actual' => $mueble->stock,
+            ], 400);
         }
 
         $mueble->stock -= $cantidad;
         $mueble->save();
 
         return response()->json([
-            'mensaje' => 'Stock reducido correctamente',
-            'id' => $mueble->id,
-            'nuevo_stock' => $mueble->stock
+            'mensaje'     => 'Stock reducido correctamente',
+            'id'          => $mueble->id,
+            'nuevo_stock' => $mueble->stock,
         ], 200);
     }
 }

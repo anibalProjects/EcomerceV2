@@ -24,6 +24,7 @@ class MuebleResource extends JsonResource
         'novedad' => $this->novedad,
         'activo' => $this->activo,
         'categoria' => $this->category?->nombre,
+        'categoria_id' => $this->categoria_id, 
         'imagenes' => $this->galeria->pluck('url'),
     ];
     }

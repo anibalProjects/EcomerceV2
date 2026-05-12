@@ -20,32 +20,21 @@ class MuebleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request, \App\Services\FurnitureServices $furnitureService, \App\Services\CategoryService $categoryService)
     {
-        
-        // Consumimos la API de Muebles
-        try {
-            $url = env('FORNITURE_API_URL') . '/muebles';
-            $response = Http::get($url);
-            
-            if ($response->successful()) {
-                $mueblesData = json_decode($response->body());
-                $muebles = collect($mueblesData->data);
-            } else {
-                $muebles = collect([]);
-            }
-        } catch (\Exception $e) {
-            $muebles = collect([]);
-        }
+        // Consumimos la API de Muebles usando el servicio
+        $responseMuebles = $furnitureService->getMuebles();
+        $muebles = collect($responseMuebles['datos']['data'] ?? []);
+
+        // Consumimos la API de Categorías usando el servicio
+        $responseCategorias = $categoryService->getCategories();
+        $categorias = collect($responseCategorias['datos']['data'] ?? []);
+
         // Otros datos necesarios
         $tema = 'light';
-        $moneda = $preferencias['moneda'] ?? 'EUR';
+        $moneda = 'EUR';
         $usuario = Session::get('usuario_logueado');
-        // Convertimos el array de sesión en objeto para que la vista pueda usar $usuario->nombre etc.
         $usuario = $usuario ? (object) $usuario : null;
-        
-        // De momento, categorías vacías hasta que hagamos el endpoint en la API
-        $categorias = collect([]); 
         
         return view('home', compact('muebles', 'categorias', 'usuario', 'tema', 'moneda'));
     }
@@ -101,7 +90,7 @@ class MuebleController extends Controller
         //
     }
 
-    public function filtrar(Request $request)
+    public function filtrar(Request $request, \App\Services\FurnitureServices $furnitureService, \App\Services\CategoryService $categoryService)
     {
         $filtro = [];
 
@@ -114,15 +103,8 @@ class MuebleController extends Controller
         }
 
         try {
-            $url = env('FORNITURE_API_URL') . '/muebles';
-            $response = Http::get($url);
-            
-            if ($response->successful()) {
-                $mueblesData = json_decode($response->body());
-                $muebles = collect($mueblesData->data);
-            } else {
-                $muebles = collect([]);
-            }
+            $responseMuebles = $furnitureService->getMuebles();
+            $muebles = collect($responseMuebles['datos']['data'] ?? []);
         } catch (\Exception $e) {
             $muebles = collect([]);
         }
@@ -135,7 +117,7 @@ class MuebleController extends Controller
         }
     if (isset($filtro['categoria_id'])) {
         $muebles = $muebles->filter(function ($mueble) use ($filtro) {
-            return $mueble->categoria == $filtro['categoria_id'];
+            return ($mueble->categoria_id ?? null) == $filtro['categoria_id'];
         });
     }
     if (isset($filtro['precio_min'])) {
@@ -154,10 +136,10 @@ class MuebleController extends Controller
     }
 
 
-        return $this->ordenar($muebles, $request->orden ?? '', $filtro);
+        return $this->ordenar($muebles, $request->orden ?? '', $filtro, $categoryService);
     }
 
-    public function ordenar($muebles, $orden, $filtro)
+    public function ordenar($muebles, $orden, $filtro, \App\Services\CategoryService $categoryService)
     {
         switch ($orden) {
         case 'precio_asc':
@@ -177,7 +159,8 @@ class MuebleController extends Controller
     }
 
 
-        $categorias = Categoria::all();
+        $responseCategorias = $categoryService->getCategories();
+        $categorias = collect($responseCategorias['datos']['data'] ?? []);
 
         $usuario = Session::get('usuario_logueado');
         $usuario = $usuario ? (object) $usuario : null;

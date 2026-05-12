@@ -2,33 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Categoria;
+use App\Services\CategoryService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class CategoriasAdministracionController extends Controller
 {
-    private function validarAcceso()
-    {
-        if (!auth()->check()) {
-            abort(403, 'Debes iniciar sesión.');
-        }
+    protected CategoryService $categoryService;
 
-        if (auth()->user()->rol_id !== 1) {
-            abort(403, 'Acceso no autorizado. Se requiere rol de Administrador.');
-        }
+    public function __construct(CategoryService $categoryService)
+    {
+        $this->categoryService = $categoryService;
     }
 
     public function index(Request $request)
     {
-        $this->validarAcceso();
+        $result = $this->categoryService->getCategories();
+        $categorias = collect($result['datos']['data'] ?? []);
 
-        $categorias = Categoria::all();
-
-        // Filtrado
+        // Filtrado en memoria
         if ($request->has('texto') && $request->texto) {
-            $categorias = $categorias->filter(function($categoria) use ($request) {
-                return str_contains(strtolower($categoria->nombre), strtolower($request->texto)) ||
-                       str_contains(strtolower($categoria->descripcion), strtolower($request->texto));
+            $texto = strtolower($request->texto);
+            $categorias = $categorias->filter(function($categoria) use ($texto) {
+                $nombre = strtolower($categoria['nombre'] ?? '');
+                return str_contains($nombre, $texto);
             });
         }
 
@@ -37,59 +34,73 @@ class CategoriasAdministracionController extends Controller
 
     public function create(Request $request)
     {
-        $this->validarAcceso();
         return view('Admin.Categorias.create');
     }
 
     public function store(Request $request)
     {
-        $this->validarAcceso();
-
         $request->validate([
             'nombre' => 'required|string|max:255',
-            'descripcion' => 'nullable|string',
         ]);
 
-        $data = $request->all();
-        Categoria::create($data);
+        $token = Session::get('api_token');
+        $result = $this->categoryService->storeCategory(
+            ['nombre' => $request->nombre],
+            $token
+        );
 
-        return redirect()->route('admin.categorias.index')->with('success', 'Categoría creada correctamente');
+        if ($result['estado'] >= 200 && $result['estado'] < 300) {
+            return redirect()->route('admin.categorias.index')->with('success', 'Categoría creada correctamente');
+        }
+
+        return back()->with('error', 'Error al crear la categoría: ' . json_encode($result['datos']));
     }
 
     public function edit(Request $request, $id)
     {
-        $this->validarAcceso();
-        $categoria = Categoria::findOrFail($id);
+        $result = $this->categoryService->getCategoryById($id);
+
+        if ($result['estado'] !== 200) {
+            return redirect()->route('admin.categorias.index')->with('error', 'Categoría no encontrada en la API');
+        }
+
+        $catData = $result['datos']['data'] ?? $result['datos'];
+        $categoria = new \stdClass();
+        $categoria->id = $catData['id'];
+        $categoria->nombre = $catData['nombre'];
+
         return view('Admin.Categorias.edit', compact('categoria'));
     }
 
     public function update(Request $request, $id)
     {
-        $this->validarAcceso();
-        $categoria = Categoria::findOrFail($id);
-
         $request->validate([
             'nombre' => 'required|string|max:255',
-            'descripcion' => 'nullable|string',
         ]);
 
-        $data = $request->all();
-        $categoria->update($data);
+        $token = Session::get('api_token');
+        $result = $this->categoryService->updateCategory(
+            $id,
+            ['nombre' => $request->nombre],
+            $token
+        );
 
-        return redirect()->route('admin.categorias.index')->with('success', 'Categoría actualizada correctamente');
+        if ($result['estado'] >= 200 && $result['estado'] < 300) {
+            return redirect()->route('admin.categorias.index')->with('success', 'Categoría actualizada correctamente');
+        }
+
+        return back()->with('error', 'Error al actualizar la categoría: ' . json_encode($result['datos']));
     }
 
     public function destroy(Request $request, $id)
     {
-        $this->validarAcceso();
-        $categoria = Categoria::findOrFail($id);
+        $token = Session::get('api_token');
+        $result = $this->categoryService->deleteCategory($id, $token);
 
-        // Check if category has products
-        if ($categoria->muebles()->count() > 0) {
-            return redirect()->route('admin.categorias.index')->with('error', 'No se puede eliminar la categoría porque tiene productos asociados');
+        if ($result['estado'] >= 200 && $result['estado'] < 300) {
+            return redirect()->route('admin.categorias.index')->with('success', 'Categoría eliminada correctamente');
         }
 
-        $categoria->delete();
-        return redirect()->route('admin.categorias.index')->with('success', 'Categoría eliminada correctamente');
+        return back()->with('error', 'Error al eliminar la categoría: ' . json_encode($result['datos']));
     }
 }

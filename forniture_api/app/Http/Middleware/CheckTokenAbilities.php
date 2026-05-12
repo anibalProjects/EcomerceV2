@@ -13,9 +13,12 @@ class CheckTokenAbilities
     /**
      * Handle an incoming request.
      *
+     * Acepta una o varias abilities separadas por coma.
+     * El acceso se concede si el token tiene AL MENOS UNA de ellas.
+     *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, string $ability): Response
+    public function handle(Request $request, Closure $next, string ...$abilities): Response
     {
         $token = $request->bearerToken();
 
@@ -24,28 +27,31 @@ class CheckTokenAbilities
         }
 
         try {
-            
-            $url = env('AUTH_API_URL') . '/validate-token';
+            $authUrl = env('AUTH_API_URL') . '/validate-token';
 
-            $response = Http::withToken($token)->get($url, [
-                'ability' => $ability
-            ]);
+            // Comprobamos cada ability hasta que una sea válida
+            foreach ($abilities as $ability) {
+                $response = Http::withToken($token)->get($authUrl, [
+                    'ability' => $ability,
+                ]);
 
-            if ($response->failed()) {
-                return response()->json([
-                    'mensaje' => 'Acceso denegado',
-                    'detalle' => $response->json()['mensaje'] ?? 'Permisos insuficientes'
-                ], $response->status());
+                if ($response->successful()) {
+                    // Tiene esta ability → acceso concedido
+                    return $next($request);
+                }
             }
 
-            return $next($request);
+            // Ninguna ability coincidió
+            return response()->json([
+                'mensaje' => 'Acceso denegado',
+                'detalle' => 'No tiene ninguno de los permisos requeridos: ' . implode(', ', $abilities),
+            ], 403);
 
         } catch (Exception $e) {
             return response()->json([
-                'error' => 'Error de conexión con el servicio de autenticación',
-                'detalle' => $e->getMessage()
+                'error'   => 'Error de conexión con el servicio de autenticación',
+                'detalle' => $e->getMessage(),
             ], 500);
         }
     }
 }
-?>

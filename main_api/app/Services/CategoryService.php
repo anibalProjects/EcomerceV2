@@ -39,4 +39,39 @@ class CategoryService
         ];
     }
 
+    public function storeCategory(array $data, string $token): array
+    {
+        $response = Http::withToken($token)
+            ->acceptJson()
+            ->post($this->baseUrl . '/categorias', $data);
+
+        return [
+            'estado' => $response->status(),
+            'datos' => $response->json(),
+        ];
+    }
+
+    public function updateCategory(int $id, array $data, string $token): array
+    {
+        $response = Http::withToken($token)
+            ->acceptJson()
+            ->put($this->baseUrl . '/categorias/' . $id, $data);
+
+        return [
+            'estado' => $response->status(),
+            'datos' => $response->json(),
+        ];
+    }
+
+    public function deleteCategory(int $id, string $token): array
+    {
+        $response = Http::withToken($token)
+            ->acceptJson()
+            ->delete($this->baseUrl . '/categorias/' . $id);
+
+        return [
+            'estado' => $response->status(),
+            'datos' => $response->json(),
+        ];
+    }
 }

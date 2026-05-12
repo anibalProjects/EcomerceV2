@@ -39,10 +39,12 @@ class MueblesAdministracionController extends Controller
         return view('Admin.Muebles.index', compact('muebles'));
     }
 
-    public function create(Request $request)
+    public function create(Request $request, \App\Services\CategoryService $categoryService)
     {
-        // Hay que coger las categorias de mueblesapi
-        $categorias = Categoria::all();
+        // Recoger categorías de la API
+        $responseCat = $categoryService->getCategories();
+        $categorias = collect($responseCat['datos']['data'] ?? []);
+
         return view('Admin.Muebles.create', compact('categorias'));
     }
 
@@ -94,7 +96,7 @@ class MueblesAdministracionController extends Controller
         return back()->with('error', 'Error al crear : ' . $response->body());
     }
 
-    public function edit(Request $request, $id)
+    public function edit(Request $request, $id, \App\Services\CategoryService $categoryService)
     {
         $token = Session::get('api_token');
         $url = env('FORNITURE_API_URL') . '/muebles/' . $id;
@@ -119,9 +121,12 @@ class MueblesAdministracionController extends Controller
         $mueble->novedad = $muebleData->novedad;
         $mueble->activo = $muebleData->activo;
         
-        //No hay categorias hay que recogerlas de MublesApi
-        //$cat = Categoria::where('nombre', $muebleData->categoria)->first();
-        $mueble->categoria_id = $cat ? $cat->id : null;
+        // Recoger categorías de la API
+        $responseCat = $categoryService->getCategories();
+        $categorias = collect($responseCat['datos']['data'] ?? []);
+        
+        $mueble->categoria_id = $muebleData->categoria_id;
+        
         return view('Admin.Muebles.edit', compact('mueble', 'categorias'));
     }
 
