@@ -49,7 +49,6 @@ Route::get('/borrar_sesion', function () {
 Route::middleware('check.ability:carrito.gestionar')->group(function () {
     Route::resource('carrito', carritoController::class);
     Route::post('/carrito/buy', [carritoController::class, 'buy'])->name('carrito.buy');
-    Route::get('/carrito/returnFromBuy', [carritoController::class, 'returnFromBuy'])->name('carrito.returnFromBuy');
     Route::post('/carrito/empty', [carritoController::class, 'empty'])->name('carrito.empty');
 });
 

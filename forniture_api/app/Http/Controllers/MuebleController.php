@@ -99,4 +99,31 @@ class MuebleController extends Controller
 
         return response()->json(['mensaje' => 'Mueble eliminado correctamente'], 200);
     }
+
+    /**
+     * Reduce stock of a specific furniture.
+     */
+    public function reduceStock(Request $request, string $id)
+    {
+        $mueble = Mueble::find($id);
+
+        if (!$mueble) {
+            return response()->json(['mensaje' => 'Mueble no encontrado'], 404);
+        }
+
+        $cantidad = $request->input('cantidad', 1);
+
+        if ($mueble->stock < $cantidad) {
+            return response()->json(['mensaje' => 'Stock insuficiente para el producto: ' . $mueble->nombre], 400);
+        }
+
+        $mueble->stock -= $cantidad;
+        $mueble->save();
+
+        return response()->json([
+            'mensaje' => 'Stock reducido correctamente',
+            'id' => $mueble->id,
+            'nuevo_stock' => $mueble->stock
+        ], 200);
+    }
 }
