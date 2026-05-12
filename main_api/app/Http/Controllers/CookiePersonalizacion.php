@@ -2,92 +2,74 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Models\UserPreference;
+use App\Services\AuthApiService;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Session;
 
 class CookiePersonalizacion extends Controller
 {
-
     /**
-     *
-    *
-    * @param Request $request
-    * @return JsonResponse
-    */
-    public static function guardarTema(Request $request, $userId = null): JsonResponse
+     * Obtiene las preferencias personalizadas del usuario a través de la Auth API.
+     */
+    public static function getPersonalizacion($sesionId = null, $userId = null)
     {
-        $user = User::find($userId);
+        $token = Session::get('api_token');
+        
+        if ($token) {
+            $authService = app(AuthApiService::class);
+            $response = $authService->getPreferencias($token);
+            
+            if ($response['estado'] === 200) {
+                return $response['datos'];
+            }
+        }
 
-        $PREFERENCIA_TEMA = 'tema_' . $user->id;
-        $DURACION_COOKIE = 60 * 24 * 365;
-        $datos = $request->validate([
-
-            'tema' => ['required', 'string', 'in:claro,oscuro'],
-        ]);
-
-        $user->preferences()->updateOrCreate(
-            ['key' => $PREFERENCIA_TEMA],
-            ['value' => $datos['tema']]
-        );
-
-        Cookie::queue($PREFERENCIA_TEMA, $datos['tema'], $DURACION_COOKIE);
-
-        return response()->json(['mensaje' => 'Tema guardado con éxito.']);
+        //valores por defecto por seguridad
+        return [
+            'tema' => 'claro',
+            'moneda' => 'EUR',
+            'paginacion' => 12,
+        ];
     }
 
-    public function index(Request $request, $userId) {
-        $sesionId = $request->query('sesionId') ?? $request->sesionId;
-        $preferencias = CookiePersonalizacion::getPersonalizacion($sesionId, $userId);
-        $tema = $preferencias['tema'];
-        $moneda = $preferencias['moneda'];
-        $paginacion = $preferencias['paginacion'];
+    /**
+     * Muestra la vista de preferencias.
+     */
+    public function index(Request $request, $userId, AuthApiService $authService)
+    {
+        $token = Session::get('api_token');
+        $response = $authService->getPreferencias($token);
+        
+        $preferencias = ($response['estado'] === 200) ? $response['datos'] : [
+            'tema' => 'claro',
+            'moneda' => 'EUR',
+            'paginacion' => 12,
+        ];
 
         return view('preferenciasView', [
             'usuario_id' => $userId,
-            'sesionId' => $sesionId,
-            'tema' => $tema,
-            'moneda' => $moneda,
-            'paginacion' => $paginacion,
+            'tema' => $preferencias['tema'],
+            'moneda' => $preferencias['moneda'],
+            'paginacion' => $preferencias['paginacion'],
         ]);
     }
 
-    public function update(Request $request, $userId) {
-        CookiePaginacion::guardarPaginacion($request, $userId);
-        CookieMoneda::guardarMoneda($request, $userId);
-        CookiePersonalizacion::guardarTema($request, $userId);
-        $user = User::find($userId);
+    /**
+     * Actualiza las preferencias llamando a la Auth API.
+     */
+    public function update(Request $request, $userId, AuthApiService $authService)
+    {
+        $token = Session::get('api_token');
+        
+        $datos = $request->only(['tema', 'moneda', 'paginacion']);
+        
+        $response = $authService->updatePreferencias($token, $datos);
 
-        $user->preferences()->updateOrCreate(['key' => 'tema'], ['value' => $request->tema]);
-        $user->preferences()->updateOrCreate(['key' => 'moneda'], ['value' => $request->moneda]);
-        $user->preferences()->updateOrCreate(['key' => 'paginacion'], ['value' => $request->paginacion]);
-
-        return redirect()->route('preferencias.index', ['userId' => $userId])
-            ->with('success', 'Preferencias actualizadas correctamente.');
-    }
-
-    public static function getPersonalizacion($sesionId = null, $userId = null) {
-        $usuario = User::find($userId);
-
-        if($usuario) {
-            $moneda = Cookie::get('moneda_' . $usuario->id) ?? 'USD';
-            $tema = Cookie::get('tema_' . $usuario->id) ?? 'claro';
-            $paginacion = Cookie::get('paginacion_' . $usuario->id) ?? 12;
-
-        } else {
-            //valores default si no hay usuario logeado
-            $tema = 'claro';
-            $moneda = 'USD';
-            $paginacion = 12;
+        if ($response['estado'] === 200) {
+            return redirect()->route('preferencias.index', ['userId' => $userId])
+                ->with('success', 'Preferencias actualizadas correctamente.');
         }
 
-         return [
-        'tema' => $tema,
-        'moneda' => $moneda,
-        'paginacion' => $paginacion,
-        ];
+        return redirect()->back()->with('error', 'No se pudieron actualizar las preferencias.');
     }
 }
-

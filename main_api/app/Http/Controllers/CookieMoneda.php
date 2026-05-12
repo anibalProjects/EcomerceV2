@@ -2,38 +2,33 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Models\UserPreference;
+use App\Services\AuthApiService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Session;
 
 class CookieMoneda extends Controller
 {
-
     /**
-     * Guarda la preferencia de moneda del usuario en una cookie.
-    *
-    * @param Request $request
-    * @return JsonResponse
-    */
+     * Guarda la preferencia de moneda a través de la Auth API.
+     */
     public static function guardarMoneda(Request $request, $userId = null): JsonResponse
     {
-        $user = User::find($userId);
+        $token = Session::get('api_token');
+        
+        if (!$token) {
+            return response()->json(['mensaje' => 'No hay sesión activa.'], 401);
+        }
 
-        $PREFERENCIA_MONEDA = 'moneda_'. $user->id;
-        $DURACION_COOKIE = 60 * 24 * 365;
-        $datos = $request->validate([
-            'moneda' => ['required', 'string', 'in:EUR,USD,GBP'],
+        $authService = app(AuthApiService::class);
+        $response = $authService->updatePreferencias($token, [
+            'moneda' => $request->moneda
         ]);
 
-        $user->preferences()->updateOrCreate(
-            ['key' => $PREFERENCIA_MONEDA],
-            ['value' => $datos['moneda']]
-        );
+        if ($response['estado'] === 200) {
+            return response()->json(['mensaje' => 'Moneda guardada con éxito en la API de Autenticación.']);
+        }
 
-        Cookie::queue($PREFERENCIA_MONEDA, $datos['moneda'], $DURACION_COOKIE);
-
-        return response()->json(['mensaje' => 'Moneda guardada con éxito.']);
+        return response()->json(['mensaje' => 'Error al guardar la moneda.'], $response['estado']);
     }
 }

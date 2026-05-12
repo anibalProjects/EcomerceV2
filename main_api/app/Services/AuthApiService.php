@@ -91,4 +91,29 @@ class AuthApiService
         ];
     }
 
+    public function updatePreferencias(string $token, array $data): array
+    {
+        $response = Http::acceptJson()
+            ->withToken($token)
+            ->timeout(10)
+            ->post($this->baseUrl . '/actualizar-preferencias', $data);
+
+        return [
+            'estado' => $response->status(),
+            'datos' => $response->json(),
+        ];
+    }
+
+    public function getPreferencias(string $token): array
+    {
+        $response = Http::acceptJson()
+            ->withToken($token)
+            ->timeout(10)
+            ->get($this->baseUrl . '/obtener-preferencias');
+
+        return [
+            'estado' => $response->status(),
+            'datos' => $response->json(),
+        ];
+    }
 }

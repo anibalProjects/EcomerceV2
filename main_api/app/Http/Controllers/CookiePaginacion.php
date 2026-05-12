@@ -2,34 +2,33 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Services\AuthApiService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Cookie;
-
+use Illuminate\Support\Facades\Session;
 
 class CookiePaginacion extends Controller
 {
-
     /**
-     * Guarda la preferencia de paginación del usuario en una cookie.
-    *
-    * @param Request $request
-    * @return JsonResponse
-    */
+     * Guarda la preferencia de paginación a través de la Auth API.
+     */
     public static function guardarPaginacion(Request $request, $userId = null): JsonResponse
     {
-        $user = User::find($userId);
+        $token = Session::get('api_token');
+        
+        if (!$token) {
+            return response()->json(['mensaje' => 'No hay sesión activa.'], 401);
+        }
 
-
-        $PREFERENCIA_PAGINACION = 'paginacion_'. $user->id;
-        $DURACION_COOKIE = 60 * 24 * 365;
-        $datos = $request->validate([
-            'paginacion' => ['required', 'integer', 'in:6,12,24'],
+        $authService = app(AuthApiService::class);
+        $response = $authService->updatePreferencias($token, [
+            'paginacion' => $request->paginacion
         ]);
 
-        Cookie::queue($PREFERENCIA_PAGINACION, $datos['paginacion'], $DURACION_COOKIE);
+        if ($response['estado'] === 200) {
+            return response()->json(['mensaje' => 'Preferencia de paginación guardada con éxito en la API de Autenticación.']);
+        }
 
-        return response()->json(['mensaje' => 'Tamaño de paginación guardado con éxito.']);
+        return response()->json(['mensaje' => 'Error al guardar la paginación.'], $response['estado']);
     }
 }
