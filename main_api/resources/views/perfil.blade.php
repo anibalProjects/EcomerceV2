@@ -1,5 +1,6 @@
 @php
-    $layout = 'layout.app';
+    $tema = $tema ?? 'claro';
+    $layout = ($tema === 'oscuro') ? 'layout.oscuro' : 'layout.app';
 @endphp
 
 @extends($layout)
