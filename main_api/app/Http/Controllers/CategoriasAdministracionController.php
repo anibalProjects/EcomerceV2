@@ -18,13 +18,13 @@ class CategoriasAdministracionController extends Controller
     public function index(Request $request)
     {
         $result = $this->categoryService->getCategories();
-        $categorias = collect($result['datos']['data'] ?? []);
+        $categorias = collect($result['datos']['data'] ?? [])->map(fn($item) => (object)$item);
 
         // Filtrado en memoria
         if ($request->has('texto') && $request->texto) {
             $texto = strtolower($request->texto);
             $categorias = $categorias->filter(function($categoria) use ($texto) {
-                $nombre = strtolower($categoria['nombre'] ?? '');
+                $nombre = strtolower($categoria->nombre ?? '');
                 return str_contains($nombre, $texto);
             });
         }

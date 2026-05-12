@@ -13,17 +13,13 @@ class MueblesAdministracionController extends Controller
 {
     protected $carpetaPrivada = 'muebles';
 
-    public function index(Request $request)
+    public function index(Request $request, \App\Services\FurnitureServices $furnitureService)
     {
-        $token = Session::get('api_token');
-        $url = env('FORNITURE_API_URL') . '/muebles';
-        
-        $response = Http::withToken($token)->get($url);
+        $response = $furnitureService->getMuebles();
         
         $muebles = collect([]);
-        if ($response->successful()) {
-            $mueblesData = json_decode($response->body());
-            $muebles = collect($mueblesData->data);
+        if ($response['estado'] === 200) {
+            $muebles = collect($response['datos']['data'] ?? [])->map(fn($item) => (object)$item);
         }
 
         // Filtrado en memoria
@@ -43,12 +39,12 @@ class MueblesAdministracionController extends Controller
     {
         // Recoger categorías de la API
         $responseCat = $categoryService->getCategories();
-        $categorias = collect($responseCat['datos']['data'] ?? []);
+        $categorias = collect($responseCat['datos']['data'] ?? [])->map(fn($item) => (object)$item);
 
         return view('Admin.Muebles.create', compact('categorias'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, \App\Services\FurnitureServices $furnitureService)
     {
         $request->validate([
             'nombre' => 'required|string|max:255',
@@ -72,13 +68,10 @@ class MueblesAdministracionController extends Controller
         ];
 
         $token = Session::get('api_token');
-        $url = env('FORNITURE_API_URL') . '/muebles';
+        $result = $furnitureService->storeMueble($dataToSend, $token);
 
-        $response = Http::withToken($token)->post($url, $dataToSend);
-
-        if ($response->successful()) {
-            $muebleApi = $response->json();
-            $newId = $muebleApi['data']['id'] ?? null;
+        if ($result['estado'] >= 200 && $result['estado'] < 300) {
+            $newId = $result['datos']['data']['id'] ?? null;
 
             if ($newId && $request->hasFile('imagen_principal')) {
                 $ruta = $request->file('imagen_principal')->store('imagenes/pagprincipal', 'public');
@@ -93,20 +86,19 @@ class MueblesAdministracionController extends Controller
             return redirect()->route('admin.muebles.index')->with('success', 'Mueble creado correctamente en la API');
         }
 
-        return back()->with('error', 'Error al crear : ' . $response->body());
+        return back()->with('error', 'Error al crear : ' . json_encode($result['datos']));
     }
 
-    public function edit(Request $request, $id, \App\Services\CategoryService $categoryService)
+    public function edit(Request $request, $id, \App\Services\CategoryService $categoryService, \App\Services\FurnitureServices $furnitureService)
     {
         $token = Session::get('api_token');
-        $url = env('FORNITURE_API_URL') . '/muebles/' . $id;
-        $response = Http::withToken($token)->get($url);
+        $result = $furnitureService->getMuebleById($id, $token);
 
-        if ($response->failed()) {
+        if ($result['estado'] !== 200) {
             return redirect()->route('admin.muebles.index')->with('error', 'Mueble no encontrado en la API');
         }
 
-        $muebleData = json_decode($response->body())->data;
+        $muebleData = (object) ($result['datos']['data'] ?? $result['datos']);
         
         // Mapear para la vista de edición local
         $mueble = new \stdClass();
@@ -123,14 +115,14 @@ class MueblesAdministracionController extends Controller
         
         // Recoger categorías de la API
         $responseCat = $categoryService->getCategories();
-        $categorias = collect($responseCat['datos']['data'] ?? []);
+        $categorias = collect($responseCat['datos']['data'] ?? [])->map(fn($item) => (object)$item);
         
         $mueble->categoria_id = $muebleData->categoria_id;
         
         return view('Admin.Muebles.edit', compact('mueble', 'categorias'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $id, \App\Services\FurnitureServices $furnitureService)
     {
         $request->validate([
             'nombre' => 'required|string|max:255',
@@ -154,11 +146,9 @@ class MueblesAdministracionController extends Controller
         ];
 
         $token = Session::get('api_token');
-        $url = env('FORNITURE_API_URL') . '/muebles/' . $id;
+        $result = $furnitureService->updateMueble($id, $dataToSend, $token);
 
-        $response = Http::withToken($token)->put($url, $dataToSend);
-
-        if ($response->successful()) {
+        if ($result['estado'] >= 200 && $result['estado'] < 300) {
             if ($request->hasFile('imagen_principal')) {
                 $ruta = $request->file('imagen_principal')->store('imagenes/pagprincipal', 'public');
                 
@@ -174,17 +164,15 @@ class MueblesAdministracionController extends Controller
             return redirect()->route('admin.muebles.index')->with('success', 'Mueble actualizado correctamente en la API');
         }
 
-        return back()->with('error', 'Error al actualizar: ' . $response->body());
+        return back()->with('error', 'Error al actualizar: ' . json_encode($result['datos']));
     }
 
-    public function destroy(Request $request, $id)
+    public function destroy(Request $request, $id, \App\Services\FurnitureServices $furnitureService)
     {
         $token = Session::get('api_token');
-        $url = env('FORNITURE_API_URL') . '/muebles/' . $id;
+        $result = $furnitureService->deleteMueble($id, $token);
 
-        $response = Http::withToken($token)->delete($url);
-
-        if ($response->successful()) {
+        if ($result['estado'] >= 200 && $result['estado'] < 300) {
             // Eliminar imágenes locales de la galería
             $galeria = Galeria::where('mueble_id', $id)->get();
             foreach($galeria as $img) {

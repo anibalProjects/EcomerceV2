@@ -1,9 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use App\Models\Categoria;
-use App\Models\Mueble;
 use App\Http\Controllers\CookiePersonalizacion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
@@ -22,11 +19,11 @@ class MuebleController extends Controller
     {
         // Consumimos la API de Muebles usando el servicio
         $responseMuebles = $furnitureService->getMuebles();
-        $muebles = collect($responseMuebles['datos']['data'] ?? []);
+        $muebles = collect($responseMuebles['datos']['data'] ?? [])->map(fn($item) => (object)$item);
 
         // Consumimos la API de Categorías usando el servicio
         $responseCategorias = $categoryService->getCategories();
-        $categorias = collect($responseCategorias['datos']['data'] ?? []);
+        $categorias = collect($responseCategorias['datos']['data'] ?? [])->map(fn($item) => (object)$item);
 
         $usuario = Session::get('usuario_logueado');
         $usuario = $usuario ? (object) $usuario : null;
@@ -55,17 +52,16 @@ class MuebleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id, Request $request)
+    public function show(string $id, Request $request, \App\Services\FurnitureServices $furnitureService)
     {
 
-        // Pedimos el mueble a la API
-        $url = env('FORNITURE_API_URL') . '/muebles/' . $id;
-        $response = Http::get($url);
+        // Pedimos el mueble a la API usando el servicio
+        $response = $furnitureService->getMuebleById($id);
 
-        if ($response->failed()) {
+        if ($response['estado'] !== 200) {
             abort(404, 'Mueble no encontrado en la API');
         }
-        $mueble = json_decode($response->body())->data;
+        $mueble = (object) ($response['datos']['data'] ?? $response['datos']);
 
         $usuario = Session::get('usuario_logueado');
         $usuario = $usuario ? (object) $usuario : null;
@@ -105,7 +101,7 @@ class MuebleController extends Controller
 
         try {
             $responseMuebles = $furnitureService->getMuebles();
-            $muebles = collect($responseMuebles['datos']['data'] ?? []);
+            $muebles = collect($responseMuebles['datos']['data'] ?? [])->map(fn($item) => (object)$item);
         } catch (\Exception $e) {
             $muebles = collect([]);
         }
@@ -161,7 +157,7 @@ class MuebleController extends Controller
 
 
         $responseCategorias = $categoryService->getCategories();
-        $categorias = collect($responseCategorias['datos']['data'] ?? []);
+        $categorias = collect($responseCategorias['datos']['data'] ?? [])->map(fn($item) => (object)$item);
 
         $usuario = Session::get('usuario_logueado');
         $usuario = $usuario ? (object) $usuario : null;

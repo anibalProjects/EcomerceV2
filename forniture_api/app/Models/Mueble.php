@@ -45,4 +45,36 @@ class Mueble extends Model
     {
         return $query->where('activo', true);
     }
+
+    public function scopeDeNombre($query, $nombre)
+    {
+        if ($nombre) {
+            return $query->where('nombre', 'like', '%' . $nombre . '%');
+        }
+    }
+
+    public function scopeRangoPrecio($query, $min, $max)
+    {
+        if ($min) {
+            $query->where('precio', '>=', $min);
+        }
+        if ($max) {
+            $query->where('precio', '<=', $max);
+        }
+        return $query;
+    }
+
+    public function scopeDeColor($query, $color)
+    {
+        if ($color) {
+            return $query->where('color', 'like', '%' . $color . '%');
+        }
+    }
+
+    public function scopeEsNovedad($query, $novedad)
+    {
+        if ($novedad) {
+            return $query->where('novedad', true);
+        }
+    }
 }

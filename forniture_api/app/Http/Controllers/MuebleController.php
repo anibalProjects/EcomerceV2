@@ -17,9 +17,13 @@ class MuebleController extends Controller
     {
         $muebles = Mueble::with(['category', 'galeria'])
             ->activos()
+            ->deNombre($request->query('nombre'))
             ->deCategoria($request->query('categoria_id'))
+            ->deColor($request->query('color'))
+            ->esNovedad($request->query('novedad'))
+            ->rangoPrecio($request->query('precio_min'), $request->query('precio_max'))
             ->ordenarPrecio($request->query('orden', 'asc'))
-            ->get();
+            ->paginate($request->query('per_page', 12));
 
         return MuebleResource::collection($muebles);
     }

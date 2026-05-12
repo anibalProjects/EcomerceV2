@@ -26,6 +26,7 @@ class MuebleResource extends JsonResource
         'categoria' => $this->category?->nombre,
         'categoria_id' => $this->categoria_id, 
         'imagenes' => $this->galeria->pluck('url'),
+        'created_at' => $this->created_at?->toDateTimeString(),
     ];
     }
 }
