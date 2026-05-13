@@ -1,11 +1,11 @@
-# EcommerceV2 - Tienda de Muebles con Microservicios
+# EcommerceV4 - Tienda de Muebles con Microservicios
 
 Proyecto Laravel compuesto por tres servicios independientes que se comunican entre si via API REST.
 
 ## Estructura del proyecto
 
 ```
-EcomerceV2/
+EcomerceV4/
    auth_api/       -> Gestiona usuarios, login y tokens (puerto 8000)
    forniture_api/  -> Gestiona el catalogo de muebles y categorias (puerto 8001)
    main_api/       -> Aplicacion principal con vistas, carrito y pedidos (puerto 8002)
