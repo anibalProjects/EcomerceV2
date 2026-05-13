@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 
 class MuebleController extends Controller
 {
@@ -17,9 +19,25 @@ class MuebleController extends Controller
      */
     public function index(Request $request, \App\Services\FurnitureServices $furnitureService, \App\Services\CategoryService $categoryService)
     {
+        $params = $request->only(['page', 'per_page', 'orden']);
+        
         // Consumimos la API de Muebles usando el servicio
-        $responseMuebles = $furnitureService->getMuebles();
-        $muebles = collect($responseMuebles['datos']['data'] ?? [])->map(fn($item) => (object)$item);
+        $responseMuebles = $furnitureService->getMuebles($params);
+        $datos = $responseMuebles['datos'];
+        
+        $mueblesData = collect($datos['data'] ?? [])->map(fn($item) => (object)$item);
+
+        if (isset($datos['meta'])) {
+            $muebles = new LengthAwarePaginator(
+                $mueblesData,
+                $datos['meta']['total'],
+                $datos['meta']['per_page'],
+                $datos['meta']['current_page'],
+                ['path' => $request->url(), 'query' => $request->query()]
+            );
+        } else {
+            $muebles = $mueblesData;
+        }
 
         // Consumimos la API de Categorías usando el servicio
         $responseCategorias = $categoryService->getCategories();
@@ -89,72 +107,43 @@ class MuebleController extends Controller
 
     public function filtrar(Request $request, \App\Services\FurnitureServices $furnitureService, \App\Services\CategoryService $categoryService)
     {
-        $filtro = [];
+        $filtro = $request->input('filtro', []);
+        $orden = $request->input('orden');
 
-        if ($request->has('filtro') && is_array($request->filtro)) {
-            foreach ($request->filtro as $i => $valor) {
-                if ($valor != null) {
-                    $filtro[$i] = $valor;
-                }
-            }
-        }
+        // Mapear los nombres de los filtros a lo que espera la API
+        $params = [
+            'nombre' => $filtro['nombre'] ?? null,
+            'categoria_id' => $filtro['categoria_id'] ?? null,
+            'precio_min' => $filtro['precio_min'] ?? null,
+            'precio_max' => $filtro['precio_max'] ?? null,
+            'color' => $filtro['color'] ?? null,
+            'novedad' => $filtro['novedad'] ?? null,
+            'orden' => $orden,
+            'page' => $request->input('page'),
+        ];
+
+        // Limpiar parámetros nulos
+        $params = array_filter($params, fn($v) => $v !== null);
 
         try {
-            $responseMuebles = $furnitureService->getMuebles();
-            $muebles = collect($responseMuebles['datos']['data'] ?? [])->map(fn($item) => (object)$item);
+            $responseMuebles = $furnitureService->getMuebles($params);
+            $datos = $responseMuebles['datos'];
+            $mueblesData = collect($datos['data'] ?? [])->map(fn($item) => (object)$item);
+
+            if (isset($datos['meta'])) {
+                $muebles = new LengthAwarePaginator(
+                    $mueblesData,
+                    $datos['meta']['total'],
+                    $datos['meta']['per_page'],
+                    $datos['meta']['current_page'],
+                    ['path' => $request->url(), 'query' => $request->query()]
+                );
+            } else {
+                $muebles = $mueblesData;
+            }
         } catch (\Exception $e) {
-            $muebles = collect([]);
+            $muebles = new LengthAwarePaginator(collect([]), 0, 12);
         }
-
-        if (isset($filtro['nombre'])) {
-            $termino = strtolower($filtro['nombre']);
-            $muebles = $muebles->filter(function ($mueble) use ($termino) {
-                return str_contains(strtolower($mueble->nombre_producto), $termino);
-            });
-        }
-    if (isset($filtro['categoria_id'])) {
-        $muebles = $muebles->filter(function ($mueble) use ($filtro) {
-            return ($mueble->categoria_id ?? null) == $filtro['categoria_id'];
-        });
-    }
-    if (isset($filtro['precio_min'])) {
-        $muebles = $muebles->where('precio_venta', '>=', $filtro['precio_min']);
-    }
-    if (isset($filtro['precio_max'])) {
-        $muebles = $muebles->where('precio_venta', '<=', $filtro['precio_max']);
-    }
-    if (isset($filtro['color'])) {
-        $muebles = $muebles->filter(function ($mueble) use ($filtro) {
-            return str_contains(strtolower($mueble->color), strtolower($filtro['color']));
-        });
-    }
-    if (isset($filtro['novedad'])) {
-        $muebles = $muebles->where('novedad', 1);
-    }
-
-
-        return $this->ordenar($muebles, $request->orden ?? '', $filtro, $categoryService);
-    }
-
-    public function ordenar($muebles, $orden, $filtro, \App\Services\CategoryService $categoryService)
-    {
-        switch ($orden) {
-        case 'precio_asc':
-            $muebles = $muebles->sortBy('precio_venta');
-            break;
-        case 'precio_desc':
-            $muebles = $muebles->sortByDesc('precio_venta');
-            break;
-        case 'nombre_asc':
-            $muebles = $muebles->sortBy('nombre_producto');
-            break;
-        case 'nombre_desc':
-            $muebles = $muebles->sortByDesc('nombre_producto');
-            break;
-        default:
-            $muebles = $muebles->sortByDesc('created_at');
-    }
-
 
         $responseCategorias = $categoryService->getCategories();
         $categorias = collect($responseCategorias['datos']['data'] ?? [])->map(fn($item) => (object)$item);
@@ -164,7 +153,6 @@ class MuebleController extends Controller
         $preferencias = CookiePersonalizacion::getPersonalizacion(null, $usuario->id ?? null);
         $tema = $preferencias['tema'];
         $moneda = $preferencias['moneda'];
-
 
         return view('home', [
             'muebles' => $muebles,

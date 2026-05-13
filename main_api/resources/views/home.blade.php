@@ -209,18 +209,18 @@
             @endforeach
         </div>
 
-        {{-- Paginación comentada temporalmente hasta implementar paginación en la API --}}
-        {{--
-        <div class="mt-4 d-flex justify-content-center">
-            {{ $muebles->withQueryString()->links('pagination::bootstrap-4') }}
-        </div>
-
-        @if($muebles->total() > 0)
-            <div class="text-center text-muted mt-2">
-                Mostrando {{ $muebles->firstItem() }} a {{ $muebles->lastItem() }} de {{ $muebles->total() }} resultados
+        @if(method_exists($muebles, 'links'))
+            <div class="mt-4 d-flex justify-content-center">
+                {{ $muebles->withQueryString()->links('pagination::bootstrap-4') }}
             </div>
+
+            @if($muebles->total() > 0)
+                <div class="text-center text-muted mt-2">
+                    Mostrando {{ $muebles->firstItem() }} a {{ $muebles->lastItem() }} de {{ $muebles->total() }} resultados
+                </div>
+            @endif
         @endif
-        --}}
+
     @endif
 </div>
 

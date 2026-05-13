@@ -22,7 +22,7 @@ class MuebleController extends Controller
             ->deColor($request->query('color'))
             ->esNovedad($request->query('novedad'))
             ->rangoPrecio($request->query('precio_min'), $request->query('precio_max'))
-            ->ordenarPrecio($request->query('orden', 'asc'))
+            ->ordenar($request->query('orden'))
             ->paginate($request->query('per_page', 12));
 
         return MuebleResource::collection($muebles);

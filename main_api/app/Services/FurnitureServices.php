@@ -14,11 +14,11 @@ class FurnitureServices
         $this->baseUrl = rtrim(config('services.remote_furniture_api.base_url'), '/');
     }
 
-    public function getMuebles(): array
+    public function getMuebles(array $params = []): array
     {
         $response = Http::acceptJson()
             ->timeout(10)
-            ->get($this->baseUrl . '/muebles');
+            ->get($this->baseUrl . '/muebles', $params);
 
         return [
             'estado' => $response->status(),

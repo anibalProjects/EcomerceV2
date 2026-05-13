@@ -36,9 +36,23 @@ class Mueble extends Model
         }
     }
 
-    public function scopeOrdenarPrecio($query, $orden = 'asc')
+    public function scopeOrdenar($query, $orden = null)
     {
-        return $query->orderBy('precio', $orden);
+        switch ($orden) {
+            case 'precio_asc':
+                return $query->orderBy('precio', 'asc');
+            case 'precio_desc':
+                return $query->orderBy('precio', 'desc');
+            case 'nombre_asc':
+                return $query->orderBy('nombre', 'asc');
+            case 'nombre_desc':
+                return $query->orderBy('nombre', 'desc');
+            case 'fecha_asc':
+                return $query->orderBy('created_at', 'asc');
+            case 'fecha_desc':
+            default:
+                return $query->orderBy('created_at', 'desc');
+        }
     }
 
     public function scopeActivos($query)
