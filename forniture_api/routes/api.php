@@ -18,19 +18,29 @@ Route::get('/categorias/{id}',   [CategoriaController::class, 'show']);
 // El middleware acepta abilities separadas por coma (cualquiera es válida)
 Route::middleware('check.abilities:muebles.crear,gestor.muebles.crear')->group(function () {
     Route::post('/muebles',          [MuebleController::class, 'store']);
-    Route::post('/categorias',       [CategoriaController::class, 'store']);
 });
 
 // ─── muebles.editar (Admin o Gestor) ─────────────────────────────────────────
 Route::middleware('check.abilities:muebles.editar,gestor.muebles.editar')->group(function () {
     Route::put('/muebles/{id}',      [MuebleController::class, 'update']);
     Route::patch('/muebles/{id}',    [MuebleController::class, 'update']);
-    Route::put('/categorias/{id}',   [CategoriaController::class, 'update']);
-    Route::patch('/categorias/{id}', [CategoriaController::class, 'update']);
 });
 
 // ─── muebles.eliminar (Admin o Gestor) ───────────────────────────────────────
 Route::middleware('check.abilities:muebles.eliminar,gestor.muebles.eliminar')->group(function () {
     Route::delete('/muebles/{id}',      [MuebleController::class, 'destroy']);
+});
+
+// ─── CRUD de categorías (Solo Admin) ─────────────────────────────────────────
+Route::middleware('check.abilities:muebles.crear')->group(function () {
+    Route::post('/categorias',       [CategoriaController::class, 'store']);
+});
+
+Route::middleware('check.abilities:muebles.editar')->group(function () {
+    Route::put('/categorias/{id}',   [CategoriaController::class, 'update']);
+    Route::patch('/categorias/{id}', [CategoriaController::class, 'update']);
+});
+
+Route::middleware('check.abilities:muebles.eliminar')->group(function () {
     Route::delete('/categorias/{id}',   [CategoriaController::class, 'destroy']);
 });
