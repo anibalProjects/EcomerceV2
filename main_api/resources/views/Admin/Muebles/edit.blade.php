@@ -55,7 +55,7 @@
 
                     <div class="mb-3">
                         <label for="nombre" class="form-label">Nombre</label>
-                        <input type="text" id="nombre" name="nombre" value="{{ old('nombre', $mueble->nombre_producto ?? '') }}" required maxlength="255" class="form-control form-control-lg py-2">
+                        <input type="text" id="nombre" name="nombre" value="{{ old('nombre', $mueble->nombre ?? '') }}" required maxlength="255" class="form-control form-control-lg py-2">
                         @error('nombre') <div class="text-danger">{{ $message }}</div> @enderror
                     </div>
 
@@ -83,14 +83,14 @@
                             <label for="precio" class="form-label">Precio</label>
                             <div class="input-group">
                                 <span class="input-group-text">€</span>
-                                <input type="number" id="precio" name="precio" value="{{ old('precio', $mueble->precio_venta ?? 0) }}" step="0.01" min="0" required class="form-control form-control-lg py-2">
+                                <input type="number" id="precio" name="precio" value="{{ old('precio', $mueble->precio ?? 0) }}" step="0.01" min="0" required class="form-control form-control-lg py-2">
                             </div>
                             @error('precio') <div class="text-danger">{{ $message }}</div> @enderror
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label for="stock" class="form-label">Stock</label>
-                            <input type="number" id="stock" name="stock" value="{{ old('stock', $mueble->stock_disponible ?? 0) }}" min="0" required class="form-control form-control-lg py-2">
+                            <input type="number" id="stock" name="stock" value="{{ old('stock', $mueble->stock ?? 0) }}" min="0" required class="form-control form-control-lg py-2">
                             @error('stock') <div class="text-danger">{{ $message }}</div> @enderror
                         </div>
                     </div>
@@ -98,13 +98,13 @@
                     <div class="row g-3">
                         <div class="col-md-12 mb-3">
                             <label for="color" class="form-label">Color</label>
-                            <select id="color" name="color" required class="form-select form-select-lg py-2">
+                            <select id="color_principal" name="color_principal" required class="form-select form-select-lg py-2">
                                 <option value="">Seleccione un color</option>
                                 @foreach(['black','white','red','blue','green','grey','brown','oak','walnut','cherry'] as $c)
-                                    <option value="{{ $c }}" {{ old('color', $mueble->color_principal ?? $mueble->color ?? '') === $c ? 'selected' : '' }}>{{ ucfirst($c) }}</option>
+                                    <option value="{{ $c }}" {{ old('color_principal', $mueble->color_principal ?? '') === $c ? 'selected' : '' }}>{{ ucfirst($c) }}</option>
                                 @endforeach
                             </select>
-                            @error('color') <div class="text-danger">{{ $message }}</div> @enderror
+                            @error('color_principal') <div class="text-danger">{{ $message }}</div> @enderror
                         </div>
                     </div>
 

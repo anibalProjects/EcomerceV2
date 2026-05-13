@@ -17,6 +17,7 @@ class AuthApiService
     // Definimos el servicio de Login para acceder a la otra API
     public function login(array $data): array
     {
+    
         $response = Http::acceptJson()
             ->timeout(10)
             ->post($this->baseUrl . '/login', [
