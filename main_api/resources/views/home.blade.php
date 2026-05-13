@@ -10,6 +10,64 @@
 
 @section('content')
 
+<style>
+    .active-filters-container .filter-badge {
+        font-weight: 500;
+        letter-spacing: 0.3px;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        display: inline-flex;
+        align-items: center;
+        font-size: 0.85rem;
+
+        @if($tema === 'oscuro')
+            background-color: var(--dark-card);
+            color: var(--light-text);
+            border: 1px solid var(--dark-border);
+        @else
+            background-color: #ffffff;
+            color: var(--dark-text);
+            border: 1px solid #ddd;
+        @endif
+    }
+
+    .active-filters-container .filter-badge:hover {
+        @if($tema === 'oscuro')
+            background-color: var(--dark-surface);
+            border-color: var(--gold);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        @else
+            background-color: #f8f9fa;
+            border-color: var(--gold);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        @endif
+    }
+
+    .active-filters-container .badge-novedad {
+        background-color: @if($tema === 'oscuro') rgba(173, 133, 22, 0.2) @else #fff3cd @endif !important;
+        color: @if($tema === 'oscuro') var(--gold-light) @else #856404 @endif !important;
+        border: 1px solid var(--gold) !important;
+    }
+
+    .active-filters-container .badge-orden {
+        background-color: @if($tema === 'oscuro') rgba(13, 110, 253, 0.1) @else #cfe2ff @endif !important;
+        color: @if($tema === 'oscuro') #6ea8fe @else #084298 @endif !important;
+        border: 1px solid @if($tema === 'oscuro') #0d6efd @else #b6d4fe @endif !important;
+    }
+
+    .hover-scale:hover {
+        transform: scale(1.05);
+    }
+    .transition-all {
+        transition: all 0.3s ease;
+    }
+    .color-dot {
+        box-shadow: 0 0 2px rgba(0,0,0,0.2);
+    }
+</style>
+
 <div class="content-container">
     <div class="d-flex justify-content-between align-items-center pt-4 pb-4 nav-centered-brand"
          style="border-bottom: 1px solid var(--nav-border); position: relative;">
@@ -150,6 +208,77 @@
             </div>
         </div>
     </form>
+
+    {{-- Filtros activos --}}
+    @php
+        $hasActiveFilters = !empty(array_filter($filtro ?? [], fn($v) => !empty($v))) || !empty($orden);
+    @endphp
+
+    @if($hasActiveFilters)
+        <div class="active-filters-container mb-4 d-flex align-items-center flex-wrap gap-2">
+            <span class="text-muted small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Filtros:</span>
+            
+            @if(!empty($filtro['nombre']))
+                <span class="filter-badge">
+                    <i class="bi bi-search me-2 opacity-50"></i>
+                    "{{ $filtro['nombre'] }}"
+                </span>
+            @endif
+
+            @if(!empty($filtro['precio_min']) || !empty($filtro['precio_max']))
+                <span class="filter-badge">
+                    <i class="bi bi-tag me-2 opacity-50"></i>
+                    @if(!empty($filtro['precio_min']) && !empty($filtro['precio_max']))
+                        {{ $filtro['precio_min'] }} - {{ $filtro['precio_max'] }} {{ $moneda }}
+                    @elseif(!empty($filtro['precio_min']))
+                        Min: {{ $filtro['precio_min'] }} {{ $moneda }}
+                    @else
+                        Max: {{ $filtro['precio_max'] }} {{ $moneda }}
+                    @endif
+                </span>
+            @endif
+
+            @if(!empty($filtro['color']))
+                <span class="filter-badge">
+                    <span class="color-dot me-2" style="width: 10px; height: 10px; border-radius: 50%; background-color: {{ $filtro['color'] }}; border: 1px solid #ddd;"></span>
+                    {{ ucfirst($filtro['color']) }}
+                </span>
+            @endif
+
+            @if(!empty($filtro['categoria_id']))
+                <span class="filter-badge">
+                    <i class="bi bi-grid me-2 opacity-50"></i>
+                    {{ $categorias->firstWhere('id', $filtro['categoria_id'])->nombre ?? 'Categoría' }}
+                </span>
+            @endif
+
+            @if(!empty($filtro['novedad']))
+                <span class="filter-badge badge-novedad">
+                    <i class="bi bi-stars me-2"></i>
+                    Novedades
+                </span>
+            @endif
+
+            @if(!empty($orden))
+                <span class="filter-badge badge-orden">
+                    <i class="bi bi-sort-down me-2"></i>
+                    @switch($orden)
+                        @case('precio_asc') Precio ↑ @break
+                        @case('precio_desc') Precio ↓ @break
+                        @case('nombre_asc') Nombre A-Z @break
+                        @case('nombre_desc') Nombre Z-A @break
+                        @case('fecha_asc') Más antiguos @break
+                        @case('fecha_desc') Más recientes @break
+                        @default {{ $orden }}
+                    @endswitch
+                </span>
+            @endif
+
+            <a href="{{ route('muebles.index') }}" class="btn btn-outline-danger btn-sm rounded-pill px-3 d-flex align-items-center transition-all hover-scale" title="Borrar todos los filtros">
+                <i class="bi bi-x-lg me-1"></i> Borrar todo
+            </a>
+        </div>
+    @endif
 
     <hr>
 
