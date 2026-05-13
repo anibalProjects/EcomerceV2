@@ -110,10 +110,10 @@
                 <i class="bi bi-gear-fill me-2"></i> Preferencias
             </a>
         </li>
-        @if($usuario->rol === 1)
+        @if($usuario->rol === 1 || $usuario->rol === 2)
         <li>
             <a class="dropdown-item" href="{{ route('admin.muebles.index') }}">
-                <i class="bi bi-gear-fill me-2"></i> Ir a administración
+                <i class="bi bi-shield-lock-fill me-2"></i> {{ $usuario->rol === 1 ? 'Ir a administración' : 'Panel de gestión' }}
             </a>
         </li>
         @endif
@@ -132,13 +132,7 @@
     <a href="{{ route('login.mostrar') }}" class="btn btn-primary">Iniciar Sesión</a>
 @endif
             </div>
-            @auth
-                @if(auth()->user()->rol_id === 1)
-                    <a href="{{ route('admin.muebles.index') }}" class="btn btn-secondary d-flex align-items-center ms-2">
-                        <i class="bi bi-gear-fill me-1"></i> Panel Admin
-                    </a>
-                @endif
-            @endauth
+
         </div>
     </div>
 

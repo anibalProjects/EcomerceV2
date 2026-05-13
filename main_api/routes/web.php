@@ -71,20 +71,26 @@ Route::middleware(['auth.api', 'check.ability:admin.panel,gestor.panel'])
         Route::post('galeria/{id}/principal',        [MueblesAdministracionController::class, 'setPrincipalGaleria'])->name('muebles.galeria.principal');
         Route::delete('galeria/{id}',                [MueblesAdministracionController::class, 'deleteImagenGaleria'])->name('muebles.galeria.delete');
 
-        // Rutas de categorías
-        Route::resource('categorias', CategoriasAdministracionController::class);
+        // Rutas de categorías (Movidas a un grupo exclusivo de admin abajo)
     });
 
 
-//Permisos de gestor, solo puede ver, crear, editar y eliminar muebles
+
 Route::middleware(['auth.api', 'check.ability:gestor.panel'])
     ->prefix('gestor')
     ->name('gestor.')
     ->group(function () {
-        // Rutas de la galeria
         Route::get('muebles/{id}/galeria',           [MueblesAdministracionController::class, 'galeria'])->name('muebles.galeria');
         Route::post('muebles/{id}/galeria',          [MueblesAdministracionController::class, 'uploadGaleria'])->name('muebles.galeria.upload');
         Route::post('galeria/{id}/principal',        [MueblesAdministracionController::class, 'setPrincipalGaleria'])->name('muebles.galeria.principal');
         Route::delete('galeria/{id}',                [MueblesAdministracionController::class, 'deleteImagenGaleria'])->name('muebles.galeria.delete');
+    });
+
+//Permisos de admin exclusivos
+Route::middleware(['auth.api', 'check.ability:admin.panel'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::resource('categorias', CategoriasAdministracionController::class);
     });
 
