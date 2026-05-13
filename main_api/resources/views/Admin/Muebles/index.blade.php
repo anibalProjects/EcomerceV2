@@ -96,7 +96,7 @@
                             @php
                                 $imgUrl = !empty($mueble->imagenes)
                                     ? $mueble->imagenes[0]
-                                    : asset('images/muebles/placeholder.jpg');
+                                    : asset('img/muebles/placeholder.png');
                             @endphp
                             <tr>
                                 <td>

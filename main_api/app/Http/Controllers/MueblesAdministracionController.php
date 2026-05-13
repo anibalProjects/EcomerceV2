@@ -220,7 +220,13 @@ class MueblesAdministracionController extends Controller
     public function uploadGaleria(Request $request, $id)
     {
         $request->validate([
-            'imagenes.*' => 'required|image|max:4096'
+            'imagenes.*' => 'required|image|mimes:jpeg,png,jpg,webp|max:4096'
+        ], [
+            'imagenes.*.required' => 'Debes seleccionar al menos una imagen.',
+            'imagenes.*.image' => 'El archivo seleccionado no es una imagen válida.',
+            'imagenes.*.mimes' => 'La imagen debe ser un formato válido (JPEG, PNG, JPG, WEBP).',
+            'imagenes.*.max' => 'La imagen es demasiado grande. El tamaño máximo permitido es de 4MB.',
+            'imagenes.*.uploaded' => 'Error al subir la imagen. Es posible que el archivo sea demasiado pesado y supere el límite interno del servidor.',
         ]);
 
         foreach($request->file('imagenes') as $file) {

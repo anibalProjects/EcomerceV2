@@ -289,7 +289,7 @@
                                     // La API devuelve ->imagenes como array de URLs
                                     $imgUrl = !empty($mueble->imagenes)
                                         ? $mueble->imagenes[0]
-                                        : asset('images/muebles/placeholder.jpg');
+                                        : asset('img/muebles/placeholder.png');
                                 @endphp
 
                                 <div style="border: 1px solid #ddd; padding: 10px; text-align: center;">

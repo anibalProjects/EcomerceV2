@@ -72,6 +72,17 @@
             <div class="alert alert-success mb-3">{{ session('success') }}</div>
         @endif
 
+        @if($errors->any())
+            <div class="alert alert-danger mb-3">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i><strong>No se pudieron subir las imágenes:</strong>
+                <ul class="mb-0 mt-2">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <form action="{{ route('admin.muebles.galeria.upload', [$mueble->id]) }}" method="POST" enctype="multipart/form-data" class="mb-4">
             @csrf
             <div class="row g-2 align-items-center">

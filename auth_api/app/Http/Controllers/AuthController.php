@@ -31,6 +31,7 @@ class AuthController extends Controller
 
         $usuarioDB = Usuario::where('email', $datos['email'])->first();
 
+        
         if (!$usuarioDB) {
             return response()->json([
                 'mensaje' => 'Credenciales incorrectas.'
