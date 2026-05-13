@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Session;
 
 class MueblesAdministracionController extends Controller
 {
-    protected $carpetaPrivada = 'muebles';
+    protected $carpetaPublica = 'img/muebles';
 
     public function index(Request $request, \App\Services\FurnitureServices $furnitureService)
     {
@@ -74,7 +74,11 @@ class MueblesAdministracionController extends Controller
             $newId = $result['datos']['data']['id'] ?? null;
 
             if ($newId && $request->hasFile('imagen_principal')) {
-                $ruta = $request->file('imagen_principal')->store('imagenes/pagprincipal', 'public');
+                $file = $request->file('imagen_principal');
+                $filename = time() . '_principal_' . $file->getClientOriginalName();
+                $file->move(public_path($this->carpetaPublica), $filename);
+                $ruta = $this->carpetaPublica . '/' . $filename;
+
                 Galeria::create([
                     'mueble_id' => $newId,
                     'ruta' => $ruta,
@@ -150,7 +154,10 @@ class MueblesAdministracionController extends Controller
 
         if ($result['estado'] >= 200 && $result['estado'] < 300) {
             if ($request->hasFile('imagen_principal')) {
-                $ruta = $request->file('imagen_principal')->store('imagenes/pagprincipal', 'public');
+                $file = $request->file('imagen_principal');
+                $filename = time() . '_principal_' . $file->getClientOriginalName();
+                $file->move(public_path($this->carpetaPublica), $filename);
+                $ruta = $this->carpetaPublica . '/' . $filename;
                 
                 Galeria::where('mueble_id', $id)->update(['es_principal' => false]);
                 Galeria::create([
@@ -176,8 +183,9 @@ class MueblesAdministracionController extends Controller
             // Eliminar imágenes locales de la galería
             $galeria = Galeria::where('mueble_id', $id)->get();
             foreach($galeria as $img) {
-                if (Storage::disk('public')->exists($img->ruta)) {
-                    Storage::disk('public')->delete($img->ruta);
+                $fullPath = public_path($img->ruta);
+                if (file_exists($fullPath)) {
+                    unlink($fullPath);
                 }
                 $img->delete();
             }
@@ -185,7 +193,7 @@ class MueblesAdministracionController extends Controller
             return redirect()->route('admin.muebles.index')->with('success', 'Mueble eliminado correctamente en la API');
         }
 
-        return back()->with('error', 'Error al eliminar: ' . $response->body());
+        return back()->with('error', 'Error al eliminar: ' . json_encode($result['datos']));
     }
 
     // GALERÍA (Mantenemos gestión local temporalmente)
@@ -216,7 +224,9 @@ class MueblesAdministracionController extends Controller
         ]);
 
         foreach($request->file('imagenes') as $file) {
-            $ruta = $file->store('imagenes/secundarias', 'public');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path($this->carpetaPublica), $filename);
+            $ruta = $this->carpetaPublica . '/' . $filename;
 
             Galeria::create([
                 'mueble_id' => $id,
@@ -232,8 +242,9 @@ class MueblesAdministracionController extends Controller
     public function deleteImagenGaleria($id)
     {
         $imagen = Galeria::findOrFail($id);
-        if (Storage::disk('public')->exists($imagen->ruta)) {
-            Storage::disk('public')->delete($imagen->ruta);
+        $fullPath = public_path($imagen->ruta);
+        if (file_exists($fullPath)) {
+            unlink($fullPath);
         }
         $imagen->delete();
         return back()->with('success', 'Imagen eliminada');

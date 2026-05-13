@@ -90,7 +90,7 @@
             <div class="galeria-grid">
                 @foreach($mueble->galeria as $imagen)
                     @php
-                        $imgUrl = route('imagen.mueble', ['path' => rawurlencode($imagen->ruta)]);
+                        $imgUrl = asset($imagen->ruta);
                     @endphp
                     <div class="galeria-card">
                         <img src="{{ $imgUrl }}" alt="Imagen" class="galeria-img">

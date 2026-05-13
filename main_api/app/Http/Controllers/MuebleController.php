@@ -25,7 +25,15 @@ class MuebleController extends Controller
         $responseMuebles = $furnitureService->getMuebles($params);
         $datos = $responseMuebles['datos'];
         
-        $mueblesData = collect($datos['data'] ?? [])->map(fn($item) => (object)$item);
+        //mapeamos las imagenes de la galeria por mueble
+        $mueblesData = collect($datos['data'] ?? [])->map(function($item) {
+            $mueble = (object)$item;
+            $galeria = \App\Models\Galeria::where('mueble_id', $mueble->id)->orderBy('es_principal', 'desc')->get();
+            if ($galeria->isNotEmpty()) {
+                $mueble->imagenes = $galeria->map(fn($g) => asset($g->ruta))->toArray();
+            }
+            return $mueble;
+        });
 
         if (isset($datos['meta'])) {
             $muebles = new LengthAwarePaginator(
@@ -80,6 +88,12 @@ class MuebleController extends Controller
             abort(404, 'Mueble no encontrado en la API');
         }
         $mueble = (object) ($response['datos']['data'] ?? $response['datos']);
+        
+        // Adjuntar imágenes locales de la galería si existen
+        $galeria = \App\Models\Galeria::where('mueble_id', $mueble->id)->orderBy('es_principal', 'desc')->get();
+        if ($galeria->isNotEmpty()) {
+            $mueble->imagenes = $galeria->map(fn($g) => asset($g->ruta))->toArray();
+        }
 
         $usuario = Session::get('usuario_logueado');
         $usuario = $usuario ? (object) $usuario : null;
@@ -128,7 +142,15 @@ class MuebleController extends Controller
         try {
             $responseMuebles = $furnitureService->getMuebles($params);
             $datos = $responseMuebles['datos'];
-            $mueblesData = collect($datos['data'] ?? [])->map(fn($item) => (object)$item);
+            $mueblesData = collect($datos['data'] ?? [])->map(function($item) {
+                $mueble = (object)$item;
+                // Adjuntar imágenes locales de la galería si existen
+                $galeria = \App\Models\Galeria::where('mueble_id', $mueble->id)->orderBy('es_principal', 'desc')->get();
+                if ($galeria->isNotEmpty()) {
+                    $mueble->imagenes = $galeria->map(fn($g) => asset($g->ruta))->toArray();
+                }
+                return $mueble;
+            });
 
             if (isset($datos['meta'])) {
                 $muebles = new LengthAwarePaginator(
