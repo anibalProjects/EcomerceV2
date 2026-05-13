@@ -113,10 +113,7 @@
                     </div>
 
                     <div class="row g-3">
-                        <div class="col-md-4 form-check mb-2">
-                            <input type="checkbox" name="destacado" class="form-check-input" id="destacado" {{ old('destacado') ? 'checked' : '' }}>
-                            <label for="destacado" class="form-check-label">Destacado</label>
-                        </div>
+
                         <div class="col-md-4 form-check mb-2">
                             <input type="checkbox" name="novedad" class="form-check-input" id="novedad" {{ old('novedad') ? 'checked' : '' }}>
                             <label for="novedad" class="form-check-label">Novedad</label>

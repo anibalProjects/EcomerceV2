@@ -113,10 +113,7 @@
                             <input type="checkbox" name="novedad" class="form-check-input" id="novedad" {{ old('novedad', $mueble->novedad) ? 'checked' : '' }}>
                             <label for="novedad" class="form-check-label">Novedad</label>
                         </div>
-                        <div class="col-md-4 form-check mb-2">
-                            <input type="checkbox" name="destacado" class="form-check-input" id="destacado" {{ old('destacado', $mueble->destacado ?? false) ? 'checked' : '' }}>
-                            <label for="destacado" class="form-check-label">Destacado</label>
-                        </div>
+
                         <div class="col-md-4 form-check mb-3">
                             <input type="checkbox" name="activo" class="form-check-input" id="activo" {{ old('activo', $mueble->activo) ? 'checked' : '' }}>
                             <label for="activo" class="form-check-label">Activo</label>
